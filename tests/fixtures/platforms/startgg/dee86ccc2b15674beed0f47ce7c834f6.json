@@ -1,0 +1,246 @@
+{
+  "request": {
+    "url": "https://api.start.gg/gql/alpha",
+    "method": "POST",
+    "body": "{\"query\":\"\\n  query PhaseGroupSetsQuery($phaseGroupId: ID!, $page: Int!, $perPage: Int!) {\\n    phaseGroup(id: $phaseGroupId) {\\n      id\\n      sets(page: $page, perPage: $perPage, sortType: CALL_ORDER) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          identifier\\n          round\\n          fullRoundText\\n          state\\n          completedAt\\n          winnerId\\n          slots {\\n            entrant {\\n              id\\n            }\\n            standing {\\n              stats {\\n                score {\\n                  value\\n                }\\n              }\\n            }\\n          }\\n          games {\\n            orderNum\\n            winnerId\\n            stage {\\n              name\\n            }\\n            selections {\\n              entrant {\\n                id\\n              }\\n              character {\\n                name\\n              }\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"phaseGroupId\":3395815,\"page\":1,\"perPage\":20}}"
+  },
+  "status": 200,
+  "body": {
+    "data": {
+      "phaseGroup": {
+        "id": 3395815,
+        "sets": {
+          "pageInfo": {
+            "totalPages": 1
+          },
+          "nodes": [
+            {
+              "id": 105848564,
+              "identifier": "E",
+              "round": 3,
+              "fullRoundText": "Round 3",
+              "state": 3,
+              "completedAt": 1785216784,
+              "winnerId": 24235155,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24235155
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24235135
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105848565,
+              "identifier": "F",
+              "round": 3,
+              "fullRoundText": "Round 3",
+              "state": 3,
+              "completedAt": 1785216761,
+              "winnerId": 24235133,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24235133
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24235156
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105848562,
+              "identifier": "C",
+              "round": 2,
+              "fullRoundText": "Round 2",
+              "state": 3,
+              "completedAt": 1785216065,
+              "winnerId": 24235155,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24235155
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24235133
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105848563,
+              "identifier": "D",
+              "round": 2,
+              "fullRoundText": "Round 2",
+              "state": 3,
+              "completedAt": 1785215786,
+              "winnerId": 24235135,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24235156
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24235135
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105848560,
+              "identifier": "A",
+              "round": 1,
+              "fullRoundText": "Round 1",
+              "state": 3,
+              "completedAt": 1785228607,
+              "winnerId": 24235155,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24235155
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24235156
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105848561,
+              "identifier": "B",
+              "round": 1,
+              "fullRoundText": "Round 1",
+              "state": 3,
+              "completedAt": 1785214286,
+              "winnerId": 24235135,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24235135
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24235133
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            }
+          ]
+        }
+      }
+    },
+    "extensions": {
+      "cacheControl": {
+        "version": 1,
+        "hints": null
+      },
+      "queryComplexity": 97
+    },
+    "actionRecords": []
+  }
+}

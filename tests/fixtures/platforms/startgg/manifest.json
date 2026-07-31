@@ -1,0 +1,13 @@
+{
+  "events": [
+    {
+      "url": "https://www.start.gg/tournament/akh-presents-ssbu-shrimp-tank-3-shrimply-the-best/event/ultimate-singles",
+      "slug": "tournament/akh-presents-ssbu-shrimp-tank-3-shrimply-the-best/event/ultimate-singles"
+    },
+    {
+      "url": "https://www.start.gg/tournament/akh-presents-ssbu-shrimp-tank-3-shrimply-the-best/event/ultimate-doubles",
+      "slug": "tournament/akh-presents-ssbu-shrimp-tank-3-shrimply-the-best/event/ultimate-doubles"
+    }
+  ],
+  "requests": 7
+}

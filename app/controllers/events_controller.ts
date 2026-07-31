@@ -1,0 +1,224 @@
+import db from '@adonisjs/lucid/services/db'
+import Event from '#models/event'
+import LeaguePolicy from '#policies/league_policy'
+import type { HttpContext } from '@adonisjs/core/http'
+
+/**
+ * The events a league counts, and one event's results.
+ *
+ * Events rather than tournaments, because that is the unit a league takes: a
+ * tournament's other events belong to whoever imported them.
+ */
+export default class EventsController {
+  async index({ league, bouncer, inertia }: HttpContext) {
+    const rows = await db
+      .from('league_events as le')
+      .innerJoin('events as e', 'e.id', 'le.event_id')
+      .innerJoin('tournaments as t', 't.id', 'e.tournament_id')
+      .where('le.league_id', league.id)
+      .select(
+        'e.id',
+        'e.name as event_name',
+        'e.entry_kind',
+        'e.game_name',
+        'e.entrant_count',
+        't.name as tournament_name',
+        't.platform_key',
+        't.start_at',
+        't.url',
+        db.raw(`(
+          select count(*) from sets s
+          join brackets b on b.id = s.bracket_id
+          join phases p on p.id = b.phase_id
+          where p.event_id = e.id and s.state = 'completed'
+        ) as completed_sets`)
+      )
+      .orderBy('t.start_at', 'desc')
+
+    return inertia.render('leagues/events', {
+      league: { slug: league.slug, name: league.name },
+      canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
+      events: rows.map((row) => ({
+        id: row.id,
+        name: row.event_name,
+        tournamentName: row.tournament_name,
+        entryKind: row.entry_kind,
+        gameName: row.game_name,
+        entrantCount: row.entrant_count,
+        completedSets: Number(row.completed_sets),
+        platformKey: row.platform_key,
+        url: row.url,
+        startAt: row.start_at ? isoDate(row.start_at) : null,
+      })),
+    })
+  }
+
+  async show({ league, bouncer, params, response, inertia }: HttpContext) {
+    /**
+     * Scoped through `league_events` rather than looked up directly: canonical
+     * events are instance-wide, so a league may only read the ones it counts.
+     */
+    const counted = await db
+      .from('league_events')
+      .where('league_id', league.id)
+      .where('event_id', params.event)
+      .first()
+
+    if (!counted) {
+      return response.notFound({ message: 'No such event in this league' })
+    }
+
+    const event = await Event.query().where('id', params.event).preload('tournament').first()
+
+    if (!event) {
+      return response.notFound({ message: 'No such event' })
+    }
+
+    /**
+     * Entrants with the tags behind them, so doubles teams read as people, plus
+     * the account each one resolved through — that is what an admin corrects.
+     */
+    const entrants = await db
+      .from('entrants as en')
+      .leftJoin('entrant_participants as ep', 'ep.entrant_id', 'en.id')
+      .leftJoin('platform_accounts as pa', 'pa.id', 'ep.platform_account_id')
+      .leftJoin('league_player_accounts as lpa', (join) =>
+        join.on('lpa.platform_account_id', 'pa.id').andOnVal('lpa.league_id', league.id)
+      )
+      .leftJoin('league_players as lp', 'lp.id', 'lpa.league_player_id')
+      .where('en.event_id', event.id)
+      .select(
+        'en.id',
+        'en.name',
+        'en.seed',
+        'en.placement',
+        'en.is_disqualified',
+        'lp.slug as player_slug',
+        'lp.display_tag',
+        'pa.id as platform_account_id',
+        'pa.gamer_tag',
+        'pa.platform_key',
+        'lpa.source',
+        'lpa.provisional'
+      )
+      .orderByRaw('en.placement asc nulls last, en.seed asc nulls last, en.name asc')
+
+    const sets = await db
+      .from('sets as s')
+      .innerJoin('brackets as b', 'b.id', 's.bracket_id')
+      .innerJoin('phases as p', 'p.id', 'b.phase_id')
+      .leftJoin('entrants as ea', 'ea.id', 's.entrant_a_id')
+      .leftJoin('entrants as eb', 'eb.id', 's.entrant_b_id')
+      .where('p.event_id', event.id)
+      .select(
+        's.id',
+        's.full_round_text',
+        's.round',
+        's.state',
+        's.score_a',
+        's.score_b',
+        's.entrant_a_disqualified',
+        's.entrant_b_disqualified',
+        's.winner_entrant_id',
+        's.entrant_a_id',
+        's.completed_at',
+        'ea.name as entrant_a_name',
+        'eb.name as entrant_b_name',
+        'p.name as phase_name',
+        'b.name as bracket_name'
+      )
+      .orderByRaw(
+        `p."order" asc nulls last, b.id asc, s.completed_at asc nulls last, s.ordinal asc nulls last`
+      )
+
+    /** One row per participant of a team, so the roster groups rather than repeats. */
+    const rosters = new Map<
+      string,
+      Array<{
+        tag: string
+        slug: string | null
+        platformAccountId: string | null
+        gamerTag: string | null
+        platformKey: string | null
+        provisional: boolean
+      }>
+    >()
+
+    for (const row of entrants) {
+      const list = rosters.get(row.id) ?? []
+      list.push({
+        tag: row.display_tag ?? row.gamer_tag ?? row.name,
+        slug: row.player_slug,
+        platformAccountId: row.platform_account_id,
+        gamerTag: row.gamer_tag,
+        platformKey: row.platform_key,
+        provisional: row.provisional ?? false,
+      })
+      rosters.set(row.id, list)
+    }
+
+    const canManage = await bouncer.with(LeaguePolicy).allows('manage', league)
+
+    /**
+     * Every player in the league, so a correction can point an account at any of
+     * them. Only sent to admins — it is the whole roster, and visitors have
+     * nothing to do with it.
+     */
+    const players = canManage
+      ? await db
+          .from('league_players')
+          .where('league_id', league.id)
+          .whereNull('merged_into_id')
+          .select('id', 'display_tag')
+          .orderBy('display_tag')
+      : []
+
+    const seen = new Set<string>()
+
+    return inertia.render('leagues/event', {
+      league: { slug: league.slug, name: league.name },
+      canManage,
+      players: players.map((row) => ({ id: row.id, displayTag: row.display_tag })),
+      event: {
+        id: event.id,
+        name: event.name,
+        tournamentName: event.tournament.name,
+        entryKind: event.entryKind,
+        gameName: event.gameName,
+        entrantCount: event.entrantCount,
+        platformKey: event.tournament.platformKey,
+        url: event.tournament.url,
+        startAt: event.tournament.startAt?.toISODate() ?? null,
+      },
+      entrants: entrants
+        .filter((row) => (seen.has(row.id) ? false : seen.add(row.id)))
+        .map((row) => ({
+          id: row.id,
+          name: row.name,
+          seed: row.seed,
+          placement: row.placement,
+          isDisqualified: row.is_disqualified,
+          players: rosters.get(row.id) ?? [],
+        })),
+      sets: sets.map((row) => ({
+        id: row.id,
+        phase: row.phase_name,
+        bracket: row.bracket_name,
+        round: row.full_round_text,
+        entrantA: row.entrant_a_name,
+        entrantB: row.entrant_b_name,
+        scoreA: row.score_a,
+        scoreB: row.score_b,
+        disqualifiedA: row.entrant_a_disqualified,
+        disqualifiedB: row.entrant_b_disqualified,
+        winnerIsA: row.winner_entrant_id !== null && row.winner_entrant_id === row.entrant_a_id,
+        decided: row.winner_entrant_id !== null,
+        state: row.state,
+      })),
+    })
+  }
+}
+
+function isoDate(value: unknown): string {
+  return new Date(value as string).toISOString().slice(0, 10)
+}

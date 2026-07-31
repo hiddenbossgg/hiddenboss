@@ -1,0 +1,13 @@
+{
+  "events": [
+    {
+      "url": "https://parry.gg/foco/melee-singles",
+      "slug": "foco/melee-singles"
+    },
+    {
+      "url": "https://parry.gg/foco/melee-doubles",
+      "slug": "foco/melee-doubles"
+    }
+  ],
+  "requests": 4
+}

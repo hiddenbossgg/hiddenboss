@@ -1,0 +1,1751 @@
+{
+  "request": {
+    "url": "https://grpcweb.parry.gg/parrygg.services.BracketService/GetBracket",
+    "method": "POST",
+    "body": "{\"id\":\"019faa05-2e39-79ba-9781-61ec9785f384\"}"
+  },
+  "status": 200,
+  "body": {
+    "bracket": {
+      "id": "019faa05-2e39-79ba-9781-61ec9785f384",
+      "state": "BRACKET_STATE_COMPLETED",
+      "matches": [
+        {
+          "id": "019fb095-8e2c-76dc-895f-1d4c3971cb50",
+          "identifier": "A",
+          "round": 1,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-896e-b29f52c2285d",
+          "losersMatchId": "019fb095-8e2c-76dc-897e-1f8cc60f72ab",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fb025-bd48-719f-9356-06a6923d1b6f",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faa58-ddd0-75ba-a0c0-5d88d31d7f60",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:13:43Z",
+          "winnersPlacement": 13,
+          "losersPlacement": 17,
+          "startedAt": "2026-07-30T01:13:43Z",
+          "endedAt": "2026-07-30T01:13:43Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-898f-8d644c79911c",
+          "identifier": "AA",
+          "round": 3,
+          "prevMatchId1": "019fb095-8e2c-76dc-8986-66608faeeb09",
+          "prevMatchId2": "019fb095-8e2c-76dc-898b-0fc5b731e511",
+          "winnersMatchId": "019fb095-8e2c-76dc-8994-2aa27bfb7706",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fae3d-4705-76ec-bb4e-c23452803644",
+              "placement": 1,
+              "score": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fae8b-3370-7931-94ab-391aac563fd9",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:42:58Z",
+          "winnersPlacement": 7,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:42:58Z",
+          "endedAt": "2026-07-30T01:42:58Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8990-4386c89e35a9",
+          "identifier": "AB",
+          "round": 3,
+          "prevMatchId1": "019fb095-8e2c-76dc-8989-e8132998fe03",
+          "prevMatchId2": "019fb095-8e2c-76dc-898c-7c5a0cb2b464",
+          "winnersMatchId": "019fb095-8e2c-76dc-8995-074a2282534e",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf83-2c27-7098-85ac-485b103fdc8b",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faee6-12da-79f4-bbfa-f707c12e55d5",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:50:10Z",
+          "winnersPlacement": 7,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:50:10Z",
+          "endedAt": "2026-07-30T01:50:10Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8991-a9a7c16101a5",
+          "identifier": "AC",
+          "round": 3,
+          "prevMatchId1": "019fb095-8e2c-76dc-8988-9f4dbb0a0423",
+          "prevMatchId2": "019fb095-8e2c-76dc-898d-9edbe62fcf62",
+          "winnersMatchId": "019fb095-8e2c-76dc-8995-074a2282534e",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fabeb-b3e1-75aa-ab14-6fc0c9a4ed6e",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf4c-de5a-74a8-a8a2-91e703372297",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:40:28Z",
+          "winnersPlacement": 7,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:40:28Z",
+          "endedAt": "2026-07-30T01:40:28Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8994-2aa27bfb7706",
+          "identifier": "AD",
+          "round": 4,
+          "prevMatchId1": "019fb095-8e2c-76dc-898e-e88b8acdd8b8",
+          "prevMatchId2": "019fb095-8e2c-76dc-898f-8d644c79911c",
+          "winnersMatchId": "019fb095-8e2c-76dc-8996-b185eb397d12",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fb069-9195-796b-ae31-9d6078f2a8ac",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fae8b-3370-7931-94ab-391aac563fd9",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:56:42Z",
+          "winnersPlacement": 5,
+          "losersPlacement": 7,
+          "startedAt": "2026-07-30T01:56:42Z",
+          "endedAt": "2026-07-30T01:56:42Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8995-074a2282534e",
+          "identifier": "AE",
+          "round": 4,
+          "prevMatchId1": "019fb095-8e2c-76dc-8990-4386c89e35a9",
+          "prevMatchId2": "019fb095-8e2c-76dc-8991-a9a7c16101a5",
+          "winnersMatchId": "019fb095-8e2c-76dc-8997-0aadbbe16015",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf83-2c27-7098-85ac-485b103fdc8b",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabeb-b3e1-75aa-ab14-6fc0c9a4ed6e",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T02:03:45Z",
+          "winnersPlacement": 5,
+          "losersPlacement": 7,
+          "startedAt": "2026-07-30T02:03:45Z",
+          "endedAt": "2026-07-30T02:03:45Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8996-b185eb397d12",
+          "identifier": "AF",
+          "round": 5,
+          "prevMatchId1": "019fb095-8e2c-76dc-8993-c28851c1d8fb",
+          "prevMatchId2": "019fb095-8e2c-76dc-8994-2aa27bfb7706",
+          "winnersMatchId": "019fb095-8e2c-76dc-8999-615e7cc21c1e",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fadb4-3677-70fe-984e-15830572d98f",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fb069-9195-796b-ae31-9d6078f2a8ac",
+              "placement": 1,
+              "score": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T02:17:14Z",
+          "winnersPlacement": 4,
+          "losersPlacement": 5,
+          "startedAt": "2026-07-30T02:17:14Z",
+          "endedAt": "2026-07-30T02:17:14Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8997-0aadbbe16015",
+          "identifier": "AG",
+          "round": 5,
+          "prevMatchId1": "019fb095-8e2c-76dc-8992-7a1d6dcf3cb8",
+          "prevMatchId2": "019fb095-8e2c-76dc-8995-074a2282534e",
+          "winnersMatchId": "019fb095-8e2c-76dc-8999-615e7cc21c1e",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabeb-b3e1-75aa-ab14-6fc0c9a4ed6e",
+              "placement": 1,
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T02:23:18Z",
+          "winnersPlacement": 4,
+          "losersPlacement": 5,
+          "startedAt": "2026-07-30T02:23:18Z",
+          "endedAt": "2026-07-30T02:23:18Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8999-615e7cc21c1e",
+          "identifier": "AH",
+          "round": 6,
+          "prevMatchId1": "019fb095-8e2c-76dc-8996-b185eb397d12",
+          "prevMatchId2": "019fb095-8e2c-76dc-8997-0aadbbe16015",
+          "winnersMatchId": "019fb095-8e2c-76dc-899a-35c249a46d1d",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fadb4-3677-70fe-984e-15830572d98f",
+              "placement": 1,
+              "score": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T02:39:39Z",
+          "winnersPlacement": 3,
+          "losersPlacement": 4,
+          "startedAt": "2026-07-30T02:39:39Z",
+          "endedAt": "2026-07-30T02:39:39Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-899a-35c249a46d1d",
+          "identifier": "AI",
+          "round": 7,
+          "prevMatchId1": "019fb095-8e2c-76dc-8998-42d3ea245176",
+          "prevMatchId2": "019fb095-8e2c-76dc-8999-615e7cc21c1e",
+          "winnersMatchId": "019fb095-8e2c-76dc-899b-d42791fc8b76",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fac3e-1c74-709d-85b8-3b75f006752c",
+              "placement": 1,
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T03:18:12Z",
+          "winnersPlacement": 2,
+          "losersPlacement": 3,
+          "startedAt": "2026-07-30T03:18:12Z",
+          "endedAt": "2026-07-30T03:18:12Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8967-83d89a8920a5",
+          "identifier": "B",
+          "round": 1,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8972-eee8d52e1acd",
+          "losersMatchId": "019fb095-8e2c-76dc-8982-3747ce26a59f",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf92-79d7-78bd-b79d-67f1ef285a0d",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fb029-bd43-7f76-bc3b-f51131fcdfef",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:13:47Z",
+          "winnersPlacement": 13,
+          "losersPlacement": 17,
+          "startedAt": "2026-07-30T01:13:47Z",
+          "endedAt": "2026-07-30T01:13:47Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-896e-b29f52c2285d",
+          "identifier": "C",
+          "round": 2,
+          "winnersSide": true,
+          "prevMatchId2": "019fb095-8e2c-76dc-895f-1d4c3971cb50",
+          "winnersMatchId": "019fb095-8e2c-76dc-8986-66608faeeb09",
+          "losersMatchId": "019fb095-8e2c-76dc-898d-9edbe62fcf62",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fb025-bd48-719f-9356-06a6923d1b6f",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:23:26Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:23:26Z",
+          "endedAt": "2026-07-30T01:23:26Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-896f-e40d2d3c87c8",
+          "identifier": "D",
+          "round": 2,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8986-66608faeeb09",
+          "losersMatchId": "019fb095-8e2c-76dc-898d-9edbe62fcf62",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf4c-de5a-74a8-a8a2-91e703372297",
+              "placement": 1,
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fae3d-4705-76ec-bb4e-c23452803644",
+              "score": 5,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:17:48Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:17:48Z",
+          "endedAt": "2026-07-30T01:17:48Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8970-81258b8718e6",
+          "identifier": "E",
+          "round": 2,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8987-34cf9bbcf08e",
+          "losersMatchId": "019fb095-8e2c-76dc-898c-7c5a0cb2b464",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fac3e-1c74-709d-85b8-3b75f006752c",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faee6-12da-79f4-bbfa-f707c12e55d5",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:14:03Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:14:03Z",
+          "endedAt": "2026-07-30T01:14:03Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8971-bccf1932f280",
+          "identifier": "F",
+          "round": 2,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8987-34cf9bbcf08e",
+          "losersMatchId": "019fb095-8e2c-76dc-8982-3747ce26a59f",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fb069-9195-796b-ae31-9d6078f2a8ac",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf7b-1b70-73e7-a109-2f187351b9aa",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:18:11Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 17,
+          "startedAt": "2026-07-30T01:18:11Z",
+          "endedAt": "2026-07-30T01:18:11Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8972-eee8d52e1acd",
+          "identifier": "G",
+          "round": 2,
+          "winnersSide": true,
+          "prevMatchId2": "019fb095-8e2c-76dc-8967-83d89a8920a5",
+          "winnersMatchId": "019fb095-8e2c-76dc-8988-9f4dbb0a0423",
+          "losersMatchId": "019fb095-8e2c-76dc-898b-0fc5b731e511",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fabeb-b3e1-75aa-ab14-6fc0c9a4ed6e",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf92-79d7-78bd-b79d-67f1ef285a0d",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:13:49Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:13:49Z",
+          "endedAt": "2026-07-30T01:13:49Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8973-6d1412247bc9",
+          "identifier": "H",
+          "round": 2,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8988-9f4dbb0a0423",
+          "losersMatchId": "019fb095-8e2c-76dc-898b-0fc5b731e511",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fadb4-3677-70fe-984e-15830572d98f",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fae8b-3370-7931-94ab-391aac563fd9",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:14:57Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:14:57Z",
+          "endedAt": "2026-07-30T01:14:57Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8974-0b805af8130e",
+          "identifier": "I",
+          "round": 2,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8989-e8132998fe03",
+          "losersMatchId": "019fb095-8e2c-76dc-898a-50b81a4199dc",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fabed-c685-763d-8b04-340d13fb27f8",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabf4-2591-75ce-96e7-eeb4a6c50880",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:13:58Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:13:58Z",
+          "endedAt": "2026-07-30T01:13:58Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8975-4f61afac4977",
+          "identifier": "J",
+          "round": 2,
+          "winnersSide": true,
+          "winnersMatchId": "019fb095-8e2c-76dc-8989-e8132998fe03",
+          "losersMatchId": "019fb095-8e2c-76dc-897e-1f8cc60f72ab",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf83-2c27-7098-85ac-485b103fdc8b",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faeb8-8a0d-7007-b6c8-f3859d6c6a6d",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:13:54Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 17,
+          "startedAt": "2026-07-30T01:13:54Z",
+          "endedAt": "2026-07-30T01:13:54Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8986-66608faeeb09",
+          "identifier": "K",
+          "round": 3,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-896e-b29f52c2285d",
+          "prevMatchId2": "019fb095-8e2c-76dc-896f-e40d2d3c87c8",
+          "winnersMatchId": "019fb095-8e2c-76dc-8992-7a1d6dcf3cb8",
+          "losersMatchId": "019fb095-8e2c-76dc-898f-8d644c79911c",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fae3d-4705-76ec-bb4e-c23452803644",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:30:51Z",
+          "winnersPlacement": 5,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:30:51Z",
+          "endedAt": "2026-07-30T01:30:51Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8987-34cf9bbcf08e",
+          "identifier": "L",
+          "round": 3,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8970-81258b8718e6",
+          "prevMatchId2": "019fb095-8e2c-76dc-8971-bccf1932f280",
+          "winnersMatchId": "019fb095-8e2c-76dc-8992-7a1d6dcf3cb8",
+          "losersMatchId": "019fb095-8e2c-76dc-898e-e88b8acdd8b8",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fac3e-1c74-709d-85b8-3b75f006752c",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fb069-9195-796b-ae31-9d6078f2a8ac",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:25:52Z",
+          "winnersPlacement": 5,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:25:52Z",
+          "endedAt": "2026-07-30T01:25:52Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8988-9f4dbb0a0423",
+          "identifier": "M",
+          "round": 3,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8972-eee8d52e1acd",
+          "prevMatchId2": "019fb095-8e2c-76dc-8973-6d1412247bc9",
+          "winnersMatchId": "019fb095-8e2c-76dc-8993-c28851c1d8fb",
+          "losersMatchId": "019fb095-8e2c-76dc-8991-a9a7c16101a5",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fabeb-b3e1-75aa-ab14-6fc0c9a4ed6e",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fadb4-3677-70fe-984e-15830572d98f",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:27:38Z",
+          "winnersPlacement": 5,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:27:38Z",
+          "endedAt": "2026-07-30T01:27:38Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8989-e8132998fe03",
+          "identifier": "N",
+          "round": 3,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8974-0b805af8130e",
+          "prevMatchId2": "019fb095-8e2c-76dc-8975-4f61afac4977",
+          "winnersMatchId": "019fb095-8e2c-76dc-8993-c28851c1d8fb",
+          "losersMatchId": "019fb095-8e2c-76dc-8990-4386c89e35a9",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fabed-c685-763d-8b04-340d13fb27f8",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf83-2c27-7098-85ac-485b103fdc8b",
+              "placement": 1,
+              "score": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:24:36Z",
+          "winnersPlacement": 5,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:24:36Z",
+          "endedAt": "2026-07-30T01:24:36Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8992-7a1d6dcf3cb8",
+          "identifier": "O",
+          "round": 4,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8986-66608faeeb09",
+          "prevMatchId2": "019fb095-8e2c-76dc-8987-34cf9bbcf08e",
+          "winnersMatchId": "019fb095-8e2c-76dc-8998-42d3ea245176",
+          "losersMatchId": "019fb095-8e2c-76dc-8997-0aadbbe16015",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "placement": 1,
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fac3e-1c74-709d-85b8-3b75f006752c",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:54:14Z",
+          "winnersPlacement": 3,
+          "losersPlacement": 5,
+          "startedAt": "2026-07-30T01:54:14Z",
+          "endedAt": "2026-07-30T01:54:14Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8993-c28851c1d8fb",
+          "identifier": "P",
+          "round": 4,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8988-9f4dbb0a0423",
+          "prevMatchId2": "019fb095-8e2c-76dc-8989-e8132998fe03",
+          "winnersMatchId": "019fb095-8e2c-76dc-8998-42d3ea245176",
+          "losersMatchId": "019fb095-8e2c-76dc-8996-b185eb397d12",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fadb4-3677-70fe-984e-15830572d98f",
+              "placement": 1,
+              "score": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabed-c685-763d-8b04-340d13fb27f8",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:50:54Z",
+          "winnersPlacement": 3,
+          "losersPlacement": 5,
+          "startedAt": "2026-07-30T01:50:54Z",
+          "endedAt": "2026-07-30T01:50:54Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8998-42d3ea245176",
+          "identifier": "Q",
+          "round": 5,
+          "winnersSide": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8992-7a1d6dcf3cb8",
+          "prevMatchId2": "019fb095-8e2c-76dc-8993-c28851c1d8fb",
+          "winnersMatchId": "019fb095-8e2c-76dc-899b-d42791fc8b76",
+          "losersMatchId": "019fb095-8e2c-76dc-899a-35c249a46d1d",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fac3e-1c74-709d-85b8-3b75f006752c",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabed-c685-763d-8b04-340d13fb27f8",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T02:09:14Z",
+          "winnersPlacement": 2,
+          "losersPlacement": 3,
+          "startedAt": "2026-07-30T02:09:14Z",
+          "endedAt": "2026-07-30T02:09:14Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-899b-d42791fc8b76",
+          "identifier": "R",
+          "round": 6,
+          "winnersSide": true,
+          "grandFinals": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-8998-42d3ea245176",
+          "prevMatchId2": "019fb095-8e2c-76dc-899a-35c249a46d1d",
+          "winnersMatchId": "019fb095-8e2c-76dc-899c-570af6a848b1",
+          "losersMatchId": "019fb095-8e2c-76dc-899c-570af6a848b1",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fabed-c685-763d-8b04-340d13fb27f8",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T03:18:18Z",
+          "winnersPlacement": 1,
+          "losersPlacement": 2,
+          "startedAt": "2026-07-30T03:18:18Z",
+          "endedAt": "2026-07-30T03:18:18Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-899c-570af6a848b1",
+          "identifier": "S",
+          "round": 7,
+          "winnersSide": true,
+          "grandFinals": true,
+          "prevMatchId1": "019fb095-8e2c-76dc-899b-d42791fc8b76",
+          "prevMatchId2": "019fb095-8e2c-76dc-899b-d42791fc8b76",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+              "score": 3,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabed-c685-763d-8b04-340d13fb27f8",
+              "placement": 1,
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T03:18:29Z",
+          "winnersPlacement": 1,
+          "losersPlacement": 2,
+          "startedAt": "2026-07-30T03:18:29Z",
+          "endedAt": "2026-07-30T03:18:29Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-897e-1f8cc60f72ab",
+          "identifier": "T",
+          "round": 1,
+          "prevMatchId1": "019fb095-8e2c-76dc-8975-4f61afac4977",
+          "prevMatchId2": "019fb095-8e2c-76dc-895f-1d4c3971cb50",
+          "winnersMatchId": "019fb095-8e2c-76dc-898a-50b81a4199dc",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faeb8-8a0d-7007-b6c8-f3859d6c6a6d",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faa58-ddd0-75ba-a0c0-5d88d31d7f60",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:22:29Z",
+          "winnersPlacement": 13,
+          "losersPlacement": 17,
+          "startedAt": "2026-07-30T01:22:29Z",
+          "endedAt": "2026-07-30T01:22:29Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-898a-50b81a4199dc",
+          "identifier": "V",
+          "round": 2,
+          "prevMatchId1": "019fb095-8e2c-76dc-897e-1f8cc60f72ab",
+          "prevMatchId2": "019fb095-8e2c-76dc-8974-0b805af8130e",
+          "winnersMatchId": "019fb095-8e2c-76dc-898e-e88b8acdd8b8",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faeb8-8a0d-7007-b6c8-f3859d6c6a6d",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fabf4-2591-75ce-96e7-eeb4a6c50880",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:31:44Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:31:44Z",
+          "endedAt": "2026-07-30T01:31:44Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-898c-7c5a0cb2b464",
+          "identifier": "X",
+          "round": 2,
+          "prevMatchId1": "019fb095-8e2c-76dc-8982-3747ce26a59f",
+          "prevMatchId2": "019fb095-8e2c-76dc-8970-81258b8718e6",
+          "winnersMatchId": "019fb095-8e2c-76dc-8990-4386c89e35a9",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf7b-1b70-73e7-a109-2f187351b9aa",
+              "placement": 1,
+              "score": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faee6-12da-79f4-bbfa-f707c12e55d5",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:42:36Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:42:36Z",
+          "endedAt": "2026-07-30T01:42:36Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-898d-9edbe62fcf62",
+          "identifier": "Y",
+          "round": 2,
+          "prevMatchId1": "019fb095-8e2c-76dc-896f-e40d2d3c87c8",
+          "prevMatchId2": "019fb095-8e2c-76dc-896e-b29f52c2285d",
+          "winnersMatchId": "019fb095-8e2c-76dc-8991-a9a7c16101a5",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf4c-de5a-74a8-a8a2-91e703372297",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fb025-bd48-719f-9356-06a6923d1b6f",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:40:26Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:40:26Z",
+          "endedAt": "2026-07-30T01:40:26Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-898e-e88b8acdd8b8",
+          "identifier": "Z",
+          "round": 3,
+          "prevMatchId1": "019fb095-8e2c-76dc-8987-34cf9bbcf08e",
+          "prevMatchId2": "019fb095-8e2c-76dc-898a-50b81a4199dc",
+          "winnersMatchId": "019fb095-8e2c-76dc-8994-2aa27bfb7706",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fb069-9195-796b-ae31-9d6078f2a8ac",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faeb8-8a0d-7007-b6c8-f3859d6c6a6d",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:41:37Z",
+          "winnersPlacement": 7,
+          "losersPlacement": 9,
+          "startedAt": "2026-07-30T01:41:37Z",
+          "endedAt": "2026-07-30T01:41:37Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-8982-3747ce26a59f",
+          "identifier": "U",
+          "round": 1,
+          "prevMatchId1": "019fb095-8e2c-76dc-8971-bccf1932f280",
+          "prevMatchId2": "019fb095-8e2c-76dc-8967-83d89a8920a5",
+          "winnersMatchId": "019fb095-8e2c-76dc-898c-7c5a0cb2b464",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019faf7b-1b70-73e7-a109-2f187351b9aa",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019fb029-bd43-7f76-bc3b-f51131fcdfef",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:30:15Z",
+          "winnersPlacement": 13,
+          "losersPlacement": 17,
+          "startedAt": "2026-07-30T01:30:15Z",
+          "endedAt": "2026-07-30T01:30:15Z"
+        },
+        {
+          "id": "019fb095-8e2c-76dc-898b-0fc5b731e511",
+          "identifier": "W",
+          "round": 2,
+          "prevMatchId1": "019fb095-8e2c-76dc-8973-6d1412247bc9",
+          "prevMatchId2": "019fb095-8e2c-76dc-8972-eee8d52e1acd",
+          "winnersMatchId": "019fb095-8e2c-76dc-898f-8d644c79911c",
+          "state": "MATCH_STATE_COMPLETED",
+          "slots": [
+            {
+              "seedId": "019fae8b-3370-7931-94ab-391aac563fd9",
+              "score": 2,
+              "state": "SLOT_STATE_NUMERIC"
+            },
+            {
+              "slot": 1,
+              "seedId": "019faf92-79d7-78bd-b79d-67f1ef285a0d",
+              "placement": 1,
+              "state": "SLOT_STATE_NUMERIC"
+            }
+          ],
+          "stateUpdatedAt": "2026-07-30T01:22:51Z",
+          "winnersPlacement": 9,
+          "losersPlacement": 13,
+          "startedAt": "2026-07-30T01:22:51Z",
+          "endedAt": "2026-07-30T01:22:51Z"
+        }
+      ],
+      "seeds": [
+        {
+          "id": "019faf12-03d7-77d3-88f4-8bce639fc85b",
+          "seed": 1,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "019586ef-e166-7e45-acc9-d5e43a497604",
+              "users": [
+                {
+                  "id": "019585f3-1ccf-7c90-bff6-7fdd9a2e5178",
+                  "gamerTag": "Dial M",
+                  "firstName": "Arthur",
+                  "lastName": "Jones",
+                  "bioMd": "Dk casual Melee player",
+                  "pronouns": "He/Him",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Longmont",
+                  "images": [
+                    {
+                      "id": "019a2798-f9f8-7c84-8a54-445c76c19277",
+                      "url": "https://parrygg.b-cdn.net/019a2798-f94b-7f2d-bd1b-b2a8220e2af3.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    },
+                    {
+                      "id": "019d740b-f64f-77ef-adf0-d231c8c08768",
+                      "url": "https://parrygg.b-cdn.net/019d740b-f46b-7333-863b-3ca1283d2532.png",
+                      "type": "IMAGE_TYPE_BADGE"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "1814037",
+                      "username": "Dial M",
+                      "slug": "user/de19d076"
+                    },
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "380804123966046210",
+                      "username": "dieetrying"
+                    }
+                  ],
+                  "sponsorName": "parry.gg"
+                }
+              ]
+            },
+            "seed": 1
+          }
+        },
+        {
+          "id": "019fabeb-b3e1-75aa-ab14-6fc0c9a4ed6e",
+          "seed": 2,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "019529d1-0bf8-7237-a575-f16861d7960a",
+              "users": [
+                {
+                  "id": "019529ce-fe3d-7e87-a958-f01f87efd564",
+                  "gamerTag": "Omegam",
+                  "firstName": "Ryan",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "images": [
+                    {
+                      "id": "01973244-3c7b-7f07-b948-f20cc1541f68",
+                      "url": "https://parrygg.b-cdn.net/01973244-3c01-7f6e-8abb-09014cbefaff.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    },
+                    {
+                      "id": "019df963-1f64-74d9-86a1-c55cef2b1909",
+                      "url": "https://parrygg.b-cdn.net/019df963-1f03-7082-a27e-5e6cfe2ffa8c.jpg",
+                      "type": "IMAGE_TYPE_BADGE"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "141061",
+                      "username": "omegam",
+                      "slug": "user/9dc7c633"
+                    },
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "184457182777966593",
+                      "username": "omegam"
+                    }
+                  ],
+                  "featureFlags": ["ENABLE_PAYMENT_CONFIGURATION"]
+                }
+              ]
+            },
+            "seed": 2
+          }
+        },
+        {
+          "id": "019fabed-c685-763d-8b04-340d13fb27f8",
+          "seed": 3,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "0195c94d-d814-7d98-ae67-3616a7b03456",
+              "users": [
+                {
+                  "id": "01957d9a-7651-79cb-98c8-6a691905da65",
+                  "gamerTag": "Jab",
+                  "firstName": "Chloe",
+                  "lastName": "Mitchell",
+                  "bioMd": "The first captain falcon main.",
+                  "pronouns": "she/her",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Castle Rock",
+                  "images": [
+                    {
+                      "id": "019e375e-381f-76b0-afaf-c38248749006",
+                      "url": "https://parrygg.b-cdn.net/019e375e-37d5-79d7-ad5c-8503c84ef686.png",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "201843795195592705",
+                      "username": "jabfalcon"
+                    },
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "1538435",
+                      "username": "Jab",
+                      "slug": "user/03d6be02"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 3
+          }
+        },
+        {
+          "id": "019fac3e-1c74-709d-85b8-3b75f006752c",
+          "seed": 4,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "01991a42-2fb4-7710-98ba-237cce949b32",
+              "users": [
+                {
+                  "id": "01991a3e-77c8-7340-b1b5-d53cf6217719",
+                  "gamerTag": "zapwad",
+                  "firstName": "Zach",
+                  "lastName": "DeShaw",
+                  "bioMd": "WA -> CO",
+                  "pronouns": "he/him",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "images": [
+                    {
+                      "id": "01991a3f-b3c3-7754-b4a9-dc56057c143c",
+                      "url": "https://parrygg.b-cdn.net/01991a3f-b353-7354-881f-56425eb394da.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "141775",
+                      "username": "zapwad",
+                      "slug": "user/3625fcd5"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 4
+          }
+        },
+        {
+          "id": "019fb069-9195-796b-ae31-9d6078f2a8ac",
+          "seed": 5,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "019c953e-ff40-793a-9080-70842a8c827a",
+              "users": [
+                {
+                  "id": "019c953a-7d93-7977-aba2-4f53552ab28d",
+                  "gamerTag": "Raine",
+                  "firstName": "Raine",
+                  "pronouns": "she/her",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "381997",
+                      "username": "Raine",
+                      "slug": "user/31cf810e"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 5
+          }
+        },
+        {
+          "id": "019faf83-2c27-7098-85ac-485b103fdc8b",
+          "seed": 6,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "01997db4-f42e-76ce-9d02-71f626a25a8f",
+              "users": [
+                {
+                  "id": "01997d8a-05a9-73fd-9460-f194bd866fae",
+                  "gamerTag": "lilfroozy",
+                  "firstName": "Maxi",
+                  "pronouns": "they/them",
+                  "locationCountry": "DE",
+                  "locationState": "BE",
+                  "locationCity": "Berlin",
+                  "images": [
+                    {
+                      "id": "019de5ef-243d-7fee-b847-26454e51d340",
+                      "url": "https://parrygg.b-cdn.net/019de5ef-2144-78b9-a1de-2cb52489f222.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "180332421319753728",
+                      "username": "lilfroozy"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 6
+          }
+        },
+        {
+          "id": "019fadb4-3677-70fe-984e-15830572d98f",
+          "seed": 7,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "01991d55-51cc-7bf0-bb58-30b5f2bcfd6a",
+              "users": [
+                {
+                  "id": "01991d50-b192-7e56-8849-8760032c38ad",
+                  "gamerTag": "WizP",
+                  "firstName": "Will",
+                  "bioMd": "CO MELEE",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "86475",
+                      "username": "WizP",
+                      "slug": "user/a64a3b70"
+                    },
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "267322253945995265",
+                      "username": ".wizp"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 7
+          }
+        },
+        {
+          "id": "019faf4c-de5a-74a8-a8a2-91e703372297",
+          "seed": 8,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "0198cde2-a2cb-7db1-bac7-2fe09226db66",
+              "users": [
+                {
+                  "id": "0198cde1-42ec-7b15-b54a-90c2b80ac440",
+                  "gamerTag": "GLEN",
+                  "firstName": "Jesse",
+                  "bioMd": "Falcon",
+                  "pronouns": "He/They",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "1464082099748339753",
+                      "username": "j3553_v"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 8
+          }
+        },
+        {
+          "id": "019fae3d-4705-76ec-bb4e-c23452803644",
+          "seed": 9,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "0198161b-6323-7685-8bf7-7e11995f97d7",
+              "users": [
+                {
+                  "id": "01958563-59cc-7c08-beeb-6204d5416a62",
+                  "gamerTag": "Fuji",
+                  "firstName": "Ozzie",
+                  "pronouns": "he/they",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "019a307f-4e8f-7e46-8fed-17dcff138d7f",
+                      "url": "https://parrygg.b-cdn.net/019a307f-4ddd-7588-bc00-3dd4f11af805.png",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "407997",
+                      "username": "Fuji",
+                      "slug": "user/2004a68c"
+                    },
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "741399642507444277",
+                      "username": "fxji."
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 9
+          }
+        },
+        {
+          "id": "019fae8b-3370-7931-94ab-391aac563fd9",
+          "seed": 10,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "0199109c-6179-7803-80af-83516e041f14",
+              "users": [
+                {
+                  "id": "0199109a-67a9-7340-92b1-ba8fc369bd7e",
+                  "gamerTag": "moeznr",
+                  "firstName": "Mike",
+                  "bioMd": "Falco ♥️",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "0199109b-f8cf-7758-9089-d2330925bc5f",
+                      "url": "https://parrygg.b-cdn.net/0199109b-f838-7bef-894e-25884ffa2a88.png",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "1040909",
+                      "username": "moeznr",
+                      "slug": "user/5d080ec7"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 10
+          }
+        },
+        {
+          "id": "019faeb8-8a0d-7007-b6c8-f3859d6c6a6d",
+          "seed": 11,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "0196928a-0a67-7eeb-a1ac-de85beedc34f",
+              "users": [
+                {
+                  "id": "01969286-c38d-7471-b41c-f253a6e1e6f0",
+                  "gamerTag": "Lizzy_McWired",
+                  "firstName": "Elizabeth",
+                  "lastName": "Lanigan",
+                  "bioMd": "Literally just a girl",
+                  "pronouns": "She/her",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "0198f6ea-e3fc-7ce9-97ec-4799cc5c7b80",
+                      "url": "https://parrygg.b-cdn.net/0198f6ea-e377-7d90-b6d6-9e2fb66b8bcf.png",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    },
+                    {
+                      "id": "019fb521-5ce7-7c2b-bc7f-bc32a4795814",
+                      "url": "https://parrygg.b-cdn.net/019fb521-5c4e-7b09-bdbe-600b2b0792d8.jpg",
+                      "type": "IMAGE_TYPE_BADGE"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "186314614517006337",
+                      "username": "lizzy_mcwired"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 11
+          }
+        },
+        {
+          "id": "019faf7b-1b70-73e7-a109-2f187351b9aa",
+          "seed": 12,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "0198823c-7fd4-7dce-a64b-e7ea7273e39f",
+              "users": [
+                {
+                  "id": "019881ba-3f19-7e12-8c2e-6f046590c2db",
+                  "gamerTag": "breckdogg",
+                  "firstName": "Brecklen",
+                  "bioMd": "In a committed relationship with a green dinosaur",
+                  "pronouns": "He/Him",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "019881bb-7886-73a5-9650-98d3a0c52a63",
+                      "url": "https://parrygg.b-cdn.net/019881bb-776d-7a4b-bc4d-41825c764834.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "328517007035072514",
+                      "username": "breckdogg"
+                    },
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "2981019",
+                      "username": "breckdogg",
+                      "slug": "user/6d333188"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 12
+          }
+        },
+        {
+          "id": "019faee6-12da-79f4-bbfa-f707c12e55d5",
+          "seed": 13,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "01991050-b2cd-7b8b-8115-dfe45ac4b2a9",
+              "users": [
+                {
+                  "id": "0199104d-7b88-7071-8754-55f0d56ce065",
+                  "gamerTag": "Rinzler",
+                  "firstName": "Nathan",
+                  "lastName": "Zenger",
+                  "bioMd": "I FUCKING LOVE MELEE",
+                  "pronouns": "He/Him",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "01995991-4279-715f-8796-6abf31f176ac",
+                      "url": "https://parrygg.b-cdn.net/01995991-41d3-7fc7-b5ad-bcc520e5bd47.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "434629567794380801",
+                      "username": "rinzler9742"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 13
+          }
+        },
+        {
+          "id": "019fabf4-2591-75ce-96e7-eeb4a6c50880",
+          "seed": 14,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "019911fb-0c80-71ac-9f43-4181e5a44b5f",
+              "users": [
+                {
+                  "id": "0198eda6-a40d-7dfd-9a69-46dd705ac7ad",
+                  "gamerTag": "Qu33 (Cornflower) ",
+                  "firstName": "Amie",
+                  "pronouns": "she/her",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "0198eda8-0b91-7177-a0cf-31692010a301",
+                      "url": "https://parrygg.b-cdn.net/0198eda8-0b09-7e77-b6da-a89b72f88078.png",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "521551903616925726",
+                      "username": "mushroom.rat"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 14
+          }
+        },
+        {
+          "id": "019faf92-79d7-78bd-b79d-67f1ef285a0d",
+          "seed": 15,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "01995897-ae00-7fae-a6a1-6e75778d4b90",
+              "users": [
+                {
+                  "id": "01995896-fb4d-7673-bbc3-70a7b20f0939",
+                  "gamerTag": "TuStep",
+                  "firstName": "Timmy",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "locationCity": "Fort Collins",
+                  "images": [
+                    {
+                      "id": "019a8e98-3d1c-720d-940c-a56787958375",
+                      "url": "https://parrygg.b-cdn.net/019a8e98-3c95-7101-a59e-1b1cdaa9e750.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "1456078",
+                      "username": "TuStep",
+                      "slug": "user/6e961559"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 15
+          }
+        },
+        {
+          "id": "019fb025-bd48-719f-9356-06a6923d1b6f",
+          "seed": 16,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "019f8c42-f519-7d26-9011-dcd1a205ffe9",
+              "users": [
+                {
+                  "id": "019f8c42-0484-7034-8fc9-3470b88802a2",
+                  "gamerTag": "RubyLightishRedHair",
+                  "firstName": "Ruby",
+                  "bioMd": "https://backloggd.com/u/RemoRuby/",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "images": [
+                    {
+                      "id": "019f8ded-6c99-7dba-91f6-daaabdb6e161",
+                      "url": "https://parrygg.b-cdn.net/019f8ded-6b41-7d9f-b4fb-890c84208df5.webp",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 16
+          }
+        },
+        {
+          "id": "019faa58-ddd0-75ba-a0c0-5d88d31d7f60",
+          "seed": 17,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "019d753f-2f10-7ae7-baa7-a50e7e96051c",
+              "users": [
+                {
+                  "id": "019d74d3-abda-74db-abad-eb25986d7749",
+                  "gamerTag": "Folk",
+                  "firstName": "Levi ",
+                  "lastName": "Marrs ",
+                  "bioMd": "Uuuh l'm going to change my gamertag every two weeks\n(Just call me by my first name)",
+                  "pronouns": "Man",
+                  "locationCountry": "US",
+                  "locationState": "WY",
+                  "locationCity": "Cheyenne",
+                  "images": [
+                    {
+                      "id": "019f8cb8-8148-7b34-aae1-83e7199e9781",
+                      "url": "https://parrygg.b-cdn.net/019f8cb8-7d5c-7618-9216-eb3dec9f7617.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_STARTGG",
+                      "userId": "3364666",
+                      "username": "Polaris",
+                      "slug": "user/04ff8467"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 17
+          }
+        },
+        {
+          "id": "019fb029-bd43-7f76-bc3b-f51131fcdfef",
+          "seed": 18,
+          "eventEntrant": {
+            "eventId": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+            "entrant": {
+              "id": "01973290-98fd-74fc-9008-c6af0d509e09",
+              "users": [
+                {
+                  "id": "0197328f-1e00-7c7a-8b92-e1d13b001fdd",
+                  "gamerTag": "SodaCup",
+                  "firstName": "Alexx",
+                  "lastName": "Lanigan",
+                  "pronouns": "He/hamburger",
+                  "locationCountry": "US",
+                  "locationState": "CO",
+                  "images": [
+                    {
+                      "id": "01973290-7f60-717f-b283-12409fb19d86",
+                      "url": "https://parrygg.b-cdn.net/01973290-7ee1-7884-a42f-5a05d8a4dec6.jpg",
+                      "type": "IMAGE_TYPE_AVATAR"
+                    }
+                  ],
+                  "linkedAccounts": [
+                    {
+                      "provider": "LINKED_ACCOUNT_PROVIDER_DISCORD",
+                      "userId": "392750717150167040",
+                      "username": "sodacup3"
+                    }
+                  ]
+                }
+              ]
+            },
+            "seed": 18
+          }
+        }
+      ],
+      "updatedAt": "2026-07-30T03:18:29Z",
+      "name": "Bracket",
+      "slug": "bracket",
+      "checksum": "0649b830f32d0db8c05c5f010eb401b9",
+      "type": "BRACKET_TYPE_DOUBLE_ELIMINATION",
+      "rounds": [
+        {
+          "number": 1,
+          "label": "Losers Round 1"
+        },
+        {
+          "number": 1,
+          "winnersSide": true,
+          "label": "Winners Round 1"
+        },
+        {
+          "number": 2,
+          "label": "Losers Round 2"
+        },
+        {
+          "number": 2,
+          "winnersSide": true,
+          "label": "Winners Round 2"
+        },
+        {
+          "number": 3,
+          "label": "Losers Round 3"
+        },
+        {
+          "number": 3,
+          "winnersSide": true,
+          "label": "Winners Quarter-Final"
+        },
+        {
+          "number": 4,
+          "label": "Losers Round 4"
+        },
+        {
+          "number": 4,
+          "winnersSide": true,
+          "label": "Winners Semi-Final"
+        },
+        {
+          "number": 5,
+          "label": "Losers Round 5"
+        },
+        {
+          "number": 5,
+          "winnersSide": true,
+          "label": "Winners Final"
+        },
+        {
+          "number": 6,
+          "label": "Losers Quarter-Final"
+        },
+        {
+          "number": 6,
+          "winnersSide": true,
+          "label": "Grand Final"
+        },
+        {
+          "number": 7,
+          "label": "Losers Semi-Final"
+        },
+        {
+          "number": 7,
+          "winnersSide": true,
+          "label": "Grand Final Reset"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,443 @@
+{
+  "request": {
+    "url": "https://api.start.gg/gql/alpha",
+    "method": "POST",
+    "body": "{\"query\":\"\\n  query EventEntrantsQuery($eventId: ID!, $page: Int!, $perPage: Int!) {\\n    event(id: $eventId) {\\n      entrants(query: { page: $page, perPage: $perPage }) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          name\\n          isDisqualified\\n          seeds {\\n            seedNum\\n          }\\n          standing {\\n            placement\\n          }\\n          participants {\\n            id\\n            gamerTag\\n            prefix\\n            user {\\n              id\\n              genderPronoun\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"eventId\":1668078,\"page\":1,\"perPage\":50}}"
+  },
+  "status": 200,
+  "body": {
+    "data": {
+      "event": {
+        "entrants": {
+          "pageInfo": {
+            "totalPages": 1
+          },
+          "nodes": [
+            {
+              "id": 24234235,
+              "name": "Shadowwiz",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 9
+                }
+              ],
+              "standing": {
+                "placement": 7
+              },
+              "participants": [
+                {
+                  "id": 22208673,
+                  "gamerTag": "Shadowwiz",
+                  "prefix": "",
+                  "user": {
+                    "id": 1402401,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24234146,
+              "name": "Superjamie",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 6
+                }
+              ],
+              "standing": {
+                "placement": 5
+              },
+              "participants": [
+                {
+                  "id": 22208600,
+                  "gamerTag": "Superjamie",
+                  "prefix": "",
+                  "user": {
+                    "id": 455811,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24234143,
+              "name": "CSUF | Isaac106",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 7
+                }
+              ],
+              "standing": {
+                "placement": 9
+              },
+              "participants": [
+                {
+                  "id": 22208597,
+                  "gamerTag": "Isaac106",
+                  "prefix": "CSUF",
+                  "user": {
+                    "id": 944605,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24234140,
+              "name": "ShowyHercules",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 17
+                }
+              ],
+              "standing": {
+                "placement": 13
+              },
+              "participants": [
+                {
+                  "id": 22208596,
+                  "gamerTag": "ShowyHercules",
+                  "prefix": null,
+                  "user": {
+                    "id": 3440139,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24234138,
+              "name": "jpp",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 16
+                }
+              ],
+              "standing": {
+                "placement": 17
+              },
+              "participants": [
+                {
+                  "id": 22208595,
+                  "gamerTag": "jpp",
+                  "prefix": null,
+                  "user": {
+                    "id": 3440138,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24233667,
+              "name": "Dogeamudiah",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 8
+                }
+              ],
+              "standing": {
+                "placement": 7
+              },
+              "participants": [
+                {
+                  "id": 22208267,
+                  "gamerTag": "Dogeamudiah",
+                  "prefix": "",
+                  "user": {
+                    "id": 2134847,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24233509,
+              "name": "Swordhero1",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 15
+                }
+              ],
+              "standing": {
+                "placement": 9
+              },
+              "participants": [
+                {
+                  "id": 22208132,
+                  "gamerTag": "Swordhero1",
+                  "prefix": null,
+                  "user": {
+                    "id": 2157674,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24233452,
+              "name": "CSULB OFM | Filmopolis",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 11
+                }
+              ],
+              "standing": {
+                "placement": 9
+              },
+              "participants": [
+                {
+                  "id": 22208091,
+                  "gamerTag": "Filmopolis",
+                  "prefix": "CSULB OFM",
+                  "user": {
+                    "id": 1883005,
+                    "genderPronoun": "He/Him"
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24233127,
+              "name": "UCI | Glowstick",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 2
+                }
+              ],
+              "standing": {
+                "placement": 2
+              },
+              "participants": [
+                {
+                  "id": 22207819,
+                  "gamerTag": "Glowstick",
+                  "prefix": "UCI",
+                  "user": {
+                    "id": 687692,
+                    "genderPronoun": "He/Him"
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24232984,
+              "name": "UCI/POW | Foreign",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 1
+                }
+              ],
+              "standing": {
+                "placement": 1
+              },
+              "participants": [
+                {
+                  "id": 22207698,
+                  "gamerTag": "Foreign",
+                  "prefix": "UCI/POW",
+                  "user": {
+                    "id": 1579703,
+                    "genderPronoun": "He/Him"
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24231551,
+              "name": "Ookienami",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 12
+                }
+              ],
+              "standing": {
+                "placement": 9
+              },
+              "participants": [
+                {
+                  "id": 22206406,
+                  "gamerTag": "Ookienami",
+                  "prefix": "",
+                  "user": {
+                    "id": 1802387,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24230080,
+              "name": "WOD | Riven",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 5
+                }
+              ],
+              "standing": {
+                "placement": 3
+              },
+              "participants": [
+                {
+                  "id": 22205087,
+                  "gamerTag": "Riven",
+                  "prefix": "WOD",
+                  "user": {
+                    "id": 1185523,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24229368,
+              "name": "GLDD | FizzyFists",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 10
+                }
+              ],
+              "standing": {
+                "placement": 13
+              },
+              "participants": [
+                {
+                  "id": 22204466,
+                  "gamerTag": "FizzyFists",
+                  "prefix": "GLDD",
+                  "user": {
+                    "id": 41382,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24229353,
+              "name": "C0nmanz",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 4
+                }
+              ],
+              "standing": {
+                "placement": 5
+              },
+              "participants": [
+                {
+                  "id": 22204452,
+                  "gamerTag": "C0nmanz",
+                  "prefix": "",
+                  "user": {
+                    "id": 1466177,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24227756,
+              "name": "kahekili23",
+              "isDisqualified": true,
+              "seeds": [
+                {
+                  "seedNum": 14
+                }
+              ],
+              "standing": {
+                "placement": 13
+              },
+              "participants": [
+                {
+                  "id": 22203082,
+                  "gamerTag": "kahekili23",
+                  "prefix": "",
+                  "user": {
+                    "id": 1393743,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24207375,
+              "name": "MyNameIs90InASchoolZone",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 3
+                }
+              ],
+              "standing": {
+                "placement": 4
+              },
+              "participants": [
+                {
+                  "id": 22186653,
+                  "gamerTag": "MyNameIs90InASchoolZone",
+                  "prefix": "",
+                  "user": {
+                    "id": 1418674,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24200020,
+              "name": "SuitableCakes",
+              "isDisqualified": true,
+              "seeds": [
+                {
+                  "seedNum": 13
+                }
+              ],
+              "standing": {
+                "placement": 13
+              },
+              "participants": [
+                {
+                  "id": 22180514,
+                  "gamerTag": "SuitableCakes",
+                  "prefix": null,
+                  "user": {
+                    "id": 3116320,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "extensions": {
+      "cacheControl": {
+        "version": 1,
+        "hints": [
+          {
+            "path": ["event"],
+            "maxAge": 60,
+            "scope": "PRIVATE"
+          }
+        ]
+      },
+      "queryComplexity": 86
+    },
+    "actionRecords": []
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "request": {
+    "url": "https://api.start.gg/gql/alpha",
+    "method": "POST",
+    "body": "{\"query\":\"\\n  query EventEntrantsQuery($eventId: ID!, $page: Int!, $perPage: Int!) {\\n    event(id: $eventId) {\\n      entrants(query: { page: $page, perPage: $perPage }) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          name\\n          isDisqualified\\n          seeds {\\n            seedNum\\n          }\\n          standing {\\n            placement\\n          }\\n          participants {\\n            id\\n            gamerTag\\n            prefix\\n            user {\\n              id\\n              genderPronoun\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"eventId\":1673520,\"page\":1,\"perPage\":50}}"
+  },
+  "status": 200,
+  "body": {
+    "data": {
+      "event": {
+        "entrants": {
+          "pageInfo": {
+            "totalPages": 1
+          },
+          "nodes": [
+            {
+              "id": 24235156,
+              "name": "Riven / Filmopolis",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 4
+                }
+              ],
+              "standing": {
+                "placement": 4
+              },
+              "participants": [
+                {
+                  "id": 22205087,
+                  "gamerTag": "Riven",
+                  "prefix": "WOD",
+                  "user": {
+                    "id": 1185523,
+                    "genderPronoun": null
+                  }
+                },
+                {
+                  "id": 22208091,
+                  "gamerTag": "Filmopolis",
+                  "prefix": "CSULB OFM",
+                  "user": {
+                    "id": 1883005,
+                    "genderPronoun": "He/Him"
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24235155,
+              "name": "Glowstick / Foreign",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 1
+                }
+              ],
+              "standing": {
+                "placement": 1
+              },
+              "participants": [
+                {
+                  "id": 22207819,
+                  "gamerTag": "Glowstick",
+                  "prefix": "UCI",
+                  "user": {
+                    "id": 687692,
+                    "genderPronoun": "He/Him"
+                  }
+                },
+                {
+                  "id": 22207698,
+                  "gamerTag": "Foreign",
+                  "prefix": "UCI/POW",
+                  "user": {
+                    "id": 1579703,
+                    "genderPronoun": "He/Him"
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24235135,
+              "name": "Superjamie / C0nmanz",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 2
+                }
+              ],
+              "standing": {
+                "placement": 2
+              },
+              "participants": [
+                {
+                  "id": 22208600,
+                  "gamerTag": "Superjamie",
+                  "prefix": "",
+                  "user": {
+                    "id": 455811,
+                    "genderPronoun": null
+                  }
+                },
+                {
+                  "id": 22204452,
+                  "gamerTag": "C0nmanz",
+                  "prefix": "",
+                  "user": {
+                    "id": 1466177,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": 24235133,
+              "name": "Isaac106 / Shadowwiz",
+              "isDisqualified": null,
+              "seeds": [
+                {
+                  "seedNum": 3
+                }
+              ],
+              "standing": {
+                "placement": 3
+              },
+              "participants": [
+                {
+                  "id": 22208597,
+                  "gamerTag": "Isaac106",
+                  "prefix": "CSUF",
+                  "user": {
+                    "id": 944605,
+                    "genderPronoun": null
+                  }
+                },
+                {
+                  "id": 22208673,
+                  "gamerTag": "Shadowwiz",
+                  "prefix": "",
+                  "user": {
+                    "id": 1402401,
+                    "genderPronoun": null
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "extensions": {
+      "cacheControl": {
+        "version": 1,
+        "hints": [
+          {
+            "path": ["event"],
+            "maxAge": 60,
+            "scope": "PRIVATE"
+          }
+        ]
+      },
+      "queryComplexity": 29
+    },
+    "actionRecords": []
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "request": {
+    "url": "https://api.start.gg/gql/alpha",
+    "method": "POST",
+    "body": "{\"query\":\"\\n  query EventQuery($slug: String!) {\\n    event(slug: $slug) {\\n      id\\n      name\\n      numEntrants\\n      teamRosterSize {\\n        minPlayers\\n        maxPlayers\\n      }\\n      videogame {\\n        id\\n        name\\n      }\\n      phases {\\n        id\\n        name\\n        phaseOrder\\n      }\\n      phaseGroups {\\n        id\\n        displayIdentifier\\n        bracketType\\n        phase {\\n          id\\n        }\\n      }\\n      tournament {\\n        id\\n        name\\n        slug\\n        startAt\\n        endAt\\n        city\\n        addrState\\n        countryCode\\n        isOnline\\n      }\\n    }\\n  }\\n\",\"variables\":{\"slug\":\"tournament/akh-presents-ssbu-shrimp-tank-3-shrimply-the-best/event/ultimate-doubles\"}}"
+  },
+  "status": 200,
+  "body": {
+    "data": {
+      "event": {
+        "id": 1673520,
+        "name": "Ultimate Doubles",
+        "numEntrants": 4,
+        "teamRosterSize": {
+          "minPlayers": 2,
+          "maxPlayers": 2
+        },
+        "videogame": {
+          "id": 1386,
+          "name": "Super Smash Bros. Ultimate"
+        },
+        "phases": [
+          {
+            "id": 2350711,
+            "name": "Bracket",
+            "phaseOrder": 1
+          }
+        ],
+        "phaseGroups": [
+          {
+            "id": 3395815,
+            "displayIdentifier": "1",
+            "bracketType": "ROUND_ROBIN",
+            "phase": {
+              "id": 2350711
+            }
+          }
+        ],
+        "tournament": {
+          "id": 932656,
+          "name": "AKH Presents... SSBU Shrimp Tank #3: Shrimply The Best",
+          "slug": "tournament/akh-presents-ssbu-shrimp-tank-3-shrimply-the-best",
+          "startAt": 1785200400,
+          "endAt": 1785221940,
+          "city": "Garden Grove",
+          "addrState": "CA",
+          "countryCode": "US",
+          "isOnline": false
+        }
+      }
+    },
+    "extensions": {
+      "cacheControl": {
+        "version": 1,
+        "hints": [
+          {
+            "path": ["event"],
+            "maxAge": 60,
+            "scope": "PRIVATE"
+          }
+        ]
+      },
+      "queryComplexity": 9
+    },
+    "actionRecords": []
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "request": {
+    "url": "https://grpcweb.parry.gg/parrygg.services.TournamentService/GetTournament",
+    "method": "POST",
+    "body": "{\"tournamentSlug\":\"foco\"}"
+  },
+  "status": 200,
+  "body": {
+    "tournament": {
+      "id": "019faa05-2df2-7af4-9768-b88201345b20",
+      "name": "Foco Weekly Wednesday #444",
+      "venueAddress": "2721 S College Ave, Fort Collins, CO 80525, USA",
+      "currencyCode": "USD",
+      "startDate": "2026-07-30T00:00:00Z",
+      "endDate": "2026-07-30T04:00:00Z",
+      "state": "TOURNAMENT_STATE_COMPLETED",
+      "images": [
+        {
+          "id": "019e4dc3-4312-7608-9048-3c0c77ea0788",
+          "url": "https://parrygg.b-cdn.net/019e4dc3-42c3-7a60-8c2a-b892a6190e55.jpg",
+          "type": "IMAGE_TYPE_BANNER"
+        }
+      ],
+      "events": [
+        {
+          "id": "019faa05-2e35-7749-b6f4-7be06ca4aebf",
+          "tournamentId": "019faa05-2df2-7af4-9768-b88201345b20",
+          "name": "Melee Singles",
+          "startDate": "2026-07-30T01:00:00Z",
+          "registrationEndDate": "1970-01-01T00:00:00Z",
+          "price": 500,
+          "entrantSize": 1,
+          "game": {
+            "id": "01920676-416e-7838-b6aa-8d4453256f05",
+            "name": "Super Smash Bros. Melee",
+            "description": "Super Smash Bros. Melee is the second installment in the Super Smash Bros. series and the follow-up to the Nintendo 64 title. It includes all playable characters from the first game, and also adds characters from franchises such as Fire Emblem, of which no games had been released outside Japan at the time. Super Smash Bros. Melee builds on the first game by adding new gameplay features and playable characters: its major focus is the multiplayer mode, while still offering a number of single-player modes.",
+            "images": [
+              {
+                "id": "01920679-2d49-7c45-8e4c-183d8ae1533f",
+                "url": "https://images.igdb.com/igdb/image/upload/t_cover_big/co21yv.webp",
+                "type": "IMAGE_TYPE_COVER"
+              }
+            ],
+            "slug": "super-smash-bros-melee"
+          },
+          "phases": [
+            {
+              "id": "019faa05-2e37-7cca-a10f-f80b3d84b862",
+              "brackets": [
+                {
+                  "id": "019faa05-2e39-79ba-9781-61ec9785f384",
+                  "state": "BRACKET_STATE_COMPLETED",
+                  "slug": "bracket"
+                }
+              ],
+              "defaultEntry": true,
+              "bracketType": "BRACKET_TYPE_DOUBLE_ELIMINATION",
+              "state": "PHASE_STATE_COMPLETED",
+              "slug": "main",
+              "numBrackets": 1,
+              "createdAt": "2026-07-28T18:38:14Z",
+              "updatedAt": "2026-07-30T03:18:29Z"
+            }
+          ],
+          "state": "EVENT_STATE_COMPLETED",
+          "slug": "melee-singles",
+          "entrantCount": 18,
+          "locationType": "LOCATION_TYPE_OFFLINE",
+          "registrationStartDate": "1970-01-01T00:00:00Z",
+          "createdAt": "2026-07-28T18:38:14Z",
+          "updatedAt": "2026-07-30T03:18:29Z"
+        },
+        {
+          "id": "019faa05-2e45-75cc-ada0-d32fee01b3b4",
+          "tournamentId": "019faa05-2df2-7af4-9768-b88201345b20",
+          "name": "Melee Doubles",
+          "startDate": "1970-01-01T00:00:00Z",
+          "registrationEndDate": "1970-01-01T00:00:00Z",
+          "price": 200,
+          "entrantSize": 2,
+          "game": {
+            "id": "01920676-416e-7838-b6aa-8d4453256f05",
+            "name": "Super Smash Bros. Melee",
+            "description": "Super Smash Bros. Melee is the second installment in the Super Smash Bros. series and the follow-up to the Nintendo 64 title. It includes all playable characters from the first game, and also adds characters from franchises such as Fire Emblem, of which no games had been released outside Japan at the time. Super Smash Bros. Melee builds on the first game by adding new gameplay features and playable characters: its major focus is the multiplayer mode, while still offering a number of single-player modes.",
+            "images": [
+              {
+                "id": "01920679-2d49-7c45-8e4c-183d8ae1533f",
+                "url": "https://images.igdb.com/igdb/image/upload/t_cover_big/co21yv.webp",
+                "type": "IMAGE_TYPE_COVER"
+              }
+            ],
+            "slug": "super-smash-bros-melee"
+          },
+          "phases": [
+            {
+              "id": "019faa05-2e47-7ab4-94ea-2942588125fb",
+              "brackets": [
+                {
+                  "id": "019faa05-2e49-7b33-b26b-50fb2ea3d0bd",
+                  "state": "BRACKET_STATE_COMPLETED",
+                  "slug": "bracket"
+                }
+              ],
+              "defaultEntry": true,
+              "bracketType": "BRACKET_TYPE_DOUBLE_ELIMINATION",
+              "state": "PHASE_STATE_COMPLETED",
+              "slug": "main",
+              "numBrackets": 1,
+              "createdAt": "2026-07-28T18:38:14Z",
+              "updatedAt": "2026-07-30T04:39:29Z"
+            }
+          ],
+          "state": "EVENT_STATE_COMPLETED",
+          "slug": "melee-doubles",
+          "entrantCount": 6,
+          "locationType": "LOCATION_TYPE_OFFLINE",
+          "registrationStartDate": "1970-01-01T00:00:00Z",
+          "createdAt": "2026-07-28T18:38:14Z",
+          "updatedAt": "2026-07-30T04:39:29Z"
+        },
+        {
+          "id": "019faa05-2e55-73db-82d3-5f0767af65da",
+          "tournamentId": "019faa05-2df2-7af4-9768-b88201345b20",
+          "name": "Ammy",
+          "startDate": "2026-07-30T02:00:00Z",
+          "registrationEndDate": "1970-01-01T00:00:00Z",
+          "entrantSize": 1,
+          "game": {
+            "id": "01920676-416e-7838-b6aa-8d4453256f05",
+            "name": "Super Smash Bros. Melee",
+            "description": "Super Smash Bros. Melee is the second installment in the Super Smash Bros. series and the follow-up to the Nintendo 64 title. It includes all playable characters from the first game, and also adds characters from franchises such as Fire Emblem, of which no games had been released outside Japan at the time. Super Smash Bros. Melee builds on the first game by adding new gameplay features and playable characters: its major focus is the multiplayer mode, while still offering a number of single-player modes.",
+            "images": [
+              {
+                "id": "01920679-2d49-7c45-8e4c-183d8ae1533f",
+                "url": "https://images.igdb.com/igdb/image/upload/t_cover_big/co21yv.webp",
+                "type": "IMAGE_TYPE_COVER"
+              }
+            ],
+            "slug": "super-smash-bros-melee"
+          },
+          "phases": [
+            {
+              "id": "019faa05-2e57-7ed8-ab68-364b53e94691",
+              "brackets": [
+                {
+                  "id": "019faa05-2e59-7e50-b726-019e62b0e893",
+                  "state": "BRACKET_STATE_COMPLETED",
+                  "slug": "bracket"
+                }
+              ],
+              "defaultEntry": true,
+              "bracketType": "BRACKET_TYPE_DOUBLE_ELIMINATION",
+              "state": "PHASE_STATE_COMPLETED",
+              "slug": "main",
+              "numBrackets": 1,
+              "createdAt": "2026-07-28T18:38:14Z",
+              "updatedAt": "2026-07-30T03:17:00Z"
+            }
+          ],
+          "state": "EVENT_STATE_COMPLETED",
+          "slug": "ammy",
+          "entrantCount": 10,
+          "locationType": "LOCATION_TYPE_OFFLINE",
+          "registrationStartDate": "1970-01-01T00:00:00Z",
+          "createdAt": "2026-07-28T18:38:14Z",
+          "updatedAt": "2026-07-30T03:17:00Z"
+        }
+      ],
+      "numAttendees": 19,
+      "ownerId": "019529ce-fe3d-7e87-a958-f01f87efd564",
+      "slugs": [
+        {
+          "slug": "foco-weekly-wednesday-444-100-pot-bonus-019faa05",
+          "type": "SLUG_TYPE_OUTDATED"
+        },
+        {
+          "slug": "foco-weekly-wednesday-444-019faa05",
+          "type": "SLUG_TYPE_PRIMARY"
+        },
+        {
+          "slug": "foco",
+          "type": "SLUG_TYPE_CUSTOM"
+        }
+      ],
+      "venueFee": 500,
+      "timeZone": "America/Denver",
+      "visibilityLevel": "VISIBILITY_LEVEL_PUBLIC",
+      "address": {
+        "id": "019b0b72-b1ef-77b2-a5b9-8700fda03bc3",
+        "latitude": 40.55021929999999,
+        "longitude": -105.0790771,
+        "formattedAddress": "2721 S College Ave, Fort Collins, CO 80525, USA",
+        "country": "United States",
+        "countryCode": "US",
+        "administrativeAreaLevel1": "Colorado",
+        "administrativeAreaLevel2": "Larimer County",
+        "locality": "Fort Collins",
+        "postalCode": "80525",
+        "streetNumber": "2721",
+        "route": "South College Avenue",
+        "placeId": "ChIJv0nndwpLaYcRU7Oj1xpzhB0",
+        "locationType": "ADDRESS_LOCATION_TYPE_ROOFTOP",
+        "createdAt": "2025-12-11T03:27:04Z",
+        "updatedAt": "2025-12-11T03:27:04Z"
+      },
+      "locationType": "LOCATION_TYPE_OFFLINE",
+      "registrationStartDate": "1970-01-01T00:00:00Z",
+      "registrationEndDate": "1970-01-01T00:00:00Z",
+      "createdAt": "2026-07-28T18:38:14Z",
+      "updatedAt": "2026-07-30T04:59:58Z",
+      "entryFeeType": "ENTRY_FEE_TYPE_PAID",
+      "uiCustomization": {}
+    }
+  }
+}

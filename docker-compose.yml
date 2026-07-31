@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16.4
+    container_name: hiddenboss-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hiddenboss
+      POSTGRES_PASSWORD: hiddenboss
+      POSTGRES_DB: hiddenboss
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U hiddenboss -d hiddenboss']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_data:

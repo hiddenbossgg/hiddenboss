@@ -1,0 +1,1122 @@
+{
+  "request": {
+    "url": "https://api.start.gg/gql/alpha",
+    "method": "POST",
+    "body": "{\"query\":\"\\n  query PhaseGroupSetsQuery($phaseGroupId: ID!, $page: Int!, $perPage: Int!) {\\n    phaseGroup(id: $phaseGroupId) {\\n      id\\n      sets(page: $page, perPage: $perPage, sortType: CALL_ORDER) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          identifier\\n          round\\n          fullRoundText\\n          state\\n          completedAt\\n          winnerId\\n          slots {\\n            entrant {\\n              id\\n            }\\n            standing {\\n              stats {\\n                score {\\n                  value\\n                }\\n              }\\n            }\\n          }\\n          games {\\n            orderNum\\n            winnerId\\n            stage {\\n              name\\n            }\\n            selections {\\n              entrant {\\n                id\\n              }\\n              character {\\n                name\\n              }\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"phaseGroupId\":3386560,\"page\":1,\"perPage\":20}}"
+  },
+  "status": 200,
+  "body": {
+    "data": {
+      "phaseGroup": {
+        "id": 3386560,
+        "sets": {
+          "pageInfo": {
+            "totalPages": 2
+          },
+          "nodes": [
+            {
+              "id": 105845779,
+              "identifier": "Q",
+              "round": 6,
+              "fullRoundText": "Grand Final",
+              "state": 3,
+              "completedAt": 1785215340,
+              "winnerId": 24232984,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24232984
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233127
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": [
+                {
+                  "orderNum": 1,
+                  "winnerId": 24232984,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24232984
+                      },
+                      "character": {
+                        "name": "Byleth"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 2,
+                  "winnerId": 24232984,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24232984
+                      },
+                      "character": {
+                        "name": "Byleth"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 3,
+                  "winnerId": 24232984,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24232984
+                      },
+                      "character": {
+                        "name": "Byleth"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 105845778,
+              "identifier": "P",
+              "round": 5,
+              "fullRoundText": "Winners Final",
+              "state": 3,
+              "completedAt": 1785211332,
+              "winnerId": 24232984,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24232984
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233127
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845842,
+              "identifier": "AG",
+              "round": -10,
+              "fullRoundText": "Losers Final",
+              "state": 3,
+              "completedAt": 1785214517,
+              "winnerId": 24233127,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24233127
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24230080
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": [
+                {
+                  "orderNum": 1,
+                  "winnerId": 24233127,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Corrin"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 2,
+                  "winnerId": 24230080,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Corrin"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 3,
+                  "winnerId": 24233127,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Corrin"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 4,
+                  "winnerId": 24230080,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 5,
+                  "winnerId": 24233127,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Sheik"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 105845841,
+              "identifier": "AF",
+              "round": -9,
+              "fullRoundText": "Losers Semi-Final",
+              "state": 3,
+              "completedAt": 1785212972,
+              "winnerId": 24230080,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24207375
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24230080
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845776,
+              "identifier": "N",
+              "round": 4,
+              "fullRoundText": "Winners Semi-Final",
+              "state": 3,
+              "completedAt": 1785209232,
+              "winnerId": 24232984,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24232984
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24230080
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845777,
+              "identifier": "O",
+              "round": 4,
+              "fullRoundText": "Winners Semi-Final",
+              "state": 3,
+              "completedAt": 1785210293,
+              "winnerId": 24233127,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24233127
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24207375
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845839,
+              "identifier": "AD",
+              "round": -8,
+              "fullRoundText": "Losers Quarter-Final",
+              "state": 3,
+              "completedAt": 1785211479,
+              "winnerId": 24207375,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24207375
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24229353
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845840,
+              "identifier": "AE",
+              "round": -8,
+              "fullRoundText": "Losers Quarter-Final",
+              "state": 3,
+              "completedAt": 1785211818,
+              "winnerId": 24230080,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24230080
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24234146
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": [
+                {
+                  "orderNum": 1,
+                  "winnerId": 24234146,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234146
+                      },
+                      "character": {
+                        "name": "Pokemon Trainer"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 2,
+                  "winnerId": 24234146,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234146
+                      },
+                      "character": {
+                        "name": "Pokemon Trainer"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 3,
+                  "winnerId": 24230080,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234146
+                      },
+                      "character": {
+                        "name": "Pokemon Trainer"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 4,
+                  "winnerId": 24230080,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234146
+                      },
+                      "character": {
+                        "name": "Pokemon Trainer"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 5,
+                  "winnerId": 24230080,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24230080
+                      },
+                      "character": {
+                        "name": "Joker"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234146
+                      },
+                      "character": {
+                        "name": "Pokemon Trainer"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 105845837,
+              "identifier": "AB",
+              "round": -7,
+              "fullRoundText": "Losers Round 4",
+              "state": 3,
+              "completedAt": 1785210415,
+              "winnerId": 24229353,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24229353
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233667
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845838,
+              "identifier": "AC",
+              "round": -7,
+              "fullRoundText": "Losers Round 4",
+              "state": 3,
+              "completedAt": 1785210327,
+              "winnerId": 24234146,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24234146
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24234235
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845772,
+              "identifier": "J",
+              "round": 3,
+              "fullRoundText": "Winners Quarter-Final",
+              "state": 3,
+              "completedAt": 1785207940,
+              "winnerId": 24232984,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24232984
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233667
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 1
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845773,
+              "identifier": "K",
+              "round": 3,
+              "fullRoundText": "Winners Quarter-Final",
+              "state": 3,
+              "completedAt": 1785207842,
+              "winnerId": 24230080,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24229353
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24230080
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845774,
+              "identifier": "L",
+              "round": 3,
+              "fullRoundText": "Winners Quarter-Final",
+              "state": 3,
+              "completedAt": 1785207147,
+              "winnerId": 24233127,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24233127
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24234143
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": [
+                {
+                  "orderNum": 1,
+                  "winnerId": 24233127,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Luigi"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234143
+                      },
+                      "character": {
+                        "name": "Mario"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 2,
+                  "winnerId": 24233127,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Luigi"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234143
+                      },
+                      "character": {
+                        "name": "Mario"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "orderNum": 3,
+                  "winnerId": 24233127,
+                  "stage": null,
+                  "selections": [
+                    {
+                      "entrant": {
+                        "id": 24233127
+                      },
+                      "character": {
+                        "name": "Luigi"
+                      }
+                    },
+                    {
+                      "entrant": {
+                        "id": 24234143
+                      },
+                      "character": {
+                        "name": "Mario"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 105845775,
+              "identifier": "M",
+              "round": 3,
+              "fullRoundText": "Winners Quarter-Final",
+              "state": 3,
+              "completedAt": 1785208900,
+              "winnerId": 24207375,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24207375
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24234146
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 2
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845836,
+              "identifier": "AA",
+              "round": -6,
+              "fullRoundText": "Losers Round 3",
+              "state": 3,
+              "completedAt": 1785208592,
+              "winnerId": 24234235,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24234143
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24234235
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845833,
+              "identifier": "X",
+              "round": -6,
+              "fullRoundText": "Losers Round 3",
+              "state": 3,
+              "completedAt": 1785209667,
+              "winnerId": 24229353,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24229353
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233452
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845834,
+              "identifier": "Y",
+              "round": -6,
+              "fullRoundText": "Losers Round 3",
+              "state": 3,
+              "completedAt": 1785209331,
+              "winnerId": 24233667,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24233667
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233509
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845835,
+              "identifier": "Z",
+              "round": -6,
+              "fullRoundText": "Losers Round 3",
+              "state": 3,
+              "completedAt": 1785209673,
+              "winnerId": 24234146,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24234146
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24231551
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845829,
+              "identifier": "T",
+              "round": -5,
+              "fullRoundText": "Losers Round 2",
+              "state": 3,
+              "completedAt": 1785208702,
+              "winnerId": 24233452,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24233452
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24227756
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": -1
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            },
+            {
+              "id": 105845830,
+              "identifier": "U",
+              "round": -5,
+              "fullRoundText": "Losers Round 2",
+              "state": 3,
+              "completedAt": 1785207884,
+              "winnerId": 24233509,
+              "slots": [
+                {
+                  "entrant": {
+                    "id": 24229368
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "entrant": {
+                    "id": 24233509
+                  },
+                  "standing": {
+                    "stats": {
+                      "score": {
+                        "value": 3
+                      }
+                    }
+                  }
+                }
+              ],
+              "games": null
+            }
+          ]
+        }
+      }
+    },
+    "extensions": {
+      "cacheControl": {
+        "version": 1,
+        "hints": null
+      },
+      "queryComplexity": 445
+    },
+    "actionRecords": []
+  }
+}
