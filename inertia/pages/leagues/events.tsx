@@ -34,7 +34,6 @@ const Events: React.FC<Props> = ({ league, canManage, events }) => {
             <thead>
               <tr>
                 <th>Event</th>
-                <th>Tournament</th>
                 <th>Game</th>
                 <th>Entrants</th>
                 <th>Sets</th>
@@ -50,11 +49,10 @@ const Events: React.FC<Props> = ({ league, canManage, events }) => {
                       route="events.show"
                       routeParams={{ league: league.slug, event: event.id }}
                     >
-                      {event.name}
+                      {event.tournamentName} - {event.name}
                     </Link>{' '}
                     <span>({event.entryKind})</span>
                   </td>
-                  <td>{event.tournamentName}</td>
                   <td>{event.gameName ?? '—'}</td>
                   <td>{event.entrantCount ?? '—'}</td>
                   <td>{event.completedSets}</td>
