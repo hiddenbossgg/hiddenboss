@@ -12,7 +12,10 @@ type ManualPayload = {
   name: string
   slug: string
   startAt?: string
-  location?: string
+  country?: string
+  state?: string
+  city?: string
+  address?: string
   eventName?: string
   entryKind?: EntryKind
   /** CSV: name, seed, placement, dq */
@@ -57,7 +60,10 @@ export class ManualAdapter implements PlatformAdapter {
       url: null,
       startAt: payload.startAt ? new Date(payload.startAt) : null,
       endAt: null,
-      location: payload.location ?? null,
+      country: payload.country ?? null,
+      state: payload.state ?? null,
+      city: payload.city ?? null,
+      address: payload.address ?? null,
       isOnline: false,
     })
 
