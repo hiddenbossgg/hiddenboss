@@ -56,7 +56,19 @@ export class RankingRecomputerService {
     this.selection = options.selection ?? new SetSelectionService()
   }
 
-  async run(rankingId: string): Promise<RecomputeResult> {
+  /**
+   * `force` bypasses the fingerprint skip-check — for the rare case where the
+   * *replay logic itself* changed in a way the fingerprint cannot see (it
+   * only tracks algorithm config, requirements, and the sets themselves), so
+   * standings need rewriting even though nothing a fingerprint tracks moved.
+   *
+   * It deliberately does nothing else: `previousRecomputeId` still comes from
+   * `ranking.latestRecomputeId` exactly as a normal recompute, so the Move
+   * column keeps comparing against the last real recompute. Do not "force" a
+   * recompute by clearing `latestRecomputeId` by hand — that severs the same
+   * chain this option exists to protect.
+   */
+  async run(rankingId: string, options: { force?: boolean } = {}): Promise<RecomputeResult> {
     const ranking = await Ranking.findOrFail(rankingId)
     const league = await League.findOrFail(ranking.leagueId)
 
@@ -74,7 +86,7 @@ export class RankingRecomputerService {
     const previousRecomputeId = ranking.latestRecomputeId
 
     const latest = previousRecomputeId ? await RankingRecompute.find(previousRecomputeId) : null
-    if (latest?.status === 'ok' && latest.inputFingerprint === fingerprint) {
+    if (!options.force && latest?.status === 'ok' && latest.inputFingerprint === fingerprint) {
       const requeued = await this.settle(ranking, startedAt)
       return { recompute: latest, skipped: true, requeued }
     }

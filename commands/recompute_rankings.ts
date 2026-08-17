@@ -26,6 +26,15 @@ export default class RecomputeRankings extends BaseCommand {
   @flags.string({ description: 'Create a ranking with this name before recomputing' })
   declare create: string
 
+  /**
+   * For when the replay logic changed in a way the fingerprint cannot see —
+   * it only tracks algorithm config, requirements, and the sets themselves.
+   * Never work around a stale skip by clearing `latest_recompute_id` by
+   * hand: that also erases the baseline the Move column compares against.
+   */
+  @flags.boolean({ description: 'Recompute even if nothing the fingerprint tracks has changed' })
+  declare force: boolean
+
   async run() {
     const league = await League.findBy('slug', this.league)
     if (!league) {
@@ -52,7 +61,7 @@ export default class RecomputeRankings extends BaseCommand {
     }
 
     for (const ranking of rankings) {
-      const result = await new RankingRecomputerService().run(ranking.id)
+      const result = await new RankingRecomputerService().run(ranking.id, { force: this.force })
 
       this.logger.success(
         result.skipped

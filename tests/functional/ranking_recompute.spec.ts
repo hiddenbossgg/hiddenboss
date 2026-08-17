@@ -136,6 +136,48 @@ test.group('ranking recompute', (group) => {
   })
 
   /**
+   * `force` exists for when the replay logic changes without the fingerprint
+   * moving. It must still write a fresh recompute — but critically, without
+   * severing the chain the Move column reads: `previousRank` has to keep
+   * comparing against the recompute that was actually last shown to users.
+   */
+  test('force rewrites standings without breaking the Move baseline', async ({ assert }) => {
+    const league = await seedLeague('forced')
+    await importWeekly(
+      league,
+      'week-1',
+      ENTRANTS,
+      'entrant_a,entrant_b,score_a,score_b\nAlice,Carol,3,0\nBob,Carol,3,0\n'
+    )
+    const ranking = await makeRanking(league)
+
+    const first = await new RankingRecomputerService().run(ranking.id)
+    const forced = await new RankingRecomputerService().run(ranking.id, { force: true })
+
+    assert.isFalse(forced.skipped)
+    assert.notEqual(forced.recompute.id, first.recompute.id)
+
+    const firstStandings = await RankingStanding.query()
+      .where('rankingRecomputeId', first.recompute.id)
+      .preload('leaguePlayer')
+    const forcedStandings = await RankingStanding.query()
+      .where('rankingRecomputeId', forced.recompute.id)
+      .preload('leaguePlayer')
+
+    const firstRankByPlayer = new Map(
+      firstStandings.map((standing) => [standing.leaguePlayer.displayTag, standing.rank])
+    )
+
+    for (const standing of forcedStandings) {
+      assert.equal(
+        standing.previousRank,
+        firstRankByPlayer.get(standing.leaguePlayer.displayTag),
+        `${standing.leaguePlayer.displayTag} should compare against the real prior recompute, not show as new`
+      )
+    }
+  })
+
+  /**
    * The fingerprint includes the league's identity version, so a merge
    * invalidates the previous recompute even though no set changed.
    */
