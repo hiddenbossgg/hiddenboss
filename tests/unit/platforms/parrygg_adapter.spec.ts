@@ -104,6 +104,25 @@ test.group('parrygg adapter', () => {
   }).skip(!recorded, 'no parry.gg fixtures recorded yet')
 
   /**
+   * parry.gg's user objects already carry structured location data
+   * (`locationCountry`/`locationState`/`locationCity`) that was sitting
+   * unused before player location was wired up — this is what proves the
+   * adapter actually reads it now, not just that the shape typechecks.
+   */
+  test('reads player location from the platform', async ({ assert }) => {
+    const sink = await recordedSink()
+
+    const located = sink.allEntrants
+      .flatMap((entrant) => entrant.participants)
+      .filter((participant) => participant.country !== null)
+
+    assert.isAbove(located.length, 0, 'expected at least one participant with a known location')
+    for (const participant of located) {
+      assert.match(participant.country!, /^[A-Z]{2}$/, 'country should be an ISO alpha-2 code')
+    }
+  }).skip(!recorded, 'no parry.gg fixtures recorded yet')
+
+  /**
    * parry.gg publishes its own round labels on the bracket rather than leaving
    * them to be synthesised from a round number, so they should survive intact.
    */

@@ -142,6 +142,23 @@ test.group('startgg adapter', () => {
     assert.isAbove(sink.brackets.length, 0)
   }).skip(!recorded, 'no start.gg fixtures recorded yet')
 
+  /**
+   * `city`/`addrState`/`countryCode` are already fetched for `isOnline`, so
+   * this is what proves they reach the tournament record rather than being
+   * read and discarded. `address` is a separate gap: it needs `venueAddress`
+   * added to the query, which would orphan every recorded fixture.
+   */
+  test('reads tournament location from the platform', async ({ assert }) => {
+    const sink = await recordedSink()
+    const [tournament] = sink.tournaments
+
+    assert.isNotNull(tournament.country, 'expected a country from the fixture')
+    assert.match(tournament.country!, /^[A-Z]{2}$/, 'country should be an ISO alpha-2 code')
+    assert.isNotNull(tournament.state)
+    assert.isNotNull(tournament.city)
+    assert.isNull(tournament.address, 'venueAddress is not queried yet')
+  }).skip(!recorded, 'no start.gg fixtures recorded yet')
+
   test('reads doubles entrants as multiple people', async ({ assert }) => {
     const sink = await recordedSink('doubles')
 

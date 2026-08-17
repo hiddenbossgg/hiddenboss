@@ -250,6 +250,9 @@ export class ParryggAdapter implements PlatformAdapter {
             gamerTag: user.gamerTag,
             prefix: null,
             pronouns: user.pronouns || null,
+            country: user.locationCountry || null,
+            state: user.locationState || null,
+            city: user.locationCity || null,
           })),
         })
       }

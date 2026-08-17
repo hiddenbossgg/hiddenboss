@@ -256,6 +256,9 @@ export class StartggAdapter implements PlatformAdapter {
           gamerTag: participant.gamerTag,
           prefix: participant.prefix || null,
           pronouns: participant.user?.genderPronoun || null,
+          country: participant.user?.location?.country || null,
+          state: participant.user?.location?.state || null,
+          city: participant.user?.location?.city || null,
         })),
       }))
 

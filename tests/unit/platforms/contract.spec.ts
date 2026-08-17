@@ -278,7 +278,17 @@ test.group('observed capabilities', () => {
         seed: null,
         placement: 3,
         isDisqualified: false,
-        participants: [{ externalUserId: null, gamerTag: 'Alice', prefix: null, pronouns: null }],
+        participants: [
+          {
+            externalUserId: null,
+            gamerTag: 'Alice',
+            prefix: null,
+            pronouns: null,
+            country: null,
+            state: null,
+            city: null,
+          },
+        ],
       },
     ])
 

@@ -33,6 +33,11 @@ export interface CanonicalParticipant {
   gamerTag: string
   prefix: string | null
   pronouns: string | null
+  /** ISO 3166-1 alpha-2, kept verbatim from the platform. */
+  country: string | null
+  /** State, province or region — whatever the platform reports, unnormalised. */
+  state: string | null
+  city: string | null
 }
 
 /**

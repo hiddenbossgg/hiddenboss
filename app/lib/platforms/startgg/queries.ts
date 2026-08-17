@@ -114,6 +114,11 @@ export const EVENT_ENTRANTS_QUERY = `
             user {
               id
               genderPronoun
+              location {
+                country
+                state
+                city
+              }
             }
           }
         }
