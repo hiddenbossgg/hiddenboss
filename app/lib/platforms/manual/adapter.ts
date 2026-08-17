@@ -152,6 +152,9 @@ export class ManualAdapter implements PlatformAdapter {
             gamerTag: name,
             prefix: row.prefix || null,
             pronouns: row.pronouns || null,
+            country: row.country || null,
+            state: row.state || null,
+            city: row.city || null,
           },
         ],
       }
