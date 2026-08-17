@@ -93,6 +93,7 @@ export default class LeaguesController {
       })),
       events: events
         .map((link) => ({
+          id: link.event.id,
           name: link.event.name,
           tournamentName: link.event.tournament.name,
           entryKind: link.event.entryKind,
