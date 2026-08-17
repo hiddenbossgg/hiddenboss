@@ -3,12 +3,13 @@ import vine from '@vinejs/vine'
 import logger from '@adonisjs/core/services/logger'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { StartggAdapter } from '#lib/platforms/startgg/adapter'
 import { runAdapter, runTwice } from './run_adapter.js'
 import { fixtureContext, hasFixtures } from './fixture_http.js'
 import type { PlatformContext } from '#lib/platforms/contracts'
 
-const FIXTURE_ROOT = new URL('../../fixtures/platforms/', import.meta.url).pathname
+const FIXTURE_ROOT = fileURLToPath(new URL('../../fixtures/platforms/', import.meta.url))
 
 /**
  * Fixture-backed tests are skipped until somebody records real responses:

@@ -1,10 +1,17 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import logger from '@adonisjs/core/services/logger'
 import { requestKey } from '../../../commands/record_platform_fixtures.js'
 import type { PlatformContext, PlatformFetch } from '#lib/platforms/contracts'
 
-const FIXTURE_ROOT = new URL('../../fixtures/platforms/', import.meta.url).pathname
+/**
+ * `.pathname` on a `file://` URL is wrong on Windows — it leaves the leading
+ * slash in front of the drive letter (`/C:/...`), which then resolves to a
+ * doubled drive (`C:\C:\...`) once joined with another path. `fileURLToPath`
+ * is the correct way to turn a module URL into a filesystem path.
+ */
+const FIXTURE_ROOT = fileURLToPath(new URL('../../fixtures/platforms/', import.meta.url))
 
 /**
  * Replays recorded platform responses.

@@ -2,11 +2,12 @@ import { test } from '@japa/runner'
 import vine from '@vinejs/vine'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { ParryggAdapter } from '#lib/platforms/parrygg/adapter'
 import { runAdapter, runTwice } from './run_adapter.js'
 import { fixtureContext, hasFixtures } from './fixture_http.js'
 
-const FIXTURE_ROOT = new URL('../../fixtures/platforms/', import.meta.url).pathname
+const FIXTURE_ROOT = fileURLToPath(new URL('../../fixtures/platforms/', import.meta.url))
 
 /**
  * Recording needs a parry.gg API key; replaying does not:
