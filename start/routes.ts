@@ -60,6 +60,7 @@ router
     router.get('settings', [controllers.Leagues, 'edit']).as('leagues.edit')
     router.patch('/', [controllers.Leagues, 'update']).as('leagues.update')
     router.delete('/', [controllers.Leagues, 'destroy']).as('leagues.destroy')
+    router.post('clear', [controllers.Leagues, 'clear']).as('leagues.clear')
 
     router.get('imports', [controllers.Imports, 'index']).as('imports.index')
     router.post('imports', [controllers.Imports, 'store']).as('imports.store')

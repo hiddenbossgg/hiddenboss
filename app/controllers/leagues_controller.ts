@@ -3,6 +3,7 @@ import LeagueAdmin from '#models/league_admin'
 import LeagueEvent from '#models/league_event'
 import Ranking from '#models/ranking'
 import LeaguePolicy from '#policies/league_policy'
+import { LeagueClearingService } from '#services/leagues/league_clearing_service'
 import db from '@adonisjs/lucid/services/db'
 import { createLeagueValidator, updateLeagueValidator } from '#validators/league'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -107,7 +108,7 @@ export default class LeaguesController {
     })
   }
 
-  async edit({ league, inertia }: HttpContext) {
+  async edit({ league, bouncer, inertia }: HttpContext) {
     return inertia.render('leagues/settings', {
       league: {
         slug: league.slug,
@@ -115,6 +116,13 @@ export default class LeaguesController {
         description: league.description,
         visibility: league.visibility,
       },
+      /**
+       * Clearing and deleting cascade to every other admin's rankings and
+       * players too, so both are gated on `delete` (owner-only) rather than
+       * the `manage` check the middleware already applied — a manager who
+       * isn't an owner should not even see the buttons.
+       */
+      canDelete: await bouncer.with(LeaguePolicy).allows('delete', league),
     })
   }
 
@@ -140,5 +148,18 @@ export default class LeaguesController {
     await league.delete()
 
     return response.redirect().toRoute('leagues.index')
+  }
+
+  /**
+   * Wipes rankings, players and imported events but keeps the league itself,
+   * its admins, credentials and game list — a reset rather than a goodbye.
+   */
+  async clear({ league, bouncer, response, session }: HttpContext) {
+    await bouncer.with(LeaguePolicy).authorize('delete', league)
+    await new LeagueClearingService().run(league.id)
+
+    session.flash('success', `Cleared ${league.name}`)
+
+    return response.redirect().toRoute('leagues.edit', { league: league.slug })
   }
 }
