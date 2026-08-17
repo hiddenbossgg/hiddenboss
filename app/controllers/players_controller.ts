@@ -43,6 +43,9 @@ export default class PlayersController {
           return {
             slug: player.slug,
             displayTag: player.displayTag,
+            city: player.city,
+            state: player.state,
+            country: player.country,
             rank: standing?.rank ?? null,
             rating: standing ? Math.round(Number(standing.value)) : null,
             wins: standing?.wins ?? 0,
@@ -178,7 +181,14 @@ export default class PlayersController {
     return inertia.render('leagues/player', {
       league: { slug: league.slug, name: league.name },
       canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
-      player: { slug: player.slug, displayTag: player.displayTag, pronouns: player.pronouns },
+      player: {
+        slug: player.slug,
+        displayTag: player.displayTag,
+        pronouns: player.pronouns,
+        city: player.city,
+        state: player.state,
+        country: player.country,
+      },
       ranking: ranking ? { slug: ranking.slug, name: ranking.name } : null,
       standing: standing
         ? {

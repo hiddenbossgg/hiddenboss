@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import { formatLocation } from '../../lib/format_location.js'
 
 type Props = {
   league: { slug: string; name: string }
@@ -16,6 +17,10 @@ type Props = {
     platformKey: string
     url: string | null
     startAt: string | null
+    city: string | null
+    state: string | null
+    country: string | null
+    address: string | null
   }>
 }
 
@@ -35,6 +40,7 @@ const Events: React.FC<Props> = ({ league, canManage, events }) => {
               <tr>
                 <th>Event</th>
                 <th>Game</th>
+                <th>Location</th>
                 <th>Entrants</th>
                 <th>Sets</th>
                 <th>Date</th>
@@ -54,6 +60,14 @@ const Events: React.FC<Props> = ({ league, canManage, events }) => {
                     <span>({event.entryKind})</span>
                   </td>
                   <td>{event.gameName ?? '—'}</td>
+                  {/* The full street address is shown on the event page; here just city/state/country. */}
+                  <td>
+                    {formatLocation({
+                      city: event.city,
+                      state: event.state,
+                      country: event.country,
+                    }) ?? '—'}
+                  </td>
                   <td>{event.entrantCount ?? '—'}</td>
                   <td>{event.completedSets}</td>
                   <td>{event.startAt ?? '—'}</td>

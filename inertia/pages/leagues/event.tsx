@@ -2,6 +2,7 @@ import type React from 'react'
 import { useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import { formatLocation } from '../../lib/format_location.js'
 
 type Props = {
   league: { slug: string; name: string }
@@ -16,6 +17,10 @@ type Props = {
     platformKey: string
     url: string | null
     startAt: string | null
+    city: string | null
+    state: string | null
+    country: string | null
+    address: string | null
   }
   players: Array<{ id: string; displayTag: string }>
   entrants: Array<{
@@ -125,6 +130,7 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
         {event.tournamentName}
         {event.gameName && <> · {event.gameName}</>} · {event.entryKind}
         {event.startAt && <> · {event.startAt}</>}
+        {formatLocation(event) && <> · {formatLocation(event)}</>}
         {event.url && (
           <>
             {' · '}

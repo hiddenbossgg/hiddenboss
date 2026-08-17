@@ -26,6 +26,10 @@ export default class EventsController {
         't.platform_key',
         't.start_at',
         't.url',
+        't.country',
+        't.state',
+        't.city',
+        't.address',
         db.raw(`(
           select count(*) from sets s
           join brackets b on b.id = s.bracket_id
@@ -49,6 +53,10 @@ export default class EventsController {
         platformKey: row.platform_key,
         url: row.url,
         startAt: row.start_at ? isoDate(row.start_at) : null,
+        city: row.city,
+        state: row.state,
+        country: row.country,
+        address: row.address,
       })),
     })
   }
@@ -189,6 +197,10 @@ export default class EventsController {
         platformKey: event.tournament.platformKey,
         url: event.tournament.url,
         startAt: event.tournament.startAt?.toISODate() ?? null,
+        city: event.tournament.city,
+        state: event.tournament.state,
+        country: event.tournament.country,
+        address: event.tournament.address,
       },
       entrants: entrants
         .filter((row) => (seen.has(row.id) ? false : seen.add(row.id)))
