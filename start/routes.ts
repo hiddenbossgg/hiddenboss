@@ -76,6 +76,8 @@ router
      */
     router.post('identity', [controllers.IdentityCorrections, 'update']).as('identity.update')
 
+    router.delete('events/:event', [controllers.Events, 'destroy']).as('events.destroy')
+
     router.get('credentials', [controllers.LeagueCredentials, 'index']).as('credentials.index')
     router
       .put('credentials/:platform', [controllers.LeagueCredentials, 'update'])

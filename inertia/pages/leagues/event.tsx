@@ -141,6 +141,22 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
         )}
       </p>
 
+      {canManage && (
+        <Form route="events.destroy" routeParams={{ league: league.slug, event: event.id }}>
+          {({ processing }) => (
+            <>
+              <button type="submit" disabled={processing}>
+                Remove from league
+              </button>
+              <p>
+                Drops it from every ranking&apos;s next recompute. Nothing is deleted — pasting the
+                same link re-imports it.
+              </p>
+            </>
+          )}
+        </Form>
+      )}
+
       <h2>Placements ({entrants.length})</h2>
       <div className="table-scroll">
         <table>
