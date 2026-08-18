@@ -1,5 +1,6 @@
 import { CsvError, isTruthy, optionalNumber, parseCsv, requireColumns } from './csv.js'
 import { PermanentPlatformError } from '#lib/platforms/errors'
+import { toAlpha2CountryCode } from '#lib/geo/normalize_country'
 import type { CanonicalEntrant, CanonicalSet, EntryKind, SetState } from '#lib/platforms/canonical'
 import type {
   ImportSink,
@@ -60,7 +61,7 @@ export class ManualAdapter implements PlatformAdapter {
       url: null,
       startAt: payload.startAt ? new Date(payload.startAt) : null,
       endAt: null,
-      country: payload.country ?? null,
+      country: this.resolveCountry(payload.country),
       state: payload.state ?? null,
       city: payload.city ?? null,
       address: payload.address ?? null,
@@ -110,6 +111,24 @@ export class ManualAdapter implements PlatformAdapter {
     }
 
     return payload
+  }
+
+  /**
+   * Rejected here rather than dropped, unlike `TournamentWriterService`'s
+   * fallback for every other platform's output: there is a human on the
+   * other end of a manual import who typed the value and can fix it.
+   */
+  private resolveCountry(country: string | undefined): string | null {
+    if (!country) return null
+
+    const resolved = toAlpha2CountryCode(country)
+    if (!resolved) {
+      throw new PermanentPlatformError(`"${country}" is not a recognised country`, {
+        platform: this.key,
+      })
+    }
+
+    return resolved
   }
 
   private entrants(payload: ManualPayload): CanonicalEntrant[] {

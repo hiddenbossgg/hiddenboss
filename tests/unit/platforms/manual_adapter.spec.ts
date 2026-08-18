@@ -189,4 +189,31 @@ test.group('manual adapter', () => {
     assert.isNull(set.winnerEntrantExternalId)
     assert.equal(set.state, 'pending')
   })
+
+  test('a country given as a full name is stored as its ISO alpha-2 code', async ({ assert }) => {
+    const sink = await collect(new ManualAdapter(), { ...basePayload, country: 'United States' })
+
+    assert.equal(sink.tournaments[0].country, 'US')
+  })
+
+  test('a country already given as its code is left alone', async ({ assert }) => {
+    const sink = await collect(new ManualAdapter(), { ...basePayload, country: 'us' })
+
+    assert.equal(sink.tournaments[0].country, 'US')
+  })
+
+  test('no country given at all imports with a null country', async ({ assert }) => {
+    const sink = await collect(new ManualAdapter(), basePayload)
+
+    assert.isNull(sink.tournaments[0].country)
+  })
+
+  test('rejects a country nothing recognises, instead of failing at the database', async ({
+    assert,
+  }) => {
+    await assert.rejects(
+      () => collect(new ManualAdapter(), { ...basePayload, country: 'Wakanda' }),
+      /not a recognised country/
+    )
+  })
 })
