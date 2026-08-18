@@ -62,12 +62,14 @@ function qualifyingCount(
   minEntrants: number | null,
   dqPolicy: DqPolicy
 ): number {
-  return tournamentActivity.filter((activity) => qualifiesUnderDqPolicy(activity, dqPolicy)).filter(
-    (activity) =>
-      minEntrants === null ||
-      minEntrants <= 0 ||
-      (activity.entrantCount !== null && activity.entrantCount >= minEntrants)
-  ).length
+  return tournamentActivity
+    .filter((activity) => qualifiesUnderDqPolicy(activity, dqPolicy))
+    .filter(
+      (activity) =>
+        minEntrants === null ||
+        minEntrants <= 0 ||
+        (activity.entrantCount !== null && activity.entrantCount >= minEntrants)
+    ).length
 }
 
 /** All clauses must hold — an empty list of requirements means everyone qualifies. */

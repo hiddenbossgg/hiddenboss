@@ -43,7 +43,10 @@ export class FakePlatformAdapter implements PlatformAdapter {
       url: ref.url,
       startAt: new Date('2026-03-01T00:00:00Z'),
       endAt: new Date('2026-03-02T00:00:00Z'),
-      location: 'Austin, TX',
+      country: 'US',
+      state: 'TX',
+      city: 'Austin',
+      address: null,
       isOnline: false,
     })
 
@@ -75,7 +78,15 @@ export class FakePlatformAdapter implements PlatformAdapter {
         placement: 1,
         isDisqualified: false,
         participants: [
-          { externalUserId: 'u1', gamerTag: 'Alice', prefix: null, pronouns: 'she/her' },
+          {
+            externalUserId: 'u1',
+            gamerTag: 'Alice',
+            prefix: null,
+            pronouns: 'she/her',
+            country: 'US',
+            state: 'CA',
+            city: 'Los Angeles',
+          },
         ],
       },
       {
@@ -84,7 +95,17 @@ export class FakePlatformAdapter implements PlatformAdapter {
         seed: 2,
         placement: 2,
         isDisqualified: false,
-        participants: [{ externalUserId: 'u2', gamerTag: 'Bob', prefix: 'TSM', pronouns: null }],
+        participants: [
+          {
+            externalUserId: 'u2',
+            gamerTag: 'Bob',
+            prefix: 'TSM',
+            pronouns: null,
+            country: null,
+            state: null,
+            city: null,
+          },
+        ],
       },
     ]
   }

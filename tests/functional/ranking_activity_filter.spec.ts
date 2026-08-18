@@ -223,7 +223,9 @@ Eve,Hank,,,yes,
 `
     )
 
-    async function inactiveFor(dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq') {
+    async function inactiveFor(
+      dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq'
+    ) {
       const ranking = await Ranking.create({
         leagueId: league.id,
         slug: `ranking-${dqPolicy}`,
