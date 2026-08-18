@@ -230,6 +230,21 @@ test.group('ranking recompute', (group) => {
     assert.equal(recompute.playerCount, 0)
   })
 
+  test('counts distinct tournaments toward the minimum event requirement', async ({ assert }) => {
+    const league = await seedLeague('events-counted')
+    await importWeekly(league, 'week-1', ENTRANTS, SETS, '2026-01-10')
+    await importWeekly(league, 'week-2', ENTRANTS, SETS, '2026-01-17')
+    const ranking = await makeRanking(league)
+
+    const { recompute } = await new RankingRecomputerService().run(ranking.id)
+    const standings = await RankingStanding.query()
+      .where('rankingRecomputeId', recompute.id)
+      .preload('leaguePlayer')
+
+    // Every player appears in both weeklies, so each counts two events.
+    assert.isTrue(standings.every((standing) => standing.eventsCounted === 2))
+  })
+
   test('clears the stale flag once recomputed', async ({ assert }) => {
     const league = await seedLeague('stale-clear')
     await importWeekly(league, 'week-1', ENTRANTS, SETS)

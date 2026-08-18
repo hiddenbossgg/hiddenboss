@@ -4,8 +4,24 @@ import RankingStanding from '#models/ranking_standing'
 import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import LeaguePolicy from '#policies/league_policy'
 import { StalenessService } from '#services/rankings/staleness_service'
-import { createRankingValidator } from '#validators/ranking'
+import { createRankingValidator, updateRankingValidator } from '#validators/ranking'
+import { meetsActivityRequirements } from '#lib/rankings/activity_requirements'
+import type { ActivityRequirement } from '#lib/rankings/activity_requirements'
 import type { HttpContext } from '@adonisjs/core/http'
+
+function activityRequirementsOf(ranking: Ranking): ActivityRequirement[] {
+  return (ranking.activityRequirements ?? []) as ActivityRequirement[]
+}
+
+/** Normalises `minEntrants` to an explicit `null` rather than an absent key, so a stored clause always matches `ActivityRequirement`. */
+function normaliseActivityRequirements(
+  requirements: Array<{ count: number; minEntrants?: number }> | undefined
+): ActivityRequirement[] {
+  return (requirements ?? []).map((requirement) => ({
+    count: requirement.count,
+    minEntrants: requirement.minEntrants ?? null,
+  }))
+}
 
 export default class RankingsController {
   /** Every ranking in the league, public. */
@@ -43,12 +59,36 @@ export default class RankingsController {
       return response.notFound({ message: 'No such ranking' })
     }
 
-    const standings = ranking.latestRecomputeId
+    const allStandings = ranking.latestRecomputeId
       ? await RankingStanding.query()
           .where('rankingRecomputeId', ranking.latestRecomputeId)
           .preload('leaguePlayer')
           .orderBy('rank')
       : []
+
+    /**
+     * Applied here rather than at recompute time — a player becomes
+     * ineligible because the requirements changed, not because any data did.
+     * Rank numbers are left as computed, so a player sitting just under a
+     * clause does not shift everyone below them.
+     *
+     * `flagInactive` chooses how that ineligibility is shown: dropped from
+     * the page entirely (the default), or kept and marked, which a league
+     * wants when players are close and visibility matters more than a clean
+     * cutoff.
+     */
+    const requirements = activityRequirementsOf(ranking)
+    const inactive = (standing: RankingStanding) =>
+      requirements.length > 0 &&
+      !meetsActivityRequirements(
+        (standing.tournamentEntrantCounts ?? []) as Array<number | null>,
+        requirements
+      )
+
+    const standings =
+      requirements.length > 0 && !ranking.flagInactive
+        ? allStandings.filter((standing) => !inactive(standing))
+        : allStandings
 
     return inertia.render('leagues/ranking', {
       league: { slug: league.slug, name: league.name },
@@ -60,6 +100,10 @@ export default class RankingsController {
         isStale: ranking.recomputeRequestedAt !== null,
         staleCount: ranking.staleTournamentCount,
         hasRecompute: ranking.latestRecomputeId !== null,
+        startsAt: ranking.startsAt?.toISODate() ?? null,
+        endsAt: ranking.endsAt?.toISODate() ?? null,
+        activityRequirements: requirements,
+        flagInactive: ranking.flagInactive,
         /**
          * A worker is replaying this ranking right now. Distinct from
          * `isStale`, which is also true for a manual ranking waiting on an
@@ -81,6 +125,8 @@ export default class RankingsController {
         wins: standing.wins,
         losses: standing.losses,
         setsPlayed: standing.setsPlayed,
+        eventsCounted: standing.eventsCounted,
+        inactive: inactive(standing),
       })),
     })
   }
@@ -100,12 +146,77 @@ export default class RankingsController {
       slug: payload.slug,
       algorithm: payload.algorithm,
       recomputeMode: payload.recomputeMode ?? 'manual',
+      startsAt: payload.startsAt ?? null,
+      endsAt: payload.endsAt ?? null,
+      activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
+      flagInactive: payload.flagInactive ?? false,
       published: true,
     })
 
     // Queue the first build so a new ranking is not permanently empty.
     await new StalenessService().request(ranking.id)
     await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
+
+    return response
+      .redirect()
+      .toRoute('rankings.show', { league: league.slug, ranking: ranking.slug })
+  }
+
+  async edit({ league, params, response, inertia }: HttpContext) {
+    const ranking = await Ranking.query()
+      .where('leagueId', league.id)
+      .where('slug', params.ranking)
+      .first()
+
+    if (!ranking) {
+      return response.notFound({ message: 'No such ranking' })
+    }
+
+    return inertia.render('leagues/ranking_edit', {
+      league: { slug: league.slug, name: league.name },
+      ranking: {
+        slug: ranking.slug,
+        name: ranking.name,
+        startsAt: ranking.startsAt?.toISODate() ?? null,
+        endsAt: ranking.endsAt?.toISODate() ?? null,
+        activityRequirements: activityRequirementsOf(ranking),
+        flagInactive: ranking.flagInactive,
+      },
+    })
+  }
+
+  async update({ league, params, request, response, session }: HttpContext) {
+    const ranking = await Ranking.query()
+      .where('leagueId', league.id)
+      .where('slug', params.ranking)
+      .firstOrFail()
+
+    const payload = await request.validateUsing(updateRankingValidator)
+
+    const dateRangeChanged =
+      (payload.startsAt?.toISODate() ?? null) !== (ranking.startsAt?.toISODate() ?? null) ||
+      (payload.endsAt?.toISODate() ?? null) !== (ranking.endsAt?.toISODate() ?? null)
+
+    ranking.merge({
+      startsAt: payload.startsAt ?? null,
+      endsAt: payload.endsAt ?? null,
+      activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
+      flagInactive: payload.flagInactive ?? false,
+    })
+    await ranking.save()
+
+    /**
+     * The date range bounds which sets are selected for rating, so standings
+     * are now behind the ranking's own config and need replaying. Activity
+     * requirements are a read-time filter over data that has not changed, so
+     * on their own they never need a recompute.
+     */
+    if (dateRangeChanged) {
+      await new StalenessService().request(ranking.id)
+      await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
+    }
+
+    session.flash('success', `Updated ${ranking.name}`)
 
     return response
       .redirect()

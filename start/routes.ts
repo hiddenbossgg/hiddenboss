@@ -67,6 +67,8 @@ router
 
     router.get('rankings/new', [controllers.Rankings, 'create']).as('rankings.create')
     router.post('rankings', [controllers.Rankings, 'store']).as('rankings.store')
+    router.get('rankings/:ranking/edit', [controllers.Rankings, 'edit']).as('rankings.edit')
+    router.patch('rankings/:ranking', [controllers.Rankings, 'update']).as('rankings.update')
     router
       .post('rankings/:ranking/recompute', [controllers.Rankings, 'recompute'])
       .as('rankings.recompute')

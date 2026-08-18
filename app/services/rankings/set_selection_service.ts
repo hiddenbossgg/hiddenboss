@@ -27,6 +27,7 @@ interface SetRow {
   entrant_b_id: string
   winner_entrant_id: string
   completed_at: Date | null
+  event_entrant_count: number | null
 }
 
 export class SetSelectionService {
@@ -71,7 +72,8 @@ export class SetSelectionService {
         'sets.entrant_a_id',
         'sets.entrant_b_id',
         'sets.winner_entrant_id',
-        'sets.completed_at'
+        'sets.completed_at',
+        'events.entrant_count as event_entrant_count'
       )
       /**
        * Tournaments group first so each one's sets stay contiguous; the
@@ -125,6 +127,7 @@ export class SetSelectionService {
           sideB,
           winner: row.winner_entrant_id === row.entrant_a_id ? ('a' as const) : ('b' as const),
           occurredAt: row.completed_at,
+          entrantCount: row.event_entrant_count,
         }
       })
       .filter((set): set is RatableSet => set !== null)

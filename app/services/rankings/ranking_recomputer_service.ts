@@ -150,6 +150,7 @@ export class RankingRecomputerService {
 
     const standings = algorithm.finalize(state)
     const lastPlayed = this.lastPlayedAt(sets)
+    const tournamentActivity = this.tournamentActivity(sets)
 
     const created = await db.transaction(async (trx) => {
       recompute.useTransaction(trx)
@@ -165,7 +166,14 @@ export class RankingRecomputerService {
       })
       await recompute.save()
 
-      await this.writeStandings(trx, recompute, standings, lastPlayed, previousRecomputeId)
+      await this.writeStandings(
+        trx,
+        recompute,
+        standings,
+        lastPlayed,
+        tournamentActivity,
+        previousRecomputeId
+      )
       await this.writeSetDeltas(trx, ranking.id, setDeltas, changedTournaments, goneTournaments)
       await this.writeTournamentStandings(
         trx,
@@ -201,6 +209,7 @@ export class RankingRecomputerService {
     recompute: RankingRecompute,
     standings: Standing[],
     lastPlayed: Map<string, Date>,
+    tournamentActivity: Map<string, Array<number | null>>,
     previousRecomputeId: string | null
   ): Promise<void> {
     if (standings.length === 0) return
@@ -208,22 +217,27 @@ export class RankingRecomputerService {
     const previous = await this.previousRanks(trx, previousRecomputeId)
 
     await RankingStanding.createMany(
-      standings.map((standing, index) => ({
-        rankingRecomputeId: recompute.id,
-        leaguePlayerId: standing.leaguePlayerId,
-        rank: index + 1,
-        previousRank: previous.get(standing.leaguePlayerId) ?? null,
-        value: standing.value.toFixed(4),
-        deviation: standing.deviation === null ? null : standing.deviation.toFixed(4),
-        volatility: standing.volatility === null ? null : standing.volatility.toFixed(6),
-        wins: standing.wins,
-        losses: standing.losses,
-        setsPlayed: standing.setsPlayed,
-        eventsCounted: 0,
-        lastPlayedAt: lastPlayed.has(standing.leaguePlayerId)
-          ? DateTime.fromJSDate(lastPlayed.get(standing.leaguePlayerId)!)
-          : null,
-      })),
+      standings.map((standing, index) => {
+        const entrantCounts = tournamentActivity.get(standing.leaguePlayerId) ?? []
+
+        return {
+          rankingRecomputeId: recompute.id,
+          leaguePlayerId: standing.leaguePlayerId,
+          rank: index + 1,
+          previousRank: previous.get(standing.leaguePlayerId) ?? null,
+          value: standing.value.toFixed(4),
+          deviation: standing.deviation === null ? null : standing.deviation.toFixed(4),
+          volatility: standing.volatility === null ? null : standing.volatility.toFixed(6),
+          wins: standing.wins,
+          losses: standing.losses,
+          setsPlayed: standing.setsPlayed,
+          eventsCounted: entrantCounts.length,
+          tournamentEntrantCounts: entrantCounts,
+          lastPlayedAt: lastPlayed.has(standing.leaguePlayerId)
+            ? DateTime.fromJSDate(lastPlayed.get(standing.leaguePlayerId)!)
+            : null,
+        }
+      }),
       { client: trx }
     )
   }
@@ -450,6 +464,40 @@ export class RankingRecomputerService {
     }
 
     return seen
+  }
+
+  /**
+   * Distinct tournaments each player's rated sets came from, with each
+   * tournament's entrant count — the read-time input for a ranking's
+   * activity requirements ("3 tournaments with 8+ entrants", etc). When a
+   * tournament's sets come from more than one event, its largest reported
+   * entrant count wins: a player who reached the big bracket should count
+   * toward a "big tournament" clause.
+   */
+  private tournamentActivity(sets: RatableSet[]): Map<string, Array<number | null>> {
+    const entrantCounts = new Map<string, number | null>()
+    for (const set of sets) {
+      const existing = entrantCounts.get(set.tournamentId)
+      if (existing === undefined || (set.entrantCount ?? -1) > (existing ?? -1)) {
+        entrantCounts.set(set.tournamentId, set.entrantCount)
+      }
+    }
+
+    const playerTournaments = new Map<string, Set<string>>()
+    for (const set of sets) {
+      for (const playerId of [...set.sideA, ...set.sideB]) {
+        const existing = playerTournaments.get(playerId) ?? new Set<string>()
+        existing.add(set.tournamentId)
+        playerTournaments.set(playerId, existing)
+      }
+    }
+
+    return new Map(
+      [...playerTournaments].map(([playerId, tournamentIds]) => [
+        playerId,
+        [...tournamentIds].map((tournamentId) => entrantCounts.get(tournamentId) ?? null),
+      ])
+    )
   }
 
   private algorithmFor(ranking: Ranking): RankingAlgorithm<any> {

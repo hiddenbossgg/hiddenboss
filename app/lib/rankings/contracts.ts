@@ -23,6 +23,12 @@ export interface RatableSet {
   winner: 'a' | 'b'
   /** For ordering and for reporting when a rating moved. */
   occurredAt: Date | null
+  /**
+   * The size of the event this set came from, for activity requirements like
+   * "3 tournaments with 8+ entrants". Null when the platform never reported
+   * one — CSV imports, mainly.
+   */
+  entrantCount: number | null
 }
 
 export interface ValueDelta {

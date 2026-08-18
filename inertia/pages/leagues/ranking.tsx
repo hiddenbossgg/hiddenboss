@@ -15,6 +15,10 @@ type Props = {
     staleCount: number
     hasRecompute: boolean
     isRecomputing: boolean
+    startsAt: string | null
+    endsAt: string | null
+    activityRequirements: Array<{ count: number; minEntrants: number | null }>
+    flagInactive: boolean
   }
   standings: Array<{
     rank: number
@@ -25,6 +29,8 @@ type Props = {
     wins: number
     losses: number
     setsPlayed: number
+    eventsCounted: number
+    inactive: boolean
   }>
 }
 
@@ -53,6 +59,27 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
 
       <h1>{ranking.name}</h1>
 
+      {(ranking.startsAt || ranking.endsAt || ranking.activityRequirements.length > 0) && (
+        <p>
+          {ranking.startsAt || ranking.endsAt
+            ? `Counts events from ${ranking.startsAt ?? 'the start'} to ${ranking.endsAt ?? 'now'}.`
+            : null}
+          {ranking.activityRequirements.length > 0 && (
+            <>
+              {' '}
+              To meet required activity, a player needs{' '}
+              {ranking.activityRequirements
+                .map(
+                  (requirement) =>
+                    `at least ${requirement.count} tournament${requirement.count === 1 ? '' : 's'}${requirement.minEntrants ? ` with ${requirement.minEntrants}+ entrants` : ' of any size'}`
+                )
+                .join(', and ')}
+              {ranking.flagInactive ? ' — otherwise they are flagged inactive.' : '.'}
+            </>
+          )}
+        </p>
+      )}
+
       {/*
         Standings are recomputed on request rather than on every import, so the
         page has to say plainly how far behind it is.
@@ -74,17 +101,22 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
       )}
 
       {canManage && (
-        <Form
-          route="rankings.recompute"
-          routeParams={{ league: league.slug, ranking: ranking.slug }}
-          onSuccess={() => setRequested(true)}
-        >
-          {({ processing }) => (
-            <button type="submit" disabled={processing || working}>
-              {working ? 'Updating…' : 'Update rankings'}
-            </button>
-          )}
-        </Form>
+        <>
+          <Form
+            route="rankings.recompute"
+            routeParams={{ league: league.slug, ranking: ranking.slug }}
+            onSuccess={() => setRequested(true)}
+          >
+            {({ processing }) => (
+              <button type="submit" disabled={processing || working}>
+                {working ? 'Updating…' : 'Update rankings'}
+              </button>
+            )}
+          </Form>{' '}
+          <Link route="rankings.edit" routeParams={{ league: league.slug, ranking: ranking.slug }}>
+            Edit date range &amp; activity requirements
+          </Link>
+        </>
       )}
 
       {standings.length === 0 ? (
@@ -100,6 +132,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                 <th>Rating</th>
                 <th>W–L</th>
                 <th>Sets</th>
+                <th>Events</th>
               </tr>
             </thead>
             <tbody>
@@ -114,12 +147,14 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                     >
                       {standing.player}
                     </Link>
+                    {standing.inactive && ' · inactive'}
                   </td>
                   <td>{standing.rating}</td>
                   <td>
                     {standing.wins}–{standing.losses}
                   </td>
                   <td>{standing.setsPlayed}</td>
+                  <td>{standing.eventsCounted}</td>
                 </tr>
               ))}
             </tbody>
