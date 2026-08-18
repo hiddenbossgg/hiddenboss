@@ -5,8 +5,8 @@ import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import LeaguePolicy from '#policies/league_policy'
 import { StalenessService } from '#services/rankings/staleness_service'
 import { createRankingValidator, updateRankingValidator } from '#validators/ranking'
-import { meetsActivityRequirements } from '#lib/rankings/activity_requirements'
-import type { ActivityRequirement } from '#lib/rankings/activity_requirements'
+import { DEFAULT_DQ_POLICY, meetsActivityRequirements } from '#lib/rankings/activity_requirements'
+import type { ActivityRequirement, DqPolicy } from '#lib/rankings/activity_requirements'
 import type { HttpContext } from '@adonisjs/core/http'
 
 function activityRequirementsOf(ranking: Ranking): ActivityRequirement[] {
@@ -78,12 +78,10 @@ export default class RankingsController {
      * cutoff.
      */
     const requirements = activityRequirementsOf(ranking)
+    const dqPolicy = (ranking.dqPolicy ?? DEFAULT_DQ_POLICY) as DqPolicy
     const inactive = (standing: RankingStanding) =>
       requirements.length > 0 &&
-      !meetsActivityRequirements(
-        (standing.tournamentEntrantCounts ?? []) as Array<number | null>,
-        requirements
-      )
+      !meetsActivityRequirements(standing.tournamentActivity ?? [], requirements, dqPolicy)
 
     const standings =
       requirements.length > 0 && !ranking.flagInactive
@@ -104,6 +102,7 @@ export default class RankingsController {
         endsAt: ranking.endsAt?.toISODate() ?? null,
         activityRequirements: requirements,
         flagInactive: ranking.flagInactive,
+        dqPolicy,
         /**
          * A worker is replaying this ranking right now. Distinct from
          * `isStale`, which is also true for a manual ranking waiting on an
@@ -150,6 +149,7 @@ export default class RankingsController {
       endsAt: payload.endsAt ?? null,
       activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
       flagInactive: payload.flagInactive ?? false,
+      dqPolicy: payload.dqPolicy ?? DEFAULT_DQ_POLICY,
       published: true,
     })
 
@@ -181,6 +181,7 @@ export default class RankingsController {
         endsAt: ranking.endsAt?.toISODate() ?? null,
         activityRequirements: activityRequirementsOf(ranking),
         flagInactive: ranking.flagInactive,
+        dqPolicy: (ranking.dqPolicy ?? DEFAULT_DQ_POLICY) as DqPolicy,
       },
     })
   }
@@ -202,14 +203,17 @@ export default class RankingsController {
       endsAt: payload.endsAt ?? null,
       activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
       flagInactive: payload.flagInactive ?? false,
+      dqPolicy: payload.dqPolicy ?? DEFAULT_DQ_POLICY,
     })
     await ranking.save()
 
     /**
      * The date range bounds which sets are selected for rating, so standings
      * are now behind the ranking's own config and need replaying. Activity
-     * requirements are a read-time filter over data that has not changed, so
-     * on their own they never need a recompute.
+     * requirements and the DQ policy are a read-time filter over data that
+     * has not changed, so on their own they never need a recompute — each
+     * standing already stores `setsPlayed`/`timesDisqualified` per
+     * tournament, not just whichever policy was active when it was written.
      */
     if (dateRangeChanged) {
       await new StalenessService().request(ranking.id)

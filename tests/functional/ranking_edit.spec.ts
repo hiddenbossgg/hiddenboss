@@ -108,6 +108,27 @@ test.group('ranking edit', (group) => {
     )
   })
 
+  test('updating the DQ policy does not request a recompute', async ({ client, assert }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await makeRanking(league)
+
+    const response = await client
+      .patch(`/${league.slug}/rankings/${ranking.slug}`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .fields({ dqPolicy: 'exclude_any_dq' })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    assert.equal(reloaded.dqPolicy, 'exclude_any_dq')
+    assert.isNull(
+      reloaded.latestRecomputeId,
+      'the DQ policy is a read-time filter over data already stored per standing'
+    )
+  })
+
   test('leaving the date range blank and submitting no rows clears both', async ({
     client,
     assert,

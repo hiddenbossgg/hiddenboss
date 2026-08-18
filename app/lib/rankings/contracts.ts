@@ -29,6 +29,13 @@ export interface RatableSet {
    * one — CSV imports, mainly.
    */
   entrantCount: number | null
+  /**
+   * Whether that side was disqualified in this set. Never affects rating —
+   * a walkover still moves rating — but it is what lets a ranking's DQ
+   * policy tell a no-show from a tournament actually played.
+   */
+  sideADisqualified: boolean
+  sideBDisqualified: boolean
 }
 
 export interface ValueDelta {

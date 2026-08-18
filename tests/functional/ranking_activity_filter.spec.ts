@@ -145,4 +145,107 @@ test.group('ranking activity filter', (group) => {
     assert.isFalse(byPlayer.get('Bob'))
     assert.isTrue(byPlayer.get('Carol'))
   })
+
+  test('default DQ policy drops a tournament where the player was disqualified before playing a set', async ({
+    client,
+    assert,
+  }) => {
+    const league = await League.create({
+      slug: 'dq-no-shows',
+      name: 'dq-no-shows',
+      visibility: 'public',
+    })
+
+    await importWeekly(
+      league,
+      'dq-no-shows-week-1',
+      'name\nAlice\nCarol\n',
+      'entrant_a,entrant_b,score_a,score_b\nAlice,Carol,3,1\n'
+    )
+
+    // Carol never plays a set here — disqualified before the bracket starts,
+    // so Alice takes it as a walkover.
+    await importWeekly(
+      league,
+      'dq-no-shows-week-2',
+      'name\nAlice\nCarol\n',
+      'entrant_a,entrant_b,score_a,score_b,dq_a,dq_b\nAlice,Carol,,,,yes\n'
+    )
+
+    const ranking = await Ranking.create({
+      leagueId: league.id,
+      slug: 'ranking',
+      name: 'Ranking',
+      algorithm: 'elo',
+      recomputeMode: 'manual',
+      activityRequirements: [{ count: 2, minEntrants: null }],
+      flagInactive: true,
+      published: true,
+    })
+    await new RankingRecomputerService().run(ranking.id)
+
+    const standings = await standingsFor(client, league, ranking)
+    const byPlayer = new Map(standings.map((standing) => [standing.player, standing.inactive]))
+
+    // Alice played a real set in both weeks — the walkover was Carol's DQ,
+    // not hers — so she still clears the two-tournament requirement.
+    assert.isFalse(byPlayer.get('Alice'))
+    // Carol only has one tournament with a set she actually played.
+    assert.isTrue(byPlayer.get('Carol'))
+  })
+
+  /**
+   * One tournament, one player disqualified twice after already playing a
+   * real set — chosen so `exclude_no_shows` (which only cares whether
+   * anything was played), `exclude_double_dq` (which counts the DQs) and
+   * `exclude_any_dq` (which cares only whether any DQ happened) disagree,
+   * proving each policy is actually wired to its own rule rather than one
+   * of the others.
+   */
+  test('DQ policy is read at standings time and changes which tournaments count', async ({
+    client,
+    assert,
+  }) => {
+    const league = await League.create({
+      slug: 'dq-policies',
+      name: 'dq-policies',
+      visibility: 'public',
+    })
+
+    await importWeekly(
+      league,
+      'dq-policies-week-1',
+      'name\nEve\nFaye\nGwen\nHank\n',
+      `entrant_a,entrant_b,score_a,score_b,dq_a,dq_b
+Eve,Faye,3,1,,
+Eve,Gwen,,,yes,
+Eve,Hank,,,yes,
+`
+    )
+
+    async function inactiveFor(dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq') {
+      const ranking = await Ranking.create({
+        leagueId: league.id,
+        slug: `ranking-${dqPolicy}`,
+        name: dqPolicy,
+        algorithm: 'elo',
+        recomputeMode: 'manual',
+        activityRequirements: [{ count: 1, minEntrants: null }],
+        flagInactive: true,
+        dqPolicy,
+        published: true,
+      })
+      await new RankingRecomputerService().run(ranking.id)
+
+      const standings = await standingsFor(client, league, ranking)
+      return standings.find((standing) => standing.player === 'Eve')!.inactive
+    }
+
+    // Eve played a real set before being disqualified twice, so a policy
+    // that only cares about no-shows still counts the tournament.
+    assert.isFalse(await inactiveFor('exclude_no_shows'))
+    // Disqualified twice — excluded under both DQ-count-sensitive policies.
+    assert.isTrue(await inactiveFor('exclude_double_dq'))
+    assert.isTrue(await inactiveFor('exclude_any_dq'))
+  })
 })

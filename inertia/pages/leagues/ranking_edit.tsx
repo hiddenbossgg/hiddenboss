@@ -12,6 +12,7 @@ type Props = {
     endsAt: string | null
     activityRequirements: Array<{ count: number; minEntrants: number | null }>
     flagInactive: boolean
+    dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq'
   }
 }
 
@@ -56,6 +57,21 @@ const EditRanking: React.FC<Props> = ({ league, ranking }) => {
                 Flag inactive players instead of hiding them
               </label>
               <small>Only matters if activity requirements are set above.</small>
+            </div>
+
+            <div>
+              <label htmlFor="dqPolicy">When a player is DQ&apos;d</label>
+              <select name="dqPolicy" id="dqPolicy" defaultValue={ranking.dqPolicy}>
+                <option value="exclude_no_shows">
+                  Don&apos;t count that tournament if they played no sets
+                </option>
+                <option value="exclude_double_dq">
+                  Don&apos;t count that tournament if they were DQ&apos;d twice
+                </option>
+                <option value="exclude_any_dq">Don&apos;t count that tournament at all</option>
+              </select>
+              <small>Only matters if activity requirements are set above.</small>
+              {errors.dqPolicy && <p role="alert">{errors.dqPolicy}</p>}
             </div>
 
             <button type="submit" disabled={processing}>

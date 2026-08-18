@@ -12,6 +12,8 @@ function set(sideA: string[], sideB: string[], winner: 'a' | 'b' = 'a'): Ratable
     winner,
     occurredAt: new Date('2026-01-01'),
     entrantCount: null,
+    sideADisqualified: false,
+    sideBDisqualified: false,
   }
 }
 

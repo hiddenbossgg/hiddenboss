@@ -75,6 +75,21 @@ const CreateRanking: React.FC<Props> = ({ league }) => {
               <small>Only matters if activity requirements are set above.</small>
             </div>
 
+            <div>
+              <label htmlFor="dqPolicy">When a player is DQ&apos;d</label>
+              <select name="dqPolicy" id="dqPolicy" defaultValue="exclude_no_shows">
+                <option value="exclude_no_shows">
+                  Don&apos;t count that tournament if they played no sets
+                </option>
+                <option value="exclude_double_dq">
+                  Don&apos;t count that tournament if they were DQ&apos;d twice
+                </option>
+                <option value="exclude_any_dq">Don&apos;t count that tournament at all</option>
+              </select>
+              <small>Only matters if activity requirements are set above.</small>
+              {errors.dqPolicy && <p role="alert">{errors.dqPolicy}</p>}
+            </div>
+
             <button type="submit" disabled={processing}>
               Create ranking
             </button>

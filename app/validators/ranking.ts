@@ -1,4 +1,5 @@
 import vine from '@vinejs/vine'
+import { DQ_POLICIES } from '#lib/rankings/activity_requirements'
 
 /**
  * One activity clause: at least `count` tournaments with `minEntrants` or
@@ -8,6 +9,9 @@ const activityRequirement = vine.object({
   count: vine.number().min(1),
   minEntrants: vine.number().min(1).optional(),
 })
+
+/** Which tournaments a DQ knocks out of a player's activity count. */
+const dqPolicy = vine.enum(DQ_POLICIES)
 
 /**
  * The enum lists exactly what `RankingRecomputerService` can run. Offering an
@@ -36,6 +40,8 @@ export const createRankingValidator = vine.create({
   activityRequirements: vine.array(activityRequirement).optional(),
   /** false (default): drop them from the page. true: keep them, flagged. */
   flagInactive: vine.boolean().optional(),
+  /** Only matters once activity requirements are set. Omitted means the default. */
+  dqPolicy: dqPolicy.optional(),
 })
 
 /**
@@ -48,4 +54,5 @@ export const updateRankingValidator = vine.create({
   endsAt: vine.date().optional(),
   activityRequirements: vine.array(activityRequirement).optional(),
   flagInactive: vine.boolean().optional(),
+  dqPolicy: dqPolicy.optional(),
 })

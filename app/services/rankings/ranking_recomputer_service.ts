@@ -12,6 +12,7 @@ import { Glicko2 } from '#lib/rankings/glicko2'
 import { OpenSkill } from '#lib/rankings/openskill'
 import { SetSelectionService } from './set_selection_service.js'
 import type { RatableSet, RankingAlgorithm, Standing } from '#lib/rankings/contracts'
+import type { TournamentActivity } from '#lib/rankings/activity_requirements'
 
 export interface RecomputeResult {
   recompute: RankingRecompute
@@ -209,7 +210,7 @@ export class RankingRecomputerService {
     recompute: RankingRecompute,
     standings: Standing[],
     lastPlayed: Map<string, Date>,
-    tournamentActivity: Map<string, Array<number | null>>,
+    tournamentActivity: Map<string, TournamentActivity[]>,
     previousRecomputeId: string | null
   ): Promise<void> {
     if (standings.length === 0) return
@@ -218,7 +219,7 @@ export class RankingRecomputerService {
 
     await RankingStanding.createMany(
       standings.map((standing, index) => {
-        const entrantCounts = tournamentActivity.get(standing.leaguePlayerId) ?? []
+        const activity = tournamentActivity.get(standing.leaguePlayerId) ?? []
 
         return {
           rankingRecomputeId: recompute.id,
@@ -231,8 +232,8 @@ export class RankingRecomputerService {
           wins: standing.wins,
           losses: standing.losses,
           setsPlayed: standing.setsPlayed,
-          eventsCounted: entrantCounts.length,
-          tournamentEntrantCounts: entrantCounts,
+          eventsCounted: activity.length,
+          tournamentActivity: activity,
           lastPlayedAt: lastPlayed.has(standing.leaguePlayerId)
             ? DateTime.fromJSDate(lastPlayed.get(standing.leaguePlayerId)!)
             : null,
@@ -468,13 +469,18 @@ export class RankingRecomputerService {
 
   /**
    * Distinct tournaments each player's rated sets came from, with each
-   * tournament's entrant count — the read-time input for a ranking's
-   * activity requirements ("3 tournaments with 8+ entrants", etc). When a
-   * tournament's sets come from more than one event, its largest reported
-   * entrant count wins: a player who reached the big bracket should count
-   * toward a "big tournament" clause.
+   * tournament's entrant count and the player's own set history there — the
+   * read-time input for a ranking's activity requirements ("3 tournaments
+   * with 8+ entrants", etc) and its DQ policy. When a tournament's sets come
+   * from more than one event, its largest reported entrant count wins: a
+   * player who reached the big bracket should count toward a "big
+   * tournament" clause.
+   *
+   * `setsPlayed` and `timesDisqualified` are per player per tournament, not
+   * per side of one set: a set where a player's side was not the
+   * disqualified side counts as played even if the other side was.
    */
-  private tournamentActivity(sets: RatableSet[]): Map<string, Array<number | null>> {
+  private tournamentActivity(sets: RatableSet[]): Map<string, TournamentActivity[]> {
     const entrantCounts = new Map<string, number | null>()
     for (const set of sets) {
       const existing = entrantCounts.get(set.tournamentId)
@@ -483,19 +489,41 @@ export class RankingRecomputerService {
       }
     }
 
-    const playerTournaments = new Map<string, Set<string>>()
-    for (const set of sets) {
-      for (const playerId of [...set.sideA, ...set.sideB]) {
-        const existing = playerTournaments.get(playerId) ?? new Set<string>()
-        existing.add(set.tournamentId)
-        playerTournaments.set(playerId, existing)
+    interface Accumulator {
+      setsPlayed: number
+      timesDisqualified: number
+    }
+    const perPlayer = new Map<string, Map<string, Accumulator>>()
+
+    const record = (playerIds: string[], tournamentId: string, disqualified: boolean) => {
+      for (const playerId of playerIds) {
+        const tournaments = perPlayer.get(playerId) ?? new Map<string, Accumulator>()
+        const accumulator = tournaments.get(tournamentId) ?? { setsPlayed: 0, timesDisqualified: 0 }
+
+        if (disqualified) {
+          accumulator.timesDisqualified += 1
+        } else {
+          accumulator.setsPlayed += 1
+        }
+
+        tournaments.set(tournamentId, accumulator)
+        perPlayer.set(playerId, tournaments)
       }
     }
 
+    for (const set of sets) {
+      record(set.sideA, set.tournamentId, set.sideADisqualified)
+      record(set.sideB, set.tournamentId, set.sideBDisqualified)
+    }
+
     return new Map(
-      [...playerTournaments].map(([playerId, tournamentIds]) => [
+      [...perPlayer].map(([playerId, tournaments]) => [
         playerId,
-        [...tournamentIds].map((tournamentId) => entrantCounts.get(tournamentId) ?? null),
+        [...tournaments].map(([tournamentId, accumulator]) => ({
+          entrantCount: entrantCounts.get(tournamentId) ?? null,
+          setsPlayed: accumulator.setsPlayed,
+          timesDisqualified: accumulator.timesDisqualified,
+        })),
       ])
     )
   }

@@ -19,6 +19,7 @@ type Props = {
     endsAt: string | null
     activityRequirements: Array<{ count: number; minEntrants: number | null }>
     flagInactive: boolean
+    dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq'
   }
   standings: Array<{
     rank: number
@@ -32,6 +33,12 @@ type Props = {
     eventsCounted: number
     inactive: boolean
   }>
+}
+
+const DQ_POLICY_LABEL: Record<Props['ranking']['dqPolicy'], string> = {
+  exclude_no_shows: " (no show DQs don't count)",
+  exclude_double_dq: " (double DQs don't count)",
+  exclude_any_dq: " (any DQs don't count)",
 }
 
 /** Places gained or lost since the previous recompute. */
@@ -74,6 +81,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                     `at least ${requirement.count} tournament${requirement.count === 1 ? '' : 's'}${requirement.minEntrants ? ` with ${requirement.minEntrants}+ entrants` : ' of any size'}`
                 )
                 .join(', and ')}
+              {DQ_POLICY_LABEL[ranking.dqPolicy]}
               {ranking.flagInactive ? ' — otherwise they are flagged inactive.' : '.'}
             </>
           )}
