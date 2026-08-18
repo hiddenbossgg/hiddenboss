@@ -102,6 +102,12 @@ const routes = {
     tokens: [{"old":"/:league","type":1,"val":"league","end":""}],
     types: placeholder as Registry['leagues.destroy']['types'],
   },
+  'leagues.clear': {
+    methods: ["POST"],
+    pattern: '/:league/clear',
+    tokens: [{"old":"/:league/clear","type":1,"val":"league","end":""},{"old":"/:league/clear","type":0,"val":"clear","end":""}],
+    types: placeholder as Registry['leagues.clear']['types'],
+  },
   'imports.index': {
     methods: ["GET","HEAD"],
     pattern: '/:league/imports',
@@ -126,6 +132,18 @@ const routes = {
     tokens: [{"old":"/:league/rankings","type":1,"val":"league","end":""},{"old":"/:league/rankings","type":0,"val":"rankings","end":""}],
     types: placeholder as Registry['rankings.store']['types'],
   },
+  'rankings.edit': {
+    methods: ["GET","HEAD"],
+    pattern: '/:league/rankings/:ranking/edit',
+    tokens: [{"old":"/:league/rankings/:ranking/edit","type":1,"val":"league","end":""},{"old":"/:league/rankings/:ranking/edit","type":0,"val":"rankings","end":""},{"old":"/:league/rankings/:ranking/edit","type":1,"val":"ranking","end":""},{"old":"/:league/rankings/:ranking/edit","type":0,"val":"edit","end":""}],
+    types: placeholder as Registry['rankings.edit']['types'],
+  },
+  'rankings.update': {
+    methods: ["PATCH"],
+    pattern: '/:league/rankings/:ranking',
+    tokens: [{"old":"/:league/rankings/:ranking","type":1,"val":"league","end":""},{"old":"/:league/rankings/:ranking","type":0,"val":"rankings","end":""},{"old":"/:league/rankings/:ranking","type":1,"val":"ranking","end":""}],
+    types: placeholder as Registry['rankings.update']['types'],
+  },
   'rankings.recompute': {
     methods: ["POST"],
     pattern: '/:league/rankings/:ranking/recompute',
@@ -137,6 +155,12 @@ const routes = {
     pattern: '/:league/identity',
     tokens: [{"old":"/:league/identity","type":1,"val":"league","end":""},{"old":"/:league/identity","type":0,"val":"identity","end":""}],
     types: placeholder as Registry['identity.update']['types'],
+  },
+  'events.destroy': {
+    methods: ["DELETE"],
+    pattern: '/:league/events/:event',
+    tokens: [{"old":"/:league/events/:event","type":1,"val":"league","end":""},{"old":"/:league/events/:event","type":0,"val":"events","end":""},{"old":"/:league/events/:event","type":1,"val":"event","end":""}],
+    types: placeholder as Registry['events.destroy']['types'],
   },
   'credentials.index': {
     methods: ["GET","HEAD"],
