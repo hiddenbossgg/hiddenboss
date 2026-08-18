@@ -270,8 +270,16 @@ export default class RankingsController {
      * shipped. Requesting it unconditionally whenever a location clause is
      * present — rather than only when one is newly added — is what actually
      * backfills that data onto older standings the first time it's needed.
+     *
+     * It also has to be `force`d: the fingerprint the recomputer skip-checks
+     * against never includes `activityRequirements`, on the (otherwise
+     * correct) assumption that requirements are a pure read-time filter, so
+     * a location clause alone leaves the fingerprint unchanged and would
+     * otherwise be silently skipped against a standing that already has an
+     * `ok` recompute on file.
      */
-    const needsRecompute = dateRangeChanged || hasLocationRequirement(newActivityRequirements)
+    const needsLocationBackfill = hasLocationRequirement(newActivityRequirements)
+    const needsRecompute = dateRangeChanged || needsLocationBackfill
 
     ranking.merge({
       startsAt: payload.startsAt ?? null,
@@ -293,7 +301,7 @@ export default class RankingsController {
      */
     if (needsRecompute) {
       await new StalenessService().request(ranking.id)
-      await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
+      await RecomputeRankingJob.dispatch({ rankingId: ranking.id, force: needsLocationBackfill })
     }
 
     session.flash('success', `Updated ${ranking.name}`)
@@ -303,7 +311,13 @@ export default class RankingsController {
       .toRoute('rankings.show', { league: league.slug, ranking: ranking.slug })
   }
 
-  /** The "update rankings" button. */
+  /**
+   * The "update rankings" button. Always `force`d: a user pressing a button
+   * called "update rankings" wants standings rewritten now, not silently
+   * skipped because the fingerprint skip-check decided nothing it tracks
+   * moved — that check exists to make automatic/internal recompute requests
+   * cheap, not to second-guess an explicit manual one.
+   */
   async recompute({ league, params, response, session }: HttpContext) {
     const ranking = await Ranking.query()
       .where('leagueId', league.id)
@@ -311,7 +325,7 @@ export default class RankingsController {
       .firstOrFail()
 
     await new StalenessService().request(ranking.id)
-    await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
+    await RecomputeRankingJob.dispatch({ rankingId: ranking.id, force: true })
 
     session.flash('success', `Updating ${ranking.name}`)
 

@@ -7,6 +7,8 @@ import type { JobOptions } from '@adonisjs/queue/types'
 
 type RecomputeRankingPayload = {
   rankingId: string
+  /** Passed straight through to `RankingRecomputerService#run` — see its own doc for when this is warranted. */
+  force?: boolean
 }
 
 /**
@@ -22,7 +24,9 @@ export default class RecomputeRankingJob extends Job<RecomputeRankingPayload> {
   }
 
   async execute() {
-    const result = await new RankingRecomputerService().run(this.payload.rankingId)
+    const result = await new RankingRecomputerService().run(this.payload.rankingId, {
+      force: this.payload.force,
+    })
 
     /**
      * A request that arrived mid-recompute is not lost: the recomputer reports it
