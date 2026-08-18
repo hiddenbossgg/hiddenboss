@@ -177,8 +177,15 @@ const ActivityRequirementsEditor: React.FC<Props> = ({ league, initial, errors }
       : []
   )
 
+  /**
+   * Functional update, not `setRows(rows.map(...))`: selecting a suggestion
+   * fires several `onChange` calls back to back in one event (city, then
+   * state, then country), and each needs to build on the previous call's
+   * result rather than the `rows` this render closed over, or only the last
+   * field in the sequence survives.
+   */
   function updateRow(id: string, field: keyof Omit<Row, 'id'>, value: string) {
-    setRows(rows.map((row) => (row.id === id ? { ...row, [field]: value } : row)))
+    setRows((prevRows) => prevRows.map((row) => (row.id === id ? { ...row, [field]: value } : row)))
   }
 
   return (
@@ -197,11 +204,11 @@ const ActivityRequirementsEditor: React.FC<Props> = ({ league, initial, errors }
           row={row}
           errors={errors}
           onChange={(field, value) => updateRow(row.id, field, value)}
-          onRemove={() => setRows(rows.filter((r) => r.id !== row.id))}
+          onRemove={() => setRows((prevRows) => prevRows.filter((r) => r.id !== row.id))}
         />
       ))}
 
-      <button type="button" onClick={() => setRows([...rows, newRow()])}>
+      <button type="button" onClick={() => setRows((prevRows) => [...prevRows, newRow()])}>
         + Add requirement
       </button>
     </div>
