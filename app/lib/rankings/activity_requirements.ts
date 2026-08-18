@@ -82,10 +82,17 @@ function normalise(value: string): string {
   return value.trim().toLowerCase()
 }
 
-/** A constraint left unset at this level imposes no restriction. */
-function fieldMatches(actual: string | null, expected: string | undefined): boolean {
+/**
+ * A constraint left unset at this level imposes no restriction. `actual` is
+ * read straight out of `ranking_standings.tournament_activity`, a jsonb blob
+ * — a row written before location tracking existed simply has no
+ * `country`/`state`/`city` key at all, so `undefined` reaches here just as
+ * often as the declared `null` does and both must be treated the same way.
+ */
+function fieldMatches(actual: string | null | undefined, expected: string | undefined): boolean {
   if (!expected) return true
-  return actual !== null && normalise(actual) === normalise(expected)
+  if (actual === null || actual === undefined) return false
+  return normalise(actual) === normalise(expected)
 }
 
 function matchesLocation(activity: TournamentActivity, location: LocationFilter | null): boolean {

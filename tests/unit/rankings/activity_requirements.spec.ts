@@ -145,4 +145,26 @@ test.group('meetsActivityRequirements', () => {
       meetsActivityRequirements(anywhere, [{ count: 1, minEntrants: null, location: null }])
     )
   })
+
+  test('activity read back from a standing written before location tracking existed does not throw', ({
+    assert,
+  }) => {
+    // `ranking_standings.tournament_activity` is a jsonb blob — a row written
+    // before this feature shipped has no country/state/city key at all, so
+    // these arrive as `undefined`, not the declared `null`.
+    const preExisting = [
+      { entrantCount: 8, setsPlayed: 2, timesDisqualified: 0 } as unknown as TournamentActivity,
+    ]
+
+    assert.doesNotThrow(() =>
+      meetsActivityRequirements(preExisting, [
+        { count: 1, minEntrants: null, location: { country: 'US' } },
+      ])
+    )
+    assert.isFalse(
+      meetsActivityRequirements(preExisting, [
+        { count: 1, minEntrants: null, location: { country: 'US' } },
+      ])
+    )
+  })
 })
