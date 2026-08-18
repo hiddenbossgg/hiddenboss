@@ -108,6 +108,37 @@ test.group('ranking edit', (group) => {
     )
   })
 
+  test('adding a location clause requests a recompute', async ({ client, assert }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await makeRanking(league)
+
+    const response = await client
+      .patch(`/${league.slug}/rankings/${ranking.slug}`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .fields({
+        'activityRequirements[0][count]': 1,
+        'activityRequirements[0][minEntrants]': 25,
+        'activityRequirements[0][location][city]': 'Seattle',
+      })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    /**
+     * `country`/`state`/`city` only exist on a standing written after this
+     * feature shipped, so an existing standing has no way to satisfy a
+     * location clause until it is rebuilt — unlike `minEntrants` and the DQ
+     * policy, this one clause is not a pure read-time filter over data every
+     * standing has always stored.
+     */
+    assert.isNotNull(
+      reloaded.latestRecomputeId,
+      'a location clause needs a recompute to backfill location onto existing standings'
+    )
+  })
+
   test('updating the DQ policy does not request a recompute', async ({ client, assert }) => {
     const { owner, league } = await makeLeagueWithOwner()
     const ranking = await makeRanking(league)

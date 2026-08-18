@@ -52,6 +52,20 @@ function normaliseLocation(
 }
 
 /**
+ * Whether any clause restricts by location, which — unlike `minEntrants` and
+ * the DQ policy — is not safe to apply against a standing computed before
+ * this field existed. `country`/`state`/`city` were added to
+ * `ranking_standings.tournament_activity` alongside this feature, so a
+ * standing from an earlier recompute simply has no such keys and can never
+ * satisfy a location clause until it is rebuilt.
+ */
+function hasLocationRequirement(requirements: ActivityRequirement[]): boolean {
+  return requirements.some(
+    (requirement) => requirement.location !== null && requirement.location !== undefined
+  )
+}
+
+/**
  * Normalises `minEntrants` and `location` to explicit `null`s rather than an
  * absent key, so a stored clause always matches `ActivityRequirement`.
  */
@@ -246,10 +260,23 @@ export default class RankingsController {
       (payload.startsAt?.toISODate() ?? null) !== (ranking.startsAt?.toISODate() ?? null) ||
       (payload.endsAt?.toISODate() ?? null) !== (ranking.endsAt?.toISODate() ?? null)
 
+    const newActivityRequirements = normaliseActivityRequirements(payload.activityRequirements)
+
+    /**
+     * A location clause is the one kind of activity requirement that is not
+     * safe to apply against already-stored standings: `minEntrants` and the
+     * DQ policy read data every standing has always stored, but
+     * country/state/city only exist on a standing written after this feature
+     * shipped. Requesting it unconditionally whenever a location clause is
+     * present — rather than only when one is newly added — is what actually
+     * backfills that data onto older standings the first time it's needed.
+     */
+    const needsRecompute = dateRangeChanged || hasLocationRequirement(newActivityRequirements)
+
     ranking.merge({
       startsAt: payload.startsAt ?? null,
       endsAt: payload.endsAt ?? null,
-      activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
+      activityRequirements: newActivityRequirements,
       flagInactive: payload.flagInactive ?? false,
       dqPolicy: payload.dqPolicy ?? DEFAULT_DQ_POLICY,
     })
@@ -257,13 +284,14 @@ export default class RankingsController {
 
     /**
      * The date range bounds which sets are selected for rating, so standings
-     * are now behind the ranking's own config and need replaying. Activity
-     * requirements and the DQ policy are a read-time filter over data that
-     * has not changed, so on their own they never need a recompute — each
-     * standing already stores `setsPlayed`/`timesDisqualified` per
-     * tournament, not just whichever policy was active when it was written.
+     * are now behind the ranking's own config and need replaying. Everything
+     * else in an activity requirement — minEntrants and the DQ policy — is a
+     * read-time filter over data that has not changed, so on its own it
+     * never needs a recompute: each standing already stores
+     * `setsPlayed`/`timesDisqualified` per tournament, not just whichever
+     * policy was active when it was written.
      */
-    if (dateRangeChanged) {
+    if (needsRecompute) {
       await new StalenessService().request(ranking.id)
       await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
     }
