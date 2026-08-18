@@ -469,12 +469,14 @@ export class RankingRecomputerService {
 
   /**
    * Distinct tournaments each player's rated sets came from, with each
-   * tournament's entrant count and the player's own set history there — the
-   * read-time input for a ranking's activity requirements ("3 tournaments
-   * with 8+ entrants", etc) and its DQ policy. When a tournament's sets come
-   * from more than one event, its largest reported entrant count wins: a
-   * player who reached the big bracket should count toward a "big
-   * tournament" clause.
+   * tournament's entrant count, location and the player's own set history
+   * there — the read-time input for a ranking's activity requirements
+   * ("3 tournaments with 8+ entrants", "2 tournaments in California") and
+   * its DQ policy. When a tournament's sets come from more than one event,
+   * its largest reported entrant count wins: a player who reached the big
+   * bracket should count toward a "big tournament" clause. Location is a
+   * property of the tournament itself, not the event, so it is the same for
+   * every set regardless of which event contributed it.
    *
    * `setsPlayed` and `timesDisqualified` are per player per tournament, not
    * per side of one set: a set where a player's side was not the
@@ -482,10 +484,22 @@ export class RankingRecomputerService {
    */
   private tournamentActivity(sets: RatableSet[]): Map<string, TournamentActivity[]> {
     const entrantCounts = new Map<string, number | null>()
+    const locations = new Map<
+      string,
+      { country: string | null; state: string | null; city: string | null }
+    >()
     for (const set of sets) {
       const existing = entrantCounts.get(set.tournamentId)
       if (existing === undefined || (set.entrantCount ?? -1) > (existing ?? -1)) {
         entrantCounts.set(set.tournamentId, set.entrantCount)
+      }
+
+      if (!locations.has(set.tournamentId)) {
+        locations.set(set.tournamentId, {
+          country: set.tournamentCountry,
+          state: set.tournamentState,
+          city: set.tournamentCity,
+        })
       }
     }
 
@@ -519,11 +533,18 @@ export class RankingRecomputerService {
     return new Map(
       [...perPlayer].map(([playerId, tournaments]) => [
         playerId,
-        [...tournaments].map(([tournamentId, accumulator]) => ({
-          entrantCount: entrantCounts.get(tournamentId) ?? null,
-          setsPlayed: accumulator.setsPlayed,
-          timesDisqualified: accumulator.timesDisqualified,
-        })),
+        [...tournaments].map(([tournamentId, accumulator]) => {
+          const location = locations.get(tournamentId)
+
+          return {
+            entrantCount: entrantCounts.get(tournamentId) ?? null,
+            setsPlayed: accumulator.setsPlayed,
+            timesDisqualified: accumulator.timesDisqualified,
+            country: location?.country ?? null,
+            state: location?.state ?? null,
+            city: location?.city ?? null,
+          }
+        }),
       ])
     )
   }

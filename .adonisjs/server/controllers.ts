@@ -10,6 +10,7 @@ export const controllers = {
   Imports: () => import('#controllers/imports_controller'),
   LeagueCredentials: () => import('#controllers/league_credentials_controller'),
   Leagues: () => import('#controllers/leagues_controller'),
+  LocationSuggestions: () => import('#controllers/location_suggestions_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   PasswordResets: () => import('#controllers/password_resets_controller'),
   Players: () => import('#controllers/players_controller'),

@@ -259,6 +259,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rankings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'rankings.locations': {
+    methods: ["GET","HEAD"]
+    pattern: '/:league/rankings/locations'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { league: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/location_suggestions_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/location_suggestions_controller').default['index']>>>
+    }
+  }
   'rankings.edit': {
     methods: ["GET","HEAD"]
     pattern: '/:league/rankings/:ranking/edit'

@@ -36,6 +36,14 @@ export interface RatableSet {
    */
   sideADisqualified: boolean
   sideBDisqualified: boolean
+  /**
+   * The tournament's own location, kept verbatim from the platform — for
+   * activity requirements like "2 tournaments in California". Null at
+   * whichever level the platform never reported.
+   */
+  tournamentCountry: string | null
+  tournamentState: string | null
+  tournamentCity: string | null
 }
 
 export interface ValueDelta {

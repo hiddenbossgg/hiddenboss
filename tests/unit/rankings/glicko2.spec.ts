@@ -15,6 +15,9 @@ function set(a: string, b: string, winner: 'a' | 'b'): RatableSet {
     entrantCount: null,
     sideADisqualified: false,
     sideBDisqualified: false,
+    tournamentCountry: null,
+    tournamentState: null,
+    tournamentCity: null,
   }
 }
 

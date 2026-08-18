@@ -82,6 +82,7 @@
     "@inertiajs/react": "^2.3.24",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
+    "country-state-city": "^3.2.1",
     "edge.js": "^6.5.1",
     "glicko2-lite": "^6.0.0",
     "luxon": "^3.7.2",

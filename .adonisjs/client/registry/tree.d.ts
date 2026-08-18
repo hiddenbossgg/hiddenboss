@@ -35,6 +35,7 @@ export interface ApiDefinition {
   rankings: {
     create: typeof routes['rankings.create']
     store: typeof routes['rankings.store']
+    locations: typeof routes['rankings.locations']
     edit: typeof routes['rankings.edit']
     update: typeof routes['rankings.update']
     recompute: typeof routes['rankings.recompute']

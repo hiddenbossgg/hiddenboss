@@ -96,7 +96,7 @@ test.group('ranking edit', (group) => {
     response.assertStatus(302)
 
     const reloaded = await Ranking.findOrFail(ranking.id)
-    assert.deepEqual(reloaded.activityRequirements, [{ count: 3, minEntrants: 8 }])
+    assert.deepEqual(reloaded.activityRequirements, [{ count: 3, minEntrants: 8, location: null }])
     /**
      * `latestRecomputeId`, not `recomputeRequestedAt` — the sync queue driver
      * clears the requested-at flag the instant a dispatched job finishes, so

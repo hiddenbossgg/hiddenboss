@@ -2,12 +2,35 @@ import vine from '@vinejs/vine'
 import { DQ_POLICIES } from '#lib/rankings/activity_requirements'
 
 /**
+ * A location constraint: any combination of country/state/city, all of which
+ * must match, so "Spokane, WA, USA" is one filter rather than three chained
+ * clauses. Every field is independently optional. No fixed vocabulary check
+ * yet — platforms report these unnormalised (`app/lib/platforms/canonical.ts`),
+ * so validation here only catches unambiguous garbage: empty, absurdly long,
+ * or containing characters no real place name uses.
+ */
+const placeName = vine
+  .string()
+  .trim()
+  .minLength(1)
+  .maxLength(100)
+  .regex(/^[\p{L}\p{M}\d\s'.,-]+$/u)
+
+const locationFilter = vine.object({
+  country: placeName.optional(),
+  state: placeName.optional(),
+  city: placeName.optional(),
+})
+
+/**
  * One activity clause: at least `count` tournaments with `minEntrants` or
- * more entrants. `minEntrants` omitted means any size counts.
+ * more entrants, optionally restricted to a location. `minEntrants` omitted
+ * means any size counts; `location` omitted means anywhere.
  */
 const activityRequirement = vine.object({
   count: vine.number().min(1),
   minEntrants: vine.number().min(1).optional(),
+  location: locationFilter.optional(),
 })
 
 /** Which tournaments a DQ knocks out of a player's activity count. */

@@ -14,6 +14,9 @@ function set(sideA: string[], sideB: string[], winner: 'a' | 'b' = 'a'): Ratable
     entrantCount: null,
     sideADisqualified: false,
     sideBDisqualified: false,
+    tournamentCountry: null,
+    tournamentState: null,
+    tournamentCity: null,
   }
 }
 

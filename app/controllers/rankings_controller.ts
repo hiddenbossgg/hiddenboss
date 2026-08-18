@@ -6,20 +6,68 @@ import LeaguePolicy from '#policies/league_policy'
 import { StalenessService } from '#services/rankings/staleness_service'
 import { createRankingValidator, updateRankingValidator } from '#validators/ranking'
 import { DEFAULT_DQ_POLICY, meetsActivityRequirements } from '#lib/rankings/activity_requirements'
-import type { ActivityRequirement, DqPolicy } from '#lib/rankings/activity_requirements'
+import type {
+  ActivityRequirement,
+  DqPolicy,
+  LocationFilter,
+} from '#lib/rankings/activity_requirements'
 import type { HttpContext } from '@adonisjs/core/http'
 
-function activityRequirementsOf(ranking: Ranking): ActivityRequirement[] {
-  return (ranking.activityRequirements ?? []) as ActivityRequirement[]
+/** A stored requirement, read back with `location` normalised to an explicit `null` for the page props — never `undefined`, even for a clause saved before this field existed. */
+type NormalisedActivityRequirement = {
+  count: number
+  minEntrants: number | null
+  location: LocationFilter | null
 }
 
-/** Normalises `minEntrants` to an explicit `null` rather than an absent key, so a stored clause always matches `ActivityRequirement`. */
+function activityRequirementsOf(ranking: Ranking): NormalisedActivityRequirement[] {
+  const requirements = (ranking.activityRequirements ?? []) as ActivityRequirement[]
+  return requirements.map((requirement) => ({
+    count: requirement.count,
+    minEntrants: requirement.minEntrants,
+    location: requirement.location ?? null,
+  }))
+}
+
+/**
+ * `Form` submits all three location inputs on every row, so a clause with no
+ * location restriction still arrives as `{ country: undefined, state:
+ * undefined, city: undefined }` rather than an absent key. Collapsing that
+ * down to `null` keeps a bare row from silently becoming a since-there's-
+ * nothing-to-not-match "always true" filter that just happens to look like
+ * one — and keeps `location: null` the one way to mean "anywhere".
+ */
+function normaliseLocation(
+  location: { country?: string; state?: string; city?: string } | undefined
+): LocationFilter | null {
+  if (!location) return null
+
+  const country = location.country?.trim() || undefined
+  const state = location.state?.trim() || undefined
+  const city = location.city?.trim() || undefined
+
+  if (!country && !state && !city) return null
+
+  return { country, state, city }
+}
+
+/**
+ * Normalises `minEntrants` and `location` to explicit `null`s rather than an
+ * absent key, so a stored clause always matches `ActivityRequirement`.
+ */
 function normaliseActivityRequirements(
-  requirements: Array<{ count: number; minEntrants?: number }> | undefined
+  requirements:
+    | Array<{
+        count: number
+        minEntrants?: number
+        location?: { country?: string; state?: string; city?: string }
+      }>
+    | undefined
 ): ActivityRequirement[] {
   return (requirements ?? []).map((requirement) => ({
     count: requirement.count,
     minEntrants: requirement.minEntrants ?? null,
+    location: normaliseLocation(requirement.location),
   }))
 }
 
