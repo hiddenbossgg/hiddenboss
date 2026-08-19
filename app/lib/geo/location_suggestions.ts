@@ -1,11 +1,6 @@
 /**
  * Autocomplete for a ranking's location activity requirements, backed by the
- * `country-state-city` dataset. Loaded once at module scope: `City.getAllCities()`
- * is ~150k rows and too slow to rebuild per request.
- *
- * A UX aid over the free-text fields in `#validators/ranking`, not a
- * stricter source of truth — picking a suggestion just fills the field with
- * plain text.
+ * `country-state-city` dataset.
  */
 import { City, Country, State } from 'country-state-city'
 import type { ICity } from 'country-state-city'
@@ -46,7 +41,6 @@ function suggestStates(query: string, countryCode: string | null): LocationSugge
     .filter((state) => startsWith(state.name, query))
     .slice(0, MAX_SUGGESTIONS)
     .map((state) => ({
-      // Country already narrowed the pool, so it'd be redundant in the label.
       label: countryCode ? state.name : `${state.name}, ${state.countryCode}`,
       state: state.isoCode,
       country: state.countryCode,
@@ -76,7 +70,7 @@ function suggestCities(
     })
 }
 
-/** `scope` narrows results to what's already filled in on the same row, so a suggestion stays consistent with the clause's other fields. */
+/** Keep suggestion consistent with other fields. */
 export function suggestLocations(
   field: LocationField,
   query: string,

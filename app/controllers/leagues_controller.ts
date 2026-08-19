@@ -63,7 +63,6 @@ export default class LeaguesController {
   }
 
   async show({ league, bouncer, inertia }: HttpContext) {
-    /** Named with their tournament — that's how people refer to events. */
     const events = await LeagueEvent.query()
       .where('leagueId', league.id)
       .preload('event', (query) => query.preload('tournament'))
@@ -126,7 +125,7 @@ export default class LeaguesController {
     return response.redirect().toRoute('leagues.edit', { league: league.slug })
   }
 
-  /** Cascades to tournament links, players and rankings, so it's owner-only. */
+  /** Cascades to tournament links, players, and rankings. */
   async destroy({ league, bouncer, response }: HttpContext) {
     await bouncer.with(LeaguePolicy).authorize('delete', league)
     await league.delete()

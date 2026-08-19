@@ -13,14 +13,6 @@ export type LocationSuggestion = {
 const MIN_QUERY_LENGTH = 2
 const DEBOUNCE_MS = 200
 
-/**
- * Debounced autocomplete over `#lib/geo/location_suggestions`. `scope`
- * narrows a state/city search to the country/state already typed on the
- * same row.
- *
- * Stale responses are dropped by request id rather than by cancelling the
- * fetch — a debounce already caps how many are in flight.
- */
 export function useLocationSuggestions(
   league: string,
   field: LocationField,

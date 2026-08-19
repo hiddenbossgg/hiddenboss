@@ -2,10 +2,7 @@ import vine from '@vinejs/vine'
 import { DQ_POLICIES } from '#lib/rankings/activity_requirements'
 
 /**
- * A location constraint: country/state/city, all optional. No fixed
- * vocabulary — platforms report these unnormalised — so validation only
- * rejects unambiguous garbage: empty, too long, or characters no place name
- * uses.
+ * A location constraint: country/state/city, all optional.
  */
 const placeName = vine
   .string()

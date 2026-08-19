@@ -157,8 +157,7 @@ const RequirementRow: React.FC<RowProps> = ({ league, index, row, errors, onChan
  * reassembles into an array.
  *
  * The three location fields combine as one filter on a single clause, not
- * three separate rows — each row demands its own count of qualifying
- * tournaments.
+ * three separate rows.
  */
 const ActivityRequirementsEditor: React.FC<Props> = ({ league, initial, errors }) => {
   const [rows, setRows] = useState<Row[]>(() =>
@@ -175,11 +174,6 @@ const ActivityRequirementsEditor: React.FC<Props> = ({ league, initial, errors }
       : []
   )
 
-  /**
-   * Functional update: selecting a suggestion fires several `onChange`
-   * calls back to back, each needing to build on the previous one rather
-   * than the `rows` this render closed over.
-   */
   function updateRow(id: string, field: keyof Omit<Row, 'id'>, value: string) {
     setRows((prevRows) => prevRows.map((row) => (row.id === id ? { ...row, [field]: value } : row)))
   }

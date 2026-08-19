@@ -5,10 +5,7 @@
  */
 
 /**
- * A location constraint: country/state/city, all of which must match if
- * set. Matched case- and whitespace-insensitively against whatever the
- * platform reported verbatim, so a tournament missing a field never
- * satisfies a constraint on it.
+ * A location constraint: country/state/city, all of which must match if set.
  */
 export interface LocationFilter {
   country?: string
@@ -79,10 +76,6 @@ function normalise(value: string): string {
   return value.trim().toLowerCase()
 }
 
-/**
- * `actual` comes from a jsonb blob; a row written before location tracking
- * existed has no key at all, so `undefined` is treated the same as `null`.
- */
 function fieldMatches(actual: string | null | undefined, expected: string | undefined): boolean {
   if (!expected) return true
   if (actual === null || actual === undefined) return false

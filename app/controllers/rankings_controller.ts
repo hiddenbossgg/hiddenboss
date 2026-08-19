@@ -29,7 +29,7 @@ function activityRequirementsOf(ranking: Ranking): NormalisedActivityRequirement
   }))
 }
 
-/** Collapses an all-empty location row to `null`, the one value that means "anywhere". */
+/** Collapses an all-empty location row to `null`. */
 function normaliseLocation(
   location: { country?: string; state?: string; city?: string } | undefined
 ): LocationFilter | null {
@@ -44,11 +44,6 @@ function normaliseLocation(
   return { country, state, city }
 }
 
-/**
- * A standing computed before location tracking existed has no
- * country/state/city keys, so it can never satisfy a location clause until
- * recomputed.
- */
 function hasLocationRequirement(requirements: ActivityRequirement[]): boolean {
   return requirements.some(
     (requirement) => requirement.location !== null && requirement.location !== undefined
@@ -255,7 +250,7 @@ export default class RankingsController {
     /**
      * `force`d because the fingerprint skip-check doesn't cover
      * `activityRequirements`, so a location clause alone would otherwise be
-     * skipped against a standing that's missing the location data it needs.
+     * skipped.
      */
     const needsLocationBackfill = hasLocationRequirement(newActivityRequirements)
     const needsRecompute = dateRangeChanged || needsLocationBackfill
@@ -287,7 +282,6 @@ export default class RankingsController {
       .toRoute('rankings.show', { league: league.slug, ranking: ranking.slug })
   }
 
-  /** The "update rankings" button. Always `force`d, so it's never silently skipped by the fingerprint check. */
   async recompute({ league, params, response, session }: HttpContext) {
     const ranking = await Ranking.query()
       .where('leagueId', league.id)
@@ -295,6 +289,7 @@ export default class RankingsController {
       .firstOrFail()
 
     await new StalenessService().request(ranking.id)
+    /** Force so fingerprint check isn't silently skipped. */
     await RecomputeRankingJob.dispatch({ rankingId: ranking.id, force: true })
 
     session.flash('success', `Updating ${ranking.name}`)
