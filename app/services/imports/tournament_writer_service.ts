@@ -9,8 +9,7 @@ import Bracket from '#models/bracket'
 import SetGame from '#models/set_game'
 import SetGameSelection from '#models/set_game_selection'
 import Tournament from '#models/tournament'
-import { normalizeCountry } from '#lib/geo/normalize_country'
-import { normalizeState } from '#lib/geo/normalize_state'
+import { normalizeCountry, normalizeState } from '#lib/geo/country'
 import { DateTime } from 'luxon'
 import type {
   CanonicalBracket,

@@ -1,6 +1,6 @@
 import { CsvError, isTruthy, optionalNumber, parseCsv, requireColumns } from './csv.js'
 import { PermanentPlatformError } from '#lib/platforms/errors'
-import { toAlpha2CountryCode } from '#lib/geo/normalize_country'
+import { toAlpha2CountryCode } from '#lib/geo/country'
 import type { CanonicalEntrant, CanonicalSet, EntryKind, SetState } from '#lib/platforms/canonical'
 import type {
   ImportSink,

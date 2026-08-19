@@ -140,7 +140,7 @@ export interface CanonicalTournament {
   /**
    * State, province or region, exactly as the platform reported it — still
    * unnormalised at this layer. `TournamentWriterService` is what converts a
-   * spelled-out name to its ISO 3166-2 code (`#lib/geo/normalize_state`) on
+   * spelled-out name to its ISO 3166-2 code (`#lib/geo/country`) on
    * the way into `tournaments.state`, so adapters and their tests see the
    * raw value here.
    */

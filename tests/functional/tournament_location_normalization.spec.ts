@@ -9,7 +9,7 @@ import { EventImporterService } from '#services/imports/event_importer_service'
  * `TournamentWriterService` is the single write path every platform funnels
  * through, so exercising it via the manual/CSV adapter is enough to prove
  * the normalisation applies regardless of which adapter produced the data —
- * coverage for the rule itself lives in `normalize_state.spec.ts`.
+ * coverage for the rule itself lives in `country.spec.ts`.
  */
 test.group('tournament location normalisation', (group) => {
   group.each.setup(() => testUtils.db().truncate())
