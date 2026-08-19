@@ -14,9 +14,6 @@ import type { HttpContext } from '@adonisjs/core/http'
  * it rather than from a slug read off the request.
  */
 export default class LeaguesController {
-  /**
-   * Leagues the signed-in user administers.
-   */
   async index({ auth, inertia }: HttpContext) {
     const user = auth.getUserOrFail()
 
@@ -37,10 +34,7 @@ export default class LeaguesController {
     return inertia.render('leagues/create', {})
   }
 
-  /**
-   * Creates a league and makes its creator the owner in one transaction. A
-   * league with no administrator would be unreachable through the UI.
-   */
+  /** Wrapped in a transaction: a league with no administrator would be unreachable through the UI. */
   async store({ auth, request, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const payload = await request.validateUsing(createLeagueValidator)
@@ -68,9 +62,7 @@ export default class LeaguesController {
     return response.redirect().toRoute('leagues.show', { league: league.slug })
   }
 
-  /** Public league home. */
   async show({ league, bouncer, inertia }: HttpContext) {
-    /** Events, named with their tournament, since that is how people refer to them. */
     const events = await LeagueEvent.query()
       .where('leagueId', league.id)
       .preload('event', (query) => query.preload('tournament'))
@@ -116,12 +108,6 @@ export default class LeaguesController {
         description: league.description,
         visibility: league.visibility,
       },
-      /**
-       * Clearing and deleting cascade to every other admin's rankings and
-       * players too, so both are gated on `delete` (owner-only) rather than
-       * the `manage` check the middleware already applied — a manager who
-       * isn't an owner should not even see the buttons.
-       */
       canDelete: await bouncer.with(LeaguePolicy).allows('delete', league),
     })
   }
@@ -139,10 +125,7 @@ export default class LeaguesController {
     return response.redirect().toRoute('leagues.edit', { league: league.slug })
   }
 
-  /**
-   * Deleting cascades to tournament links, players and rankings, so it is
-   * restricted to owners beyond the `manage` check the middleware applied.
-   */
+  /** Cascades to tournament links, players, and rankings. */
   async destroy({ league, bouncer, response }: HttpContext) {
     await bouncer.with(LeaguePolicy).authorize('delete', league)
     await league.delete()
@@ -150,10 +133,7 @@ export default class LeaguesController {
     return response.redirect().toRoute('leagues.index')
   }
 
-  /**
-   * Wipes rankings, players and imported events but keeps the league itself,
-   * its admins, credentials and game list — a reset rather than a goodbye.
-   */
+  /** Wipes rankings, players and imported events; keeps the league, its admins, credentials and game list. */
   async clear({ league, bouncer, response, session }: HttpContext) {
     await bouncer.with(LeaguePolicy).authorize('delete', league)
     await new LeagueClearingService().run(league.id)

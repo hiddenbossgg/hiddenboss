@@ -410,3 +410,40 @@ main > .hero:first-child {
 .segmented button:not(:disabled):hover {
   background: var(--gray-4);
 }
+
+/* Location autocomplete, on the activity requirements editor. */
+.location-autocomplete {
+  position: relative;
+  display: inline-block;
+}
+.location-suggestions {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--gray-4);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px oklch(0% 0 0 / 12%);
+  list-style: none;
+}
+.location-suggestions li + li {
+  border-top: 1px solid var(--gray-3);
+}
+.location-suggestions button {
+  width: 100%;
+  height: auto;
+  text-align: left;
+  background: none;
+  color: var(--gray-10);
+  font-weight: 400;
+  padding: 8px 12px;
+  border-radius: 0;
+}
+.location-suggestions button:hover,
+.location-suggestions li[aria-selected='true'] button {
+  background: var(--gray-2);
+}

@@ -2,12 +2,30 @@ import vine from '@vinejs/vine'
 import { DQ_POLICIES } from '#lib/rankings/activity_requirements'
 
 /**
+ * A location constraint: country/state/city, all optional.
+ */
+const placeName = vine
+  .string()
+  .trim()
+  .minLength(1)
+  .maxLength(100)
+  .regex(/^[\p{L}\p{M}\d\s'.,-]+$/u)
+
+const locationFilter = vine.object({
+  country: placeName.optional(),
+  state: placeName.optional(),
+  city: placeName.optional(),
+})
+
+/**
  * One activity clause: at least `count` tournaments with `minEntrants` or
- * more entrants. `minEntrants` omitted means any size counts.
+ * more entrants, optionally restricted to a location. `minEntrants` omitted
+ * means any size counts; `location` omitted means anywhere.
  */
 const activityRequirement = vine.object({
   count: vine.number().min(1),
   minEntrants: vine.number().min(1).optional(),
+  location: locationFilter.optional(),
 })
 
 /** Which tournaments a DQ knocks out of a player's activity count. */

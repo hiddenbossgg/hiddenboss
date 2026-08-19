@@ -6,20 +6,67 @@ import LeaguePolicy from '#policies/league_policy'
 import { StalenessService } from '#services/rankings/staleness_service'
 import { createRankingValidator, updateRankingValidator } from '#validators/ranking'
 import { DEFAULT_DQ_POLICY, meetsActivityRequirements } from '#lib/rankings/activity_requirements'
-import type { ActivityRequirement, DqPolicy } from '#lib/rankings/activity_requirements'
+import type {
+  ActivityRequirement,
+  DqPolicy,
+  LocationFilter,
+} from '#lib/rankings/activity_requirements'
 import type { HttpContext } from '@adonisjs/core/http'
 
-function activityRequirementsOf(ranking: Ranking): ActivityRequirement[] {
-  return (ranking.activityRequirements ?? []) as ActivityRequirement[]
+/** A stored requirement, read back with `location` normalised to an explicit `null` for the page props — never `undefined`, even for a clause saved before this field existed. */
+type NormalisedActivityRequirement = {
+  count: number
+  minEntrants: number | null
+  location: LocationFilter | null
 }
 
-/** Normalises `minEntrants` to an explicit `null` rather than an absent key, so a stored clause always matches `ActivityRequirement`. */
+function activityRequirementsOf(ranking: Ranking): NormalisedActivityRequirement[] {
+  const requirements = (ranking.activityRequirements ?? []) as ActivityRequirement[]
+  return requirements.map((requirement) => ({
+    count: requirement.count,
+    minEntrants: requirement.minEntrants,
+    location: requirement.location ?? null,
+  }))
+}
+
+/** Collapses an all-empty location row to `null`. */
+function normaliseLocation(
+  location: { country?: string; state?: string; city?: string } | undefined
+): LocationFilter | null {
+  if (!location) return null
+
+  const country = location.country?.trim() || undefined
+  const state = location.state?.trim() || undefined
+  const city = location.city?.trim() || undefined
+
+  if (!country && !state && !city) return null
+
+  return { country, state, city }
+}
+
+function hasLocationRequirement(requirements: ActivityRequirement[]): boolean {
+  return requirements.some(
+    (requirement) => requirement.location !== null && requirement.location !== undefined
+  )
+}
+
+/**
+ * Normalises `minEntrants` and `location` to explicit `null`s rather than an
+ * absent key, so a stored clause always matches `ActivityRequirement`.
+ */
 function normaliseActivityRequirements(
-  requirements: Array<{ count: number; minEntrants?: number }> | undefined
+  requirements:
+    | Array<{
+        count: number
+        minEntrants?: number
+        location?: { country?: string; state?: string; city?: string }
+      }>
+    | undefined
 ): ActivityRequirement[] {
   return (requirements ?? []).map((requirement) => ({
     count: requirement.count,
     minEntrants: requirement.minEntrants ?? null,
+    location: normaliseLocation(requirement.location),
   }))
 }
 
@@ -198,26 +245,34 @@ export default class RankingsController {
       (payload.startsAt?.toISODate() ?? null) !== (ranking.startsAt?.toISODate() ?? null) ||
       (payload.endsAt?.toISODate() ?? null) !== (ranking.endsAt?.toISODate() ?? null)
 
+    const newActivityRequirements = normaliseActivityRequirements(payload.activityRequirements)
+
+    /**
+     * `force`d because the fingerprint skip-check doesn't cover
+     * `activityRequirements`, so a location clause alone would otherwise be
+     * skipped.
+     */
+    const needsLocationBackfill = hasLocationRequirement(newActivityRequirements)
+    const needsRecompute = dateRangeChanged || needsLocationBackfill
+
     ranking.merge({
       startsAt: payload.startsAt ?? null,
       endsAt: payload.endsAt ?? null,
-      activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
+      activityRequirements: newActivityRequirements,
       flagInactive: payload.flagInactive ?? false,
       dqPolicy: payload.dqPolicy ?? DEFAULT_DQ_POLICY,
     })
     await ranking.save()
 
     /**
-     * The date range bounds which sets are selected for rating, so standings
-     * are now behind the ranking's own config and need replaying. Activity
-     * requirements and the DQ policy are a read-time filter over data that
-     * has not changed, so on their own they never need a recompute — each
-     * standing already stores `setsPlayed`/`timesDisqualified` per
-     * tournament, not just whichever policy was active when it was written.
+     * The date range bounds which sets are selected for rating, so a change
+     * needs replaying. minEntrants and the DQ policy are a read-time filter
+     * over data every standing already stores, so on their own they never
+     * need a recompute.
      */
-    if (dateRangeChanged) {
+    if (needsRecompute) {
       await new StalenessService().request(ranking.id)
-      await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
+      await RecomputeRankingJob.dispatch({ rankingId: ranking.id, force: needsLocationBackfill })
     }
 
     session.flash('success', `Updated ${ranking.name}`)
@@ -227,7 +282,6 @@ export default class RankingsController {
       .toRoute('rankings.show', { league: league.slug, ranking: ranking.slug })
   }
 
-  /** The "update rankings" button. */
   async recompute({ league, params, response, session }: HttpContext) {
     const ranking = await Ranking.query()
       .where('leagueId', league.id)
@@ -235,7 +289,8 @@ export default class RankingsController {
       .firstOrFail()
 
     await new StalenessService().request(ranking.id)
-    await RecomputeRankingJob.dispatch({ rankingId: ranking.id })
+    /** Force so fingerprint check isn't silently skipped. */
+    await RecomputeRankingJob.dispatch({ rankingId: ranking.id, force: true })
 
     session.flash('success', `Updating ${ranking.name}`)
 

@@ -44,7 +44,11 @@ const EditRanking: React.FC<Props> = ({ league, ranking }) => {
               {errors.endsAt && <p role="alert">{errors.endsAt}</p>}
             </div>
 
-            <ActivityRequirementsEditor initial={ranking.activityRequirements} errors={errors} />
+            <ActivityRequirementsEditor
+              league={league.slug}
+              initial={ranking.activityRequirements}
+              errors={errors}
+            />
 
             <div>
               <label htmlFor="flagInactive">

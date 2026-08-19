@@ -30,6 +30,9 @@ interface SetRow {
   event_entrant_count: number | null
   entrant_a_disqualified: boolean
   entrant_b_disqualified: boolean
+  tournament_country: string | null
+  tournament_state: string | null
+  tournament_city: string | null
 }
 
 export class SetSelectionService {
@@ -77,7 +80,10 @@ export class SetSelectionService {
         'sets.completed_at',
         'events.entrant_count as event_entrant_count',
         'sets.entrant_a_disqualified',
-        'sets.entrant_b_disqualified'
+        'sets.entrant_b_disqualified',
+        'tournaments.country as tournament_country',
+        'tournaments.state as tournament_state',
+        'tournaments.city as tournament_city'
       )
       /**
        * Tournaments group first so each one's sets stay contiguous; the
@@ -134,6 +140,9 @@ export class SetSelectionService {
           entrantCount: row.event_entrant_count,
           sideADisqualified: row.entrant_a_disqualified,
           sideBDisqualified: row.entrant_b_disqualified,
+          tournamentCountry: row.tournament_country,
+          tournamentState: row.tournament_state,
+          tournamentCity: row.tournament_city,
         }
       })
       .filter((set): set is RatableSet => set !== null)

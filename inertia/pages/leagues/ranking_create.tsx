@@ -65,7 +65,7 @@ const CreateRanking: React.FC<Props> = ({ league }) => {
               {errors.endsAt && <p role="alert">{errors.endsAt}</p>}
             </div>
 
-            <ActivityRequirementsEditor initial={[]} errors={errors} />
+            <ActivityRequirementsEditor league={league.slug} initial={[]} errors={errors} />
 
             <div>
               <label htmlFor="flagInactive">

@@ -14,6 +14,9 @@ function match(overrides: Partial<RatableSet> = {}): RatableSet {
     entrantCount: null,
     sideADisqualified: false,
     sideBDisqualified: false,
+    tournamentCountry: null,
+    tournamentState: null,
+    tournamentCity: null,
     ...overrides,
   }
 }

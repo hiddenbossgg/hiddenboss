@@ -132,6 +132,12 @@ const routes = {
     tokens: [{"old":"/:league/rankings","type":1,"val":"league","end":""},{"old":"/:league/rankings","type":0,"val":"rankings","end":""}],
     types: placeholder as Registry['rankings.store']['types'],
   },
+  'rankings.locations': {
+    methods: ["GET","HEAD"],
+    pattern: '/:league/rankings/locations',
+    tokens: [{"old":"/:league/rankings/locations","type":1,"val":"league","end":""},{"old":"/:league/rankings/locations","type":0,"val":"rankings","end":""},{"old":"/:league/rankings/locations","type":0,"val":"locations","end":""}],
+    types: placeholder as Registry['rankings.locations']['types'],
+  },
   'rankings.edit': {
     methods: ["GET","HEAD"],
     pattern: '/:league/rankings/:ranking/edit',

@@ -5,6 +5,7 @@ import League from '#models/league'
 import LeagueAdmin from '#models/league_admin'
 import Ranking from '#models/ranking'
 import User from '#models/user'
+import { RankingRecomputerService } from '#services/rankings/ranking_recomputer_service'
 
 /**
  * The date range and activity requirements are edited independently of name,
@@ -96,7 +97,7 @@ test.group('ranking edit', (group) => {
     response.assertStatus(302)
 
     const reloaded = await Ranking.findOrFail(ranking.id)
-    assert.deepEqual(reloaded.activityRequirements, [{ count: 3, minEntrants: 8 }])
+    assert.deepEqual(reloaded.activityRequirements, [{ count: 3, minEntrants: 8, location: null }])
     /**
      * `latestRecomputeId`, not `recomputeRequestedAt` — the sync queue driver
      * clears the requested-at flag the instant a dispatched job finishes, so
@@ -105,6 +106,44 @@ test.group('ranking edit', (group) => {
     assert.isNull(
       reloaded.latestRecomputeId,
       'tournament_entrant_counts is already stored per standing, so new clauses need no replay'
+    )
+  })
+
+  test('adding a location clause forces a real recompute, not a skipped one', async ({
+    client,
+    assert,
+  }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await makeRanking(league)
+
+    /**
+     * An `ok` recompute already on file is what makes this a meaningful
+     * regression test: nothing about the sets, algorithm, config or identity
+     * versions is about to change, so the recomputer's fingerprint
+     * skip-check would otherwise no-op the follow-up recompute below and
+     * leave every standing without the location data the new clause needs.
+     */
+    const before = await new RankingRecomputerService().run(ranking.id)
+    assert.isFalse(before.skipped)
+
+    const response = await client
+      .patch(`/${league.slug}/rankings/${ranking.slug}`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .fields({
+        'activityRequirements[0][count]': 1,
+        'activityRequirements[0][minEntrants]': 25,
+        'activityRequirements[0][location][city]': 'Seattle',
+      })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    assert.notEqual(
+      reloaded.latestRecomputeId,
+      before.recompute.id,
+      'a location clause must force past the fingerprint skip-check, not be silently no-opped'
     )
   })
 
@@ -126,6 +165,32 @@ test.group('ranking edit', (group) => {
     assert.isNull(
       reloaded.latestRecomputeId,
       'the DQ policy is a read-time filter over data already stored per standing'
+    )
+  })
+
+  test('the "update rankings" button forces a real recompute even if nothing tracked changed', async ({
+    client,
+    assert,
+  }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await makeRanking(league)
+
+    const before = await new RankingRecomputerService().run(ranking.id)
+    assert.isFalse(before.skipped)
+
+    const response = await client
+      .post(`/${league.slug}/rankings/${ranking.slug}/recompute`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    assert.notEqual(
+      reloaded.latestRecomputeId,
+      before.recompute.id,
+      'a button called "update rankings" must not silently no-op via the fingerprint skip-check'
     )
   })
 

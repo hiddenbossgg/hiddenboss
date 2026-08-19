@@ -25,6 +25,7 @@ export type ScannedRoutes = {
     'imports.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.locations': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'rankings.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'rankings.recompute': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
@@ -51,6 +52,7 @@ export type ScannedRoutes = {
     'leagues.edit': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.locations': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -72,6 +74,7 @@ export type ScannedRoutes = {
     'leagues.edit': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.locations': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }

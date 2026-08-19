@@ -67,6 +67,9 @@ router
 
     router.get('rankings/new', [controllers.Rankings, 'create']).as('rankings.create')
     router.post('rankings', [controllers.Rankings, 'store']).as('rankings.store')
+    router
+      .get('rankings/locations', [controllers.LocationSuggestions, 'index'])
+      .as('rankings.locations')
     router.get('rankings/:ranking/edit', [controllers.Rankings, 'edit']).as('rankings.edit')
     router.patch('rankings/:ranking', [controllers.Rankings, 'update']).as('rankings.update')
     router
