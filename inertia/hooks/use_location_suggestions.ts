@@ -14,14 +14,12 @@ const MIN_QUERY_LENGTH = 2
 const DEBOUNCE_MS = 200
 
 /**
- * Debounced autocomplete over `#lib/geo/location_suggestions` — "type Spoka,
- * see Spokane, WA". `scope` narrows a state or city search to a country (and
- * a city search further to a state) already typed on the same row, so a
- * suggestion is never inconsistent with the clause's other fields.
+ * Debounced autocomplete over `#lib/geo/location_suggestions`. `scope`
+ * narrows a state/city search to the country/state already typed on the
+ * same row.
  *
  * Stale responses are dropped by request id rather than by cancelling the
- * fetch, since a debounce already limits how many are in flight and a
- * dropped-but-still-pending request costs nothing once its result is ignored.
+ * fetch — a debounce already caps how many are in flight.
  */
 export function useLocationSuggestions(
   league: string,
@@ -52,8 +50,6 @@ export function useLocationSuggestions(
         const data = await response.json()
         if (id === requestId.current) setSuggestions(data.suggestions ?? [])
       } catch {
-        // A flaky suggestion request just means no suggestions this
-        // keystroke — the field itself still accepts free text.
         if (id === requestId.current) setSuggestions([])
       }
     }, DEBOUNCE_MS)
@@ -61,8 +57,7 @@ export function useLocationSuggestions(
     return () => clearTimeout(timer)
   }, [league, field, query, country, state, tooShort])
 
-  // Derived rather than reset from inside the effect above, so clearing the
-  // input back below the minimum length hides suggestions immediately
-  // instead of flashing the previous query's results for one render.
+  // Derived, not reset inside the effect, so it hides immediately rather
+  // than flashing stale results for one render.
   return tooShort ? [] : suggestions
 }

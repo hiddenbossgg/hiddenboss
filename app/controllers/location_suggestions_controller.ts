@@ -5,9 +5,9 @@ import type { HttpContext } from '@adonisjs/core/http'
 const LOCATION_FIELDS: LocationField[] = ['country', 'state', 'city']
 
 /**
- * Autocomplete for the activity requirement location fields. League-scoped
- * and manage-gated purely because that is where it is used — the underlying
- * `country-state-city` dataset is public reference data, not league data.
+ * Autocomplete for activity requirement location fields. League-scoped only
+ * because that's where it's used — the underlying dataset is public, not
+ * league-specific.
  */
 export default class LocationSuggestionsController {
   async index({ request, response }: HttpContext) {

@@ -51,8 +51,8 @@ type RowProps = {
 /**
  * Its own component, not inlined in the list below, so each row's three
  * `useLocationSuggestions` calls are hooks of a stable component instance
- * rather than hooks called from inside `.map` — which would break as soon as
- * a row was added or removed anywhere but the end of the list.
+ * rather than hooks called inside `.map`, which breaks React's rules of
+ * hooks once a row is added or removed anywhere but the end of the list.
  */
 const RequirementRow: React.FC<RowProps> = ({ league, index, row, errors, onChange, onRemove }) => {
   const countrySuggestions = useLocationSuggestions(league, 'country', row.locationCountry)
@@ -156,11 +156,9 @@ const RequirementRow: React.FC<RowProps> = ({ league, index, row, errors, onChan
  * change what's rendered; the bracket-indexed `name`s are what the server
  * reassembles into an array.
  *
- * The three location fields are independently optional and all combine as
- * one filter — "Spokane, WA, USA" is `city`+`state`+`country` on a single
- * clause, not three separate requirement rows, since three rows would each
- * demand their own count of qualifying tournaments rather than narrowing the
- * same tournaments together.
+ * The three location fields combine as one filter on a single clause, not
+ * three separate rows — each row demands its own count of qualifying
+ * tournaments.
  */
 const ActivityRequirementsEditor: React.FC<Props> = ({ league, initial, errors }) => {
   const [rows, setRows] = useState<Row[]>(() =>
@@ -178,11 +176,9 @@ const ActivityRequirementsEditor: React.FC<Props> = ({ league, initial, errors }
   )
 
   /**
-   * Functional update, not `setRows(rows.map(...))`: selecting a suggestion
-   * fires several `onChange` calls back to back in one event (city, then
-   * state, then country), and each needs to build on the previous call's
-   * result rather than the `rows` this render closed over, or only the last
-   * field in the sequence survives.
+   * Functional update: selecting a suggestion fires several `onChange`
+   * calls back to back, each needing to build on the previous one rather
+   * than the `rows` this render closed over.
    */
   function updateRow(id: string, field: keyof Omit<Row, 'id'>, value: string) {
     setRows((prevRows) => prevRows.map((row) => (row.id === id ? { ...row, [field]: value } : row)))

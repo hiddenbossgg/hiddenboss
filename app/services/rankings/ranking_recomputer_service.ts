@@ -469,14 +469,11 @@ export class RankingRecomputerService {
 
   /**
    * Distinct tournaments each player's rated sets came from, with each
-   * tournament's entrant count, location and the player's own set history
-   * there — the read-time input for a ranking's activity requirements
-   * ("3 tournaments with 8+ entrants", "2 tournaments in California") and
-   * its DQ policy. When a tournament's sets come from more than one event,
-   * its largest reported entrant count wins: a player who reached the big
-   * bracket should count toward a "big tournament" clause. Location is a
-   * property of the tournament itself, not the event, so it is the same for
-   * every set regardless of which event contributed it.
+   * tournament's entrant count, location and the player's own set history —
+   * the read-time input for activity requirements and DQ policy. When a
+   * tournament's sets span more than one event, its largest reported
+   * entrant count wins; location is a tournament property, so it's the same
+   * regardless of which event contributed the set.
    *
    * `setsPlayed` and `timesDisqualified` are per player per tournament, not
    * per side of one set: a set where a player's side was not the

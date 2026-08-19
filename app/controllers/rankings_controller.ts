@@ -29,14 +29,7 @@ function activityRequirementsOf(ranking: Ranking): NormalisedActivityRequirement
   }))
 }
 
-/**
- * `Form` submits all three location inputs on every row, so a clause with no
- * location restriction still arrives as `{ country: undefined, state:
- * undefined, city: undefined }` rather than an absent key. Collapsing that
- * down to `null` keeps a bare row from silently becoming a since-there's-
- * nothing-to-not-match "always true" filter that just happens to look like
- * one — and keeps `location: null` the one way to mean "anywhere".
- */
+/** Collapses an all-empty location row to `null`, the one value that means "anywhere". */
 function normaliseLocation(
   location: { country?: string; state?: string; city?: string } | undefined
 ): LocationFilter | null {
@@ -52,12 +45,9 @@ function normaliseLocation(
 }
 
 /**
- * Whether any clause restricts by location, which — unlike `minEntrants` and
- * the DQ policy — is not safe to apply against a standing computed before
- * this field existed. `country`/`state`/`city` were added to
- * `ranking_standings.tournament_activity` alongside this feature, so a
- * standing from an earlier recompute simply has no such keys and can never
- * satisfy a location clause until it is rebuilt.
+ * A standing computed before location tracking existed has no
+ * country/state/city keys, so it can never satisfy a location clause until
+ * recomputed.
  */
 function hasLocationRequirement(requirements: ActivityRequirement[]): boolean {
   return requirements.some(
@@ -263,20 +253,9 @@ export default class RankingsController {
     const newActivityRequirements = normaliseActivityRequirements(payload.activityRequirements)
 
     /**
-     * A location clause is the one kind of activity requirement that is not
-     * safe to apply against already-stored standings: `minEntrants` and the
-     * DQ policy read data every standing has always stored, but
-     * country/state/city only exist on a standing written after this feature
-     * shipped. Requesting it unconditionally whenever a location clause is
-     * present — rather than only when one is newly added — is what actually
-     * backfills that data onto older standings the first time it's needed.
-     *
-     * It also has to be `force`d: the fingerprint the recomputer skip-checks
-     * against never includes `activityRequirements`, on the (otherwise
-     * correct) assumption that requirements are a pure read-time filter, so
-     * a location clause alone leaves the fingerprint unchanged and would
-     * otherwise be silently skipped against a standing that already has an
-     * `ok` recompute on file.
+     * `force`d because the fingerprint skip-check doesn't cover
+     * `activityRequirements`, so a location clause alone would otherwise be
+     * skipped against a standing that's missing the location data it needs.
      */
     const needsLocationBackfill = hasLocationRequirement(newActivityRequirements)
     const needsRecompute = dateRangeChanged || needsLocationBackfill
@@ -291,13 +270,10 @@ export default class RankingsController {
     await ranking.save()
 
     /**
-     * The date range bounds which sets are selected for rating, so standings
-     * are now behind the ranking's own config and need replaying. Everything
-     * else in an activity requirement — minEntrants and the DQ policy — is a
-     * read-time filter over data that has not changed, so on its own it
-     * never needs a recompute: each standing already stores
-     * `setsPlayed`/`timesDisqualified` per tournament, not just whichever
-     * policy was active when it was written.
+     * The date range bounds which sets are selected for rating, so a change
+     * needs replaying. minEntrants and the DQ policy are a read-time filter
+     * over data every standing already stores, so on their own they never
+     * need a recompute.
      */
     if (needsRecompute) {
       await new StalenessService().request(ranking.id)
@@ -311,13 +287,7 @@ export default class RankingsController {
       .toRoute('rankings.show', { league: league.slug, ranking: ranking.slug })
   }
 
-  /**
-   * The "update rankings" button. Always `force`d: a user pressing a button
-   * called "update rankings" wants standings rewritten now, not silently
-   * skipped because the fingerprint skip-check decided nothing it tracks
-   * moved — that check exists to make automatic/internal recompute requests
-   * cheap, not to second-guess an explicit manual one.
-   */
+  /** The "update rankings" button. Always `force`d, so it's never silently skipped by the fingerprint check. */
   async recompute({ league, params, response, session }: HttpContext) {
     const ranking = await Ranking.query()
       .where('leagueId', league.id)

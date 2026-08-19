@@ -2,12 +2,10 @@ import vine from '@vinejs/vine'
 import { DQ_POLICIES } from '#lib/rankings/activity_requirements'
 
 /**
- * A location constraint: any combination of country/state/city, all of which
- * must match, so "Spokane, WA, USA" is one filter rather than three chained
- * clauses. Every field is independently optional. No fixed vocabulary check
- * yet — platforms report these unnormalised (`app/lib/platforms/canonical.ts`),
- * so validation here only catches unambiguous garbage: empty, absurdly long,
- * or containing characters no real place name uses.
+ * A location constraint: country/state/city, all optional. No fixed
+ * vocabulary — platforms report these unnormalised — so validation only
+ * rejects unambiguous garbage: empty, too long, or characters no place name
+ * uses.
  */
 const placeName = vine
   .string()

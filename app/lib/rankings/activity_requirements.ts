@@ -5,13 +5,10 @@
  */
 
 /**
- * Restricts a clause to tournaments at a location — any combination of
- * country/state/city, all of which must match, so "Spokane, WA, USA" is one
- * filter (`{ city: 'Spokane', state: 'WA', country: 'USA' }`) rather than
- * three separate clauses chained together. A field left unset imposes no
- * constraint at that level. Matched against whatever the platform reported
- * verbatim (case- and whitespace-insensitively), so a tournament with no
- * reported city never satisfies a `city` constraint.
+ * A location constraint: country/state/city, all of which must match if
+ * set. Matched case- and whitespace-insensitively against whatever the
+ * platform reported verbatim, so a tournament missing a field never
+ * satisfies a constraint on it.
  */
 export interface LocationFilter {
   country?: string
@@ -83,11 +80,8 @@ function normalise(value: string): string {
 }
 
 /**
- * A constraint left unset at this level imposes no restriction. `actual` is
- * read straight out of `ranking_standings.tournament_activity`, a jsonb blob
- * — a row written before location tracking existed simply has no
- * `country`/`state`/`city` key at all, so `undefined` reaches here just as
- * often as the declared `null` does and both must be treated the same way.
+ * `actual` comes from a jsonb blob; a row written before location tracking
+ * existed has no key at all, so `undefined` is treated the same as `null`.
  */
 function fieldMatches(actual: string | null | undefined, expected: string | undefined): boolean {
   if (!expected) return true

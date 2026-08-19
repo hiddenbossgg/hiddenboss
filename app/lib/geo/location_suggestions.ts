@@ -1,16 +1,11 @@
 /**
- * Autocomplete suggestions for a ranking's location activity requirements —
- * type "Spoka", see "Spokane, WA" — backed by the `country-state-city`
- * dataset. Loaded once at module scope: `City.getAllCities()` is ~150k rows
- * and takes tens of milliseconds to build, which would be wasteful to repeat
- * on every request.
+ * Autocomplete for a ranking's location activity requirements, backed by the
+ * `country-state-city` dataset. Loaded once at module scope: `City.getAllCities()`
+ * is ~150k rows and too slow to rebuild per request.
  *
- * Suggestions are a UX aid over the free-text fields validated in
- * `#validators/ranking`, not a second, stricter source of truth. State and
- * city stay unnormalised there for the same reason this module offers
- * suggestions rather than a fixed dropdown: platforms report them in
- * whatever form they use, so no fixed vocabulary can be authoritative —
- * picking a suggestion fills the field with plain text like any other input.
+ * A UX aid over the free-text fields in `#validators/ranking`, not a
+ * stricter source of truth — picking a suggestion just fills the field with
+ * plain text.
  */
 import { City, Country, State } from 'country-state-city'
 import type { ICity } from 'country-state-city'
@@ -51,8 +46,7 @@ function suggestStates(query: string, countryCode: string | null): LocationSugge
     .filter((state) => startsWith(state.name, query))
     .slice(0, MAX_SUGGESTIONS)
     .map((state) => ({
-      // The country is already fixed once it has narrowed the pool, so it
-      // would be redundant in every label.
+      // Country already narrowed the pool, so it'd be redundant in the label.
       label: countryCode ? state.name : `${state.name}, ${state.countryCode}`,
       state: state.isoCode,
       country: state.countryCode,
@@ -82,13 +76,7 @@ function suggestCities(
     })
 }
 
-/**
- * `scope.country` (and, for a city, `scope.state`) narrows the search to
- * what the admin has already filled in on the same row, so a state or city
- * suggestion is always consistent with the other fields of the clause it
- * would complete — never a city whose real state contradicts one already
- * typed.
- */
+/** `scope` narrows results to what's already filled in on the same row, so a suggestion stays consistent with the clause's other fields. */
 export function suggestLocations(
   field: LocationField,
   query: string,
