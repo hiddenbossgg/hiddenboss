@@ -33,6 +33,11 @@ export interface CanonicalParticipant {
   gamerTag: string
   prefix: string | null
   pronouns: string | null
+  /** ISO 3166-1 alpha-2, kept verbatim from the platform. */
+  country: string | null
+  /** State, province or region — whatever the platform reports, unnormalised. */
+  state: string | null
+  city: string | null
 }
 
 /**
@@ -130,6 +135,18 @@ export interface CanonicalTournament {
   url: string | null
   startAt: Date | null
   endAt: Date | null
-  location: string | null
+  /** ISO 3166-1 alpha-2, kept verbatim from the platform. */
+  country: string | null
+  /**
+   * State, province or region, exactly as the platform reported it — still
+   * unnormalised at this layer. `TournamentWriterService` is what converts a
+   * spelled-out name to its ISO 3166-2 code (`#lib/geo/country`) on
+   * the way into `tournaments.state`, so adapters and their tests see the
+   * raw value here.
+   */
+  state: string | null
+  city: string | null
+  /** Street-level detail. Null where a platform only reports city/state/country. */
+  address: string | null
   isOnline: boolean | null
 }

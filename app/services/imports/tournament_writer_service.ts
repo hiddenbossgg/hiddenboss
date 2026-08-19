@@ -9,6 +9,7 @@ import Bracket from '#models/bracket'
 import SetGame from '#models/set_game'
 import SetGameSelection from '#models/set_game_selection'
 import Tournament from '#models/tournament'
+import { normalizeCountry, normalizeState } from '#lib/geo/country'
 import { DateTime } from 'luxon'
 import type {
   CanonicalBracket,
@@ -45,6 +46,8 @@ export class TournamentWriterService {
   /** Returns the row id, which the caller needs to link the import record. */
   async writeTournament(tournament: CanonicalTournament): Promise<string> {
     return db.transaction(async (trx) => {
+      const country = normalizeCountry(tournament.country)
+
       const row = await Tournament.updateOrCreate(
         { platformKey: this.platformKey, externalId: tournament.externalId },
         {
@@ -53,7 +56,10 @@ export class TournamentWriterService {
           url: tournament.url,
           startAt: toDateTime(tournament.startAt),
           endAt: toDateTime(tournament.endAt),
-          location: tournament.location,
+          country,
+          state: normalizeState(tournament.state, country),
+          city: tournament.city,
+          address: tournament.address,
           isOnline: tournament.isOnline,
           importedAt: DateTime.now(),
         },
@@ -140,6 +146,9 @@ export class TournamentWriterService {
               gamerTag: participant.gamerTag,
               prefix: participant.prefix,
               pronouns: participant.pronouns,
+              country: participant.country,
+              state: participant.state,
+              city: participant.city,
               normalizedTag: PlatformAccount.normalizeTag(participant.gamerTag),
               weakIdentity,
             },

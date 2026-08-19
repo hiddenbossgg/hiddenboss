@@ -1,6 +1,9 @@
 import db from '@adonisjs/lucid/services/db'
 import Event from '#models/event'
+import LeagueEvent from '#models/league_event'
 import LeaguePolicy from '#policies/league_policy'
+import RecomputeRankingJob from '#jobs/recompute_ranking_job'
+import { StalenessService } from '#services/rankings/staleness_service'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -26,6 +29,10 @@ export default class EventsController {
         't.platform_key',
         't.start_at',
         't.url',
+        't.country',
+        't.state',
+        't.city',
+        't.address',
         db.raw(`(
           select count(*) from sets s
           join brackets b on b.id = s.bracket_id
@@ -49,6 +56,10 @@ export default class EventsController {
         platformKey: row.platform_key,
         url: row.url,
         startAt: row.start_at ? isoDate(row.start_at) : null,
+        city: row.city,
+        state: row.state,
+        country: row.country,
+        address: row.address,
       })),
     })
   }
@@ -189,6 +200,10 @@ export default class EventsController {
         platformKey: event.tournament.platformKey,
         url: event.tournament.url,
         startAt: event.tournament.startAt?.toISODate() ?? null,
+        city: event.tournament.city,
+        state: event.tournament.state,
+        country: event.tournament.country,
+        address: event.tournament.address,
       },
       entrants: entrants
         .filter((row) => (seen.has(row.id) ? false : seen.add(row.id)))
@@ -216,6 +231,41 @@ export default class EventsController {
         state: row.state,
       })),
     })
+  }
+
+  /**
+   * Un-counts an event rather than deleting it: canonical tournament data is
+   * shared across the instance, so removing it here could break another
+   * league that counts the same tournament. The event stays importable again
+   * later — re-pasting the link upserts the same canonical rows and recreates
+   * this league's `league_events` row.
+   */
+  async destroy({ league, params, response, session }: HttpContext) {
+    const counted = await LeagueEvent.query()
+      .where('leagueId', league.id)
+      .where('eventId', params.event)
+      .first()
+
+    if (!counted) {
+      return response.notFound({ message: 'No such event in this league' })
+    }
+
+    await counted.delete()
+
+    /**
+     * The next recompute of each ranking replays only the events this league
+     * still counts, so a departed tournament's sets and standings are dropped
+     * the same way a retroactive correction drops them — nothing here needs
+     * to touch ranking tables directly.
+     */
+    const auto = await new StalenessService().markLeagueStale(league.id)
+    for (const rankingId of auto) {
+      await RecomputeRankingJob.dispatch({ rankingId })
+    }
+
+    session.flash('success', 'Removed the event from this league')
+
+    return response.redirect().toRoute('events.index', { league: league.slug })
   }
 }
 

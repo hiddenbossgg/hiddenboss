@@ -182,6 +182,9 @@ export class IdentityResolverService {
         displayTag: account.gamerTag,
         globalPlayerId: account.globalPlayerId,
         pronouns: account.pronouns,
+        country: account.country,
+        state: account.state,
+        city: account.city,
       },
       { client: trx }
     )

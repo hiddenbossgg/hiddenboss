@@ -199,6 +199,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/leagues_controller').default['destroy']>>>
     }
   }
+  'leagues.clear': {
+    methods: ["POST"]
+    pattern: '/:league/clear'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { league: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/leagues_controller').default['clear']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/leagues_controller').default['clear']>>>
+    }
+  }
   'imports.index': {
     methods: ["GET","HEAD"]
     pattern: '/:league/imports'
@@ -247,6 +259,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rankings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'rankings.edit': {
+    methods: ["GET","HEAD"]
+    pattern: '/:league/rankings/:ranking/edit'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; ranking: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rankings_controller').default['edit']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rankings_controller').default['edit']>>>
+    }
+  }
+  'rankings.update': {
+    methods: ["PATCH"]
+    pattern: '/:league/rankings/:ranking'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/ranking').updateRankingValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; ranking: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/ranking').updateRankingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rankings_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rankings_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'rankings.recompute': {
     methods: ["POST"]
     pattern: '/:league/rankings/:ranking/recompute'
@@ -269,6 +305,18 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/identity').reassignAccountValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/identity_corrections_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/identity_corrections_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'events.destroy': {
+    methods: ["DELETE"]
+    pattern: '/:league/events/:event'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; event: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['destroy']>>>
     }
   }
   'credentials.index': {

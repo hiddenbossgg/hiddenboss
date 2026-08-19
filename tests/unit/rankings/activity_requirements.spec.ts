@@ -1,0 +1,88 @@
+import { test } from '@japa/runner'
+import { meetsActivityRequirements } from '#lib/rankings/activity_requirements'
+import type { TournamentActivity } from '#lib/rankings/activity_requirements'
+
+function activity(overrides: Partial<TournamentActivity> = {}): TournamentActivity {
+  return { entrantCount: null, setsPlayed: 1, timesDisqualified: 0, ...overrides }
+}
+
+test.group('meetsActivityRequirements', () => {
+  test('an empty requirement list always passes', ({ assert }) => {
+    assert.isTrue(meetsActivityRequirements([], []))
+  })
+
+  test('minEntrants excludes tournaments below the bar and unknown sizes', ({ assert }) => {
+    const tournaments = [activity({ entrantCount: 4 }), activity({ entrantCount: null })]
+
+    assert.isTrue(meetsActivityRequirements(tournaments, [{ count: 1, minEntrants: 4 }]))
+    assert.isFalse(meetsActivityRequirements(tournaments, [{ count: 2, minEntrants: 4 }]))
+  })
+
+  test('exclude_no_shows (default) drops a DQ with nothing played, keeps one with something played', ({
+    assert,
+  }) => {
+    const noShow = [activity({ setsPlayed: 0, timesDisqualified: 1 })]
+    const playedThenDqd = [activity({ setsPlayed: 2, timesDisqualified: 1 })]
+
+    assert.isFalse(meetsActivityRequirements(noShow, [{ count: 1, minEntrants: null }]))
+    assert.isTrue(meetsActivityRequirements(playedThenDqd, [{ count: 1, minEntrants: null }]))
+    // Same result when the policy is passed explicitly.
+    assert.isFalse(
+      meetsActivityRequirements(noShow, [{ count: 1, minEntrants: null }], 'exclude_no_shows')
+    )
+  })
+
+  test('exclude_double_dq keeps a single DQ, drops two in the same tournament', ({ assert }) => {
+    const singleDq = [activity({ setsPlayed: 0, timesDisqualified: 1 })]
+    const doubleDq = [activity({ setsPlayed: 2, timesDisqualified: 2 })]
+
+    assert.isTrue(
+      meetsActivityRequirements(singleDq, [{ count: 1, minEntrants: null }], 'exclude_double_dq')
+    )
+    assert.isFalse(
+      meetsActivityRequirements(doubleDq, [{ count: 1, minEntrants: null }], 'exclude_double_dq')
+    )
+  })
+
+  test('exclude_any_dq drops a tournament on any disqualification, however much was played', ({
+    assert,
+  }) => {
+    const oneDqAfterPlaying = [activity({ setsPlayed: 3, timesDisqualified: 1 })]
+
+    assert.isFalse(
+      meetsActivityRequirements(
+        oneDqAfterPlaying,
+        [{ count: 1, minEntrants: null }],
+        'exclude_any_dq'
+      )
+    )
+  })
+
+  test('a clean tournament with no DQ counts under every policy', ({ assert }) => {
+    const clean = [activity({ setsPlayed: 3, timesDisqualified: 0 })]
+
+    for (const dqPolicy of ['exclude_no_shows', 'exclude_double_dq', 'exclude_any_dq'] as const) {
+      assert.isTrue(
+        meetsActivityRequirements(clean, [{ count: 1, minEntrants: null }], dqPolicy),
+        `expected a DQ-free tournament to count under ${dqPolicy}`
+      )
+    }
+  })
+
+  test('every clause must independently hold', ({ assert }) => {
+    const tournaments = [
+      activity({ entrantCount: 8, setsPlayed: 2, timesDisqualified: 0 }),
+      activity({ entrantCount: 2, setsPlayed: 0, timesDisqualified: 1 }),
+    ]
+
+    assert.isTrue(
+      meetsActivityRequirements(tournaments, [
+        { count: 1, minEntrants: 8 },
+        { count: 1, minEntrants: null },
+      ])
+    )
+    // The no-show tournament doesn't qualify under the default policy, so
+    // only one tournament is left to satisfy a count of 2.
+    assert.isFalse(meetsActivityRequirements(tournaments, [{ count: 2, minEntrants: null }]))
+  })
+})

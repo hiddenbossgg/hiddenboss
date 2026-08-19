@@ -1,4 +1,17 @@
 import vine from '@vinejs/vine'
+import { DQ_POLICIES } from '#lib/rankings/activity_requirements'
+
+/**
+ * One activity clause: at least `count` tournaments with `minEntrants` or
+ * more entrants. `minEntrants` omitted means any size counts.
+ */
+const activityRequirement = vine.object({
+  count: vine.number().min(1),
+  minEntrants: vine.number().min(1).optional(),
+})
+
+/** Which tournaments a DQ knocks out of a player's activity count. */
+const dqPolicy = vine.enum(DQ_POLICIES)
 
 /**
  * The enum lists exactly what `RankingRecomputerService` can run. Offering an
@@ -16,4 +29,30 @@ export const createRankingValidator = vine.create({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   algorithm: vine.enum(['elo', 'glicko2', 'openskill'] as const),
   recomputeMode: vine.enum(['manual', 'auto'] as const).optional(),
+  /** Bounds which tournaments the ranking counts. Omitted means unbounded. */
+  startsAt: vine.date().optional(),
+  endsAt: vine.date().optional(),
+  /**
+   * All clauses a league player must satisfy — within the ranking's date
+   * range — to appear on the standings page, e.g. 3 tournaments with 8+
+   * entrants and 5 tournaments of any size.
+   */
+  activityRequirements: vine.array(activityRequirement).optional(),
+  /** false (default): drop them from the page. true: keep them, flagged. */
+  flagInactive: vine.boolean().optional(),
+  /** Only matters once activity requirements are set. Omitted means the default. */
+  dqPolicy: dqPolicy.optional(),
+})
+
+/**
+ * Date range and activity requirements only — name, slug, algorithm and
+ * recompute mode are fixed at creation, matching the rest of the app, which
+ * has no edit path for those either.
+ */
+export const updateRankingValidator = vine.create({
+  startsAt: vine.date().optional(),
+  endsAt: vine.date().optional(),
+  activityRequirements: vine.array(activityRequirement).optional(),
+  flagInactive: vine.boolean().optional(),
+  dqPolicy: dqPolicy.optional(),
 })

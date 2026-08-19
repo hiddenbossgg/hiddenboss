@@ -11,6 +11,9 @@ function match(overrides: Partial<RatableSet> = {}): RatableSet {
     sideB: ['b'],
     winner: 'a',
     occurredAt: new Date('2026-01-01T00:00:00Z'),
+    entrantCount: null,
+    sideADisqualified: false,
+    sideBDisqualified: false,
     ...overrides,
   }
 }

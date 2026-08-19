@@ -12,6 +12,9 @@ function set(a: string, b: string, winner: 'a' | 'b'): RatableSet {
     sideB: [b],
     winner,
     occurredAt: new Date('2026-01-01'),
+    entrantCount: null,
+    sideADisqualified: false,
+    sideBDisqualified: false,
   }
 }
 

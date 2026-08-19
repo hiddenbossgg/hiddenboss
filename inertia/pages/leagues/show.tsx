@@ -14,6 +14,7 @@ type Props = {
     algorithm: string
   }>
   events: Array<{
+    id: string
     name: string
     tournamentName: string
     entryKind: string
@@ -69,7 +70,6 @@ const LeagueHome: React.FC<Props> = ({ league, rankings, events, canManage }) =>
             <thead>
               <tr>
                 <th>Event</th>
-                <th>Tournament</th>
                 <th>Game</th>
                 <th>Date</th>
                 <th>Source</th>
@@ -77,11 +77,16 @@ const LeagueHome: React.FC<Props> = ({ league, rankings, events, canManage }) =>
             </thead>
             <tbody>
               {events.map((event) => (
-                <tr key={`${event.platformKey}-${event.tournamentName}-${event.name}`}>
+                <tr key={event.id}>
                   <td>
-                    {event.name} <span>({event.entryKind})</span>
+                    <Link
+                      route="events.show"
+                      routeParams={{ league: league.slug, event: event.id }}
+                    >
+                      {event.tournamentName} - {event.name}
+                    </Link>{' '}
+                    <span>({event.entryKind})</span>
                   </td>
-                  <td>{event.tournamentName}</td>
                   <td>{event.gameName ?? '—'}</td>
                   <td>{event.startAt ?? '—'}</td>
                   <td>{event.platformKey}</td>

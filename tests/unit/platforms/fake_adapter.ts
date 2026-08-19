@@ -7,7 +7,11 @@ import type {
   PlatformContext,
   EventRef,
 } from '#lib/platforms/contracts'
-import type { CanonicalBracket, CanonicalEntrant } from '#lib/platforms/canonical'
+import type {
+  CanonicalBracket,
+  CanonicalEntrant,
+  CanonicalTournament,
+} from '#lib/platforms/canonical'
 import type { RecordingSink } from '#lib/platforms/recording_sink'
 import { runAdapter as run } from './run_adapter.js'
 
@@ -36,16 +40,7 @@ export class FakePlatformAdapter implements PlatformAdapter {
   }
 
   async fetchEvent(ref: EventRef, _context: PlatformContext, sink: ImportSink): Promise<void> {
-    await sink.tournament({
-      externalId: 't1',
-      slug: ref.slug,
-      name: 'Fake Major',
-      url: ref.url,
-      startAt: new Date('2026-03-01T00:00:00Z'),
-      endAt: new Date('2026-03-02T00:00:00Z'),
-      location: 'Austin, TX',
-      isOnline: false,
-    })
+    await sink.tournament(this.tournament(ref))
 
     await sink.event({
       externalId: 'e1',
@@ -66,6 +61,23 @@ export class FakePlatformAdapter implements PlatformAdapter {
   }
 
   /** Overridable so tests can build a deliberately broken adapter. */
+  protected tournament(ref: EventRef): CanonicalTournament {
+    return {
+      externalId: 't1',
+      slug: ref.slug,
+      name: 'Fake Major',
+      url: ref.url,
+      startAt: new Date('2026-03-01T00:00:00Z'),
+      endAt: new Date('2026-03-02T00:00:00Z'),
+      country: 'US',
+      state: 'TX',
+      city: 'Austin',
+      address: null,
+      isOnline: false,
+    }
+  }
+
+  /** Overridable so tests can build a deliberately broken adapter. */
   protected entrants(): CanonicalEntrant[] {
     return [
       {
@@ -75,7 +87,15 @@ export class FakePlatformAdapter implements PlatformAdapter {
         placement: 1,
         isDisqualified: false,
         participants: [
-          { externalUserId: 'u1', gamerTag: 'Alice', prefix: null, pronouns: 'she/her' },
+          {
+            externalUserId: 'u1',
+            gamerTag: 'Alice',
+            prefix: null,
+            pronouns: 'she/her',
+            country: 'US',
+            state: 'CA',
+            city: 'Los Angeles',
+          },
         ],
       },
       {
@@ -84,7 +104,17 @@ export class FakePlatformAdapter implements PlatformAdapter {
         seed: 2,
         placement: 2,
         isDisqualified: false,
-        participants: [{ externalUserId: 'u2', gamerTag: 'Bob', prefix: 'TSM', pronouns: null }],
+        participants: [
+          {
+            externalUserId: 'u2',
+            gamerTag: 'Bob',
+            prefix: 'TSM',
+            pronouns: null,
+            country: null,
+            state: null,
+            city: null,
+          },
+        ],
       },
     ]
   }

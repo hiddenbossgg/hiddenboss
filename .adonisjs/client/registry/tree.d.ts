@@ -25,6 +25,7 @@ export interface ApiDefinition {
     edit: typeof routes['leagues.edit']
     update: typeof routes['leagues.update']
     destroy: typeof routes['leagues.destroy']
+    clear: typeof routes['leagues.clear']
     show: typeof routes['leagues.show']
   }
   imports: {
@@ -34,12 +35,19 @@ export interface ApiDefinition {
   rankings: {
     create: typeof routes['rankings.create']
     store: typeof routes['rankings.store']
+    edit: typeof routes['rankings.edit']
+    update: typeof routes['rankings.update']
     recompute: typeof routes['rankings.recompute']
     index: typeof routes['rankings.index']
     show: typeof routes['rankings.show']
   }
   identity: {
     update: typeof routes['identity.update']
+  }
+  events: {
+    destroy: typeof routes['events.destroy']
+    index: typeof routes['events.index']
+    show: typeof routes['events.show']
   }
   credentials: {
     index: typeof routes['credentials.index']
@@ -48,9 +56,5 @@ export interface ApiDefinition {
   players: {
     index: typeof routes['players.index']
     show: typeof routes['players.show']
-  }
-  events: {
-    index: typeof routes['events.index']
-    show: typeof routes['events.show']
   }
 }

@@ -2,7 +2,7 @@
   "request": {
     "url": "https://api.start.gg/gql/alpha",
     "method": "POST",
-    "body": "{\"query\":\"\\n  query EventEntrantsQuery($eventId: ID!, $page: Int!, $perPage: Int!) {\\n    event(id: $eventId) {\\n      entrants(query: { page: $page, perPage: $perPage }) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          name\\n          isDisqualified\\n          seeds {\\n            seedNum\\n          }\\n          standing {\\n            placement\\n          }\\n          participants {\\n            id\\n            gamerTag\\n            prefix\\n            user {\\n              id\\n              genderPronoun\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"eventId\":1673520,\"page\":1,\"perPage\":50}}"
+    "body": "{\"query\":\"\\n  query EventEntrantsQuery($eventId: ID!, $page: Int!, $perPage: Int!) {\\n    event(id: $eventId) {\\n      entrants(query: { page: $page, perPage: $perPage }) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          name\\n          isDisqualified\\n          seeds {\\n            seedNum\\n          }\\n          standing {\\n            placement\\n          }\\n          participants {\\n            id\\n            gamerTag\\n            prefix\\n            user {\\n              id\\n              genderPronoun\\n              location {\\n                country\\n                state\\n                city\\n              }\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"eventId\":1673520,\"page\":1,\"perPage\":50}}"
   },
   "status": 200,
   "body": {
@@ -32,7 +32,8 @@
                   "prefix": "WOD",
                   "user": {
                     "id": 1185523,
-                    "genderPronoun": null
+                    "genderPronoun": null,
+                    "location": null
                   }
                 },
                 {
@@ -41,7 +42,8 @@
                   "prefix": "CSULB OFM",
                   "user": {
                     "id": 1883005,
-                    "genderPronoun": "He/Him"
+                    "genderPronoun": "He/Him",
+                    "location": null
                   }
                 }
               ]
@@ -65,7 +67,8 @@
                   "prefix": "UCI",
                   "user": {
                     "id": 687692,
-                    "genderPronoun": "He/Him"
+                    "genderPronoun": "He/Him",
+                    "location": null
                   }
                 },
                 {
@@ -74,7 +77,8 @@
                   "prefix": "UCI/POW",
                   "user": {
                     "id": 1579703,
-                    "genderPronoun": "He/Him"
+                    "genderPronoun": "He/Him",
+                    "location": null
                   }
                 }
               ]
@@ -98,7 +102,8 @@
                   "prefix": "",
                   "user": {
                     "id": 455811,
-                    "genderPronoun": null
+                    "genderPronoun": null,
+                    "location": null
                   }
                 },
                 {
@@ -107,7 +112,8 @@
                   "prefix": "",
                   "user": {
                     "id": 1466177,
-                    "genderPronoun": null
+                    "genderPronoun": null,
+                    "location": null
                   }
                 }
               ]
@@ -131,7 +137,8 @@
                   "prefix": "CSUF",
                   "user": {
                     "id": 944605,
-                    "genderPronoun": null
+                    "genderPronoun": null,
+                    "location": null
                   }
                 },
                 {
@@ -140,7 +147,8 @@
                   "prefix": "",
                   "user": {
                     "id": 1402401,
-                    "genderPronoun": null
+                    "genderPronoun": null,
+                    "location": null
                   }
                 }
               ]
@@ -154,7 +162,9 @@
         "version": 1,
         "hints": [
           {
-            "path": ["event"],
+            "path": [
+              "event"
+            ],
             "maxAge": 60,
             "scope": "PRIVATE"
           }

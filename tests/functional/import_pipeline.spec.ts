@@ -17,6 +17,7 @@ import { EventImporterService } from '#services/imports/event_importer_service'
 import ImportEventJob from '#jobs/import_event_job'
 import { errors as queueErrors } from '@boringnode/queue'
 import { FakePlatformAdapter } from '../unit/platforms/fake_adapter.js'
+import type { EventRef } from '#lib/platforms/contracts'
 
 /**
  * These tests truncate rather than wrapping each test in a transaction.
@@ -102,6 +103,35 @@ test.group('import pipeline', (group) => {
       characterSelections: true,
       stages: true,
     })
+  })
+
+  /**
+   * `ManualAdapter` rejects a bad country itself, since there is a human on
+   * the other end to hand the error back to — but `TournamentWriterService`
+   * is what every adapter's output actually passes through, and a
+   * non-manual platform has no such human. `tournaments.country` is
+   * `varchar(2)`, so writing a value like this straight through would fail
+   * the whole import with a raw database error instead of just dropping one
+   * non-essential field.
+   */
+  test('a country the writer cannot resolve is dropped to null, not written raw', async ({
+    assert,
+  }) => {
+    class BadCountry extends FakePlatformAdapter {
+      protected override tournament(ref: EventRef) {
+        return { ...super.tournament(ref), country: 'Not A Real Country' }
+      }
+    }
+
+    platforms.unregister('fake')
+    platforms.register(new BadCountry())
+
+    const league = await seedLeague()
+    const finished = await startImport(league)
+
+    assert.equal(finished.status, 'ok')
+    const tournament = await Tournament.findOrFail(finished.tournamentId!)
+    assert.isNull(tournament.country)
   })
 
   async function rowCounts() {

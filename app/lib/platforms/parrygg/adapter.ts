@@ -122,7 +122,10 @@ export class ParryggAdapter implements PlatformAdapter {
       url: ref.url,
       startAt: timestamp(tournament.startDate),
       endAt: timestamp(tournament.endDate),
-      location: tournament.venueAddress || null,
+      country: tournament.address?.countryCode || null,
+      state: tournament.address?.administrativeAreaLevel1 || null,
+      city: tournament.address?.locality || null,
+      address: tournament.address?.formattedAddress || tournament.venueAddress || null,
       isOnline: tournament.locationType === 'LOCATION_TYPE_ONLINE',
     })
 
@@ -250,6 +253,9 @@ export class ParryggAdapter implements PlatformAdapter {
             gamerTag: user.gamerTag,
             prefix: null,
             pronouns: user.pronouns || null,
+            country: user.locationCountry || null,
+            state: user.locationState || null,
+            city: user.locationCity || null,
           })),
         })
       }

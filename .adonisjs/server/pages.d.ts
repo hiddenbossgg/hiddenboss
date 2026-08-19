@@ -28,6 +28,7 @@ declare module '@adonisjs/inertia/types' {
     'leagues/player': ExtractProps<(typeof import('../../inertia/pages/leagues/player.tsx'))['default']>
     'leagues/players': ExtractProps<(typeof import('../../inertia/pages/leagues/players.tsx'))['default']>
     'leagues/ranking_create': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking_create.tsx'))['default']>
+    'leagues/ranking_edit': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking_edit.tsx'))['default']>
     'leagues/ranking': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking.tsx'))['default']>
     'leagues/rankings': ExtractProps<(typeof import('../../inertia/pages/leagues/rankings.tsx'))['default']>
     'leagues/settings': ExtractProps<(typeof import('../../inertia/pages/leagues/settings.tsx'))['default']>

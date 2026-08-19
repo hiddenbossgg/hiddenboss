@@ -9,11 +9,13 @@ import { IdentityResolverService } from '#services/identity/identity_resolver_se
 import { EventImporterService } from '#services/imports/event_importer_service'
 import { fixtureHttp, hasFixtures } from '../unit/platforms/fixture_http.js'
 import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const FIXTURE_ROOT = new URL('../fixtures/platforms/', import.meta.url).pathname
+const FIXTURE_ROOT = fileURLToPath(new URL('../fixtures/platforms/', import.meta.url))
 const recorded = await hasFixtures('startgg')
 const manifest: { events: Array<{ url: string }> } = recorded
-  ? JSON.parse(await readFile(`${FIXTURE_ROOT}startgg/manifest.json`, 'utf8'))
+  ? JSON.parse(await readFile(join(FIXTURE_ROOT, 'startgg', 'manifest.json'), 'utf8'))
   : { events: [] }
 
 const eventUrl = (kind: 'singles' | 'doubles') =>

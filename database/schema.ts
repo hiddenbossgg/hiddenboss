@@ -224,8 +224,10 @@ export class GlobalIdentityLinkSchema extends BaseModel {
 }
 
 export class GlobalPlayerSchema extends BaseModel {
-  static $columns = ['country', 'createdAt', 'displayTag', 'id', 'pronouns', 'slug', 'socials', 'updatedAt'] as const
+  static $columns = ['city', 'country', 'createdAt', 'displayTag', 'id', 'pronouns', 'slug', 'socials', 'state', 'updatedAt'] as const
   $columns = GlobalPlayerSchema.$columns
+  @column()
+  declare city: string | null
   @column()
   declare country: string | null
   @column.dateTime({ autoCreate: true })
@@ -240,6 +242,8 @@ export class GlobalPlayerSchema extends BaseModel {
   declare slug: string
   @column()
   declare socials: Record<string, any>
+  @column()
+  declare state: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
@@ -361,8 +365,10 @@ export class LeaguePlayerAccountSchema extends BaseModel {
 }
 
 export class LeaguePlayerSchema extends BaseModel {
-  static $columns = ['country', 'createdAt', 'displayTag', 'globalPlayerId', 'id', 'lastPlayedAt', 'leagueId', 'mergedIntoId', 'pronouns', 'slug', 'socials', 'updatedAt'] as const
+  static $columns = ['city', 'country', 'createdAt', 'displayTag', 'globalPlayerId', 'id', 'lastPlayedAt', 'leagueId', 'mergedIntoId', 'pronouns', 'slug', 'socials', 'state', 'updatedAt'] as const
   $columns = LeaguePlayerSchema.$columns
+  @column()
+  declare city: string | null
   @column()
   declare country: string | null
   @column.dateTime({ autoCreate: true })
@@ -385,6 +391,8 @@ export class LeaguePlayerSchema extends BaseModel {
   declare slug: string
   @column()
   declare socials: Record<string, any>
+  @column()
+  declare state: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
@@ -436,8 +444,12 @@ export class PhaseSchema extends BaseModel {
 }
 
 export class PlatformAccountSchema extends BaseModel {
-  static $columns = ['createdAt', 'externalUserId', 'gamerTag', 'globalPlayerId', 'id', 'normalizedTag', 'platformKey', 'prefix', 'pronouns', 'raw', 'updatedAt', 'weakIdentity'] as const
+  static $columns = ['city', 'country', 'createdAt', 'externalUserId', 'gamerTag', 'globalPlayerId', 'id', 'normalizedTag', 'platformKey', 'prefix', 'pronouns', 'raw', 'state', 'updatedAt', 'weakIdentity'] as const
   $columns = PlatformAccountSchema.$columns
+  @column()
+  declare city: string | null
+  @column()
+  declare country: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -458,6 +470,8 @@ export class PlatformAccountSchema extends BaseModel {
   declare pronouns: string | null
   @column()
   declare raw: Record<string, any> | null
+  @column()
+  declare state: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
@@ -591,7 +605,7 @@ export class RankingSetDeltaSchema extends BaseModel {
 }
 
 export class RankingStandingSchema extends BaseModel {
-  static $columns = ['createdAt', 'deviation', 'eventsCounted', 'id', 'lastPlayedAt', 'leaguePlayerId', 'losses', 'metrics', 'previousRank', 'rank', 'rankingRecomputeId', 'setsPlayed', 'updatedAt', 'value', 'volatility', 'wins'] as const
+  static $columns = ['createdAt', 'deviation', 'eventsCounted', 'id', 'lastPlayedAt', 'leaguePlayerId', 'losses', 'metrics', 'previousRank', 'rank', 'rankingRecomputeId', 'setsPlayed', 'tournamentActivity', 'updatedAt', 'value', 'volatility', 'wins'] as const
   $columns = RankingStandingSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -617,6 +631,8 @@ export class RankingStandingSchema extends BaseModel {
   declare rankingRecomputeId: string
   @column()
   declare setsPlayed: number
+  @column()
+  declare tournamentActivity: Record<string, any>
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
@@ -651,8 +667,10 @@ export class RankingTournamentStandingSchema extends BaseModel {
 }
 
 export class RankingSchema extends BaseModel {
-  static $columns = ['algorithm', 'config', 'createdAt', 'description', 'endsAt', 'id', 'latestRecomputeId', 'leagueId', 'name', 'published', 'recomputeMode', 'recomputeRequestedAt', 'requirements', 'slug', 'staleTournamentCount', 'startsAt', 'tournamentHashes', 'updatedAt'] as const
+  static $columns = ['activityRequirements', 'algorithm', 'config', 'createdAt', 'description', 'dqPolicy', 'endsAt', 'flagInactive', 'id', 'latestRecomputeId', 'leagueId', 'name', 'published', 'recomputeMode', 'recomputeRequestedAt', 'requirements', 'slug', 'staleTournamentCount', 'startsAt', 'tournamentHashes', 'updatedAt'] as const
   $columns = RankingSchema.$columns
+  @column()
+  declare activityRequirements: Record<string, any>
   @column()
   declare algorithm: string
   @column()
@@ -661,8 +679,12 @@ export class RankingSchema extends BaseModel {
   declare createdAt: DateTime
   @column()
   declare description: string | null
+  @column()
+  declare dqPolicy: string
   @column.dateTime()
   declare endsAt: DateTime | null
+  @column()
+  declare flagInactive: boolean
   @column({ isPrimary: true })
   declare id: string
   @column()
@@ -786,10 +808,16 @@ export class SetSchema extends BaseModel {
 }
 
 export class TournamentSchema extends BaseModel {
-  static $columns = ['capabilities', 'createdAt', 'endAt', 'externalId', 'id', 'importedAt', 'isOnline', 'location', 'name', 'platformKey', 'slug', 'startAt', 'updatedAt', 'url'] as const
+  static $columns = ['address', 'capabilities', 'city', 'country', 'createdAt', 'endAt', 'externalId', 'id', 'importedAt', 'isOnline', 'name', 'platformKey', 'slug', 'startAt', 'state', 'updatedAt', 'url'] as const
   $columns = TournamentSchema.$columns
   @column()
+  declare address: string | null
+  @column()
   declare capabilities: Record<string, any>
+  @column()
+  declare city: string | null
+  @column()
+  declare country: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column.dateTime()
@@ -803,8 +831,6 @@ export class TournamentSchema extends BaseModel {
   @column()
   declare isOnline: boolean | null
   @column()
-  declare location: string | null
-  @column()
   declare name: string
   @column()
   declare platformKey: string
@@ -812,6 +838,8 @@ export class TournamentSchema extends BaseModel {
   declare slug: string
   @column.dateTime()
   declare startAt: DateTime | null
+  @column()
+  declare state: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()

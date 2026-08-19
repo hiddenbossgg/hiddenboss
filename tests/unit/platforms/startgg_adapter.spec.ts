@@ -3,12 +3,13 @@ import vine from '@vinejs/vine'
 import logger from '@adonisjs/core/services/logger'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { StartggAdapter } from '#lib/platforms/startgg/adapter'
 import { runAdapter, runTwice } from './run_adapter.js'
 import { fixtureContext, hasFixtures } from './fixture_http.js'
 import type { PlatformContext } from '#lib/platforms/contracts'
 
-const FIXTURE_ROOT = new URL('../../fixtures/platforms/', import.meta.url).pathname
+const FIXTURE_ROOT = fileURLToPath(new URL('../../fixtures/platforms/', import.meta.url))
 
 /**
  * Fixture-backed tests are skipped until somebody records real responses:
@@ -139,6 +140,23 @@ test.group('startgg adapter', () => {
 
     assert.equal(sink.calls[0].name, 'tournament')
     assert.isAbove(sink.brackets.length, 0)
+  }).skip(!recorded, 'no start.gg fixtures recorded yet')
+
+  /**
+   * `city`/`addrState`/`countryCode` are already fetched for `isOnline`, so
+   * this is what proves they reach the tournament record rather than being
+   * read and discarded. `address` is a separate gap: it needs `venueAddress`
+   * added to the query, which would orphan every recorded fixture.
+   */
+  test('reads tournament location from the platform', async ({ assert }) => {
+    const sink = await recordedSink()
+    const [tournament] = sink.tournaments
+
+    assert.isNotNull(tournament.country, 'expected a country from the fixture')
+    assert.match(tournament.country!, /^[A-Z]{2}$/, 'country should be an ISO alpha-2 code')
+    assert.isNotNull(tournament.state)
+    assert.isNotNull(tournament.city)
+    assert.isNull(tournament.address, 'venueAddress is not queried yet')
   }).skip(!recorded, 'no start.gg fixtures recorded yet')
 
   test('reads doubles entrants as multiple people', async ({ assert }) => {

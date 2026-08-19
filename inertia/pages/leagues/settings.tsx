@@ -9,9 +9,10 @@ type Props = {
     description: string | null
     visibility: string
   }
+  canDelete: boolean
 }
 
-const Settings: React.FC<Props> = ({ league }) => {
+const Settings: React.FC<Props> = ({ league, canDelete }) => {
   return (
     <>
       <LeagueNav slug={league.slug} name={league.name} />
@@ -56,6 +57,61 @@ const Settings: React.FC<Props> = ({ league }) => {
         The league URL <code>/{league.slug}</code> cannot be changed, so links your community has
         already shared keep working.
       </p>
+
+      {canDelete && (
+        <>
+          <h2>Danger zone</h2>
+
+          <Form route="leagues.clear" routeParams={{ league: league.slug }}>
+            {({ processing }) => (
+              <>
+                <button
+                  type="submit"
+                  disabled={processing}
+                  onClick={(event) => {
+                    if (
+                      !window.confirm(
+                        `Clear ${league.name}? This deletes every ranking, player and imported event in this league. Admins, credentials and the league itself stay — you can re-import from scratch.`
+                      )
+                    ) {
+                      event.preventDefault()
+                    }
+                  }}
+                >
+                  Clear league data
+                </button>
+                <p>
+                  Wipes rankings, players and imported events. Admins, credentials and the game list
+                  are kept, and re-importing brings data back.
+                </p>
+              </>
+            )}
+          </Form>
+
+          <Form route="leagues.destroy" routeParams={{ league: league.slug }}>
+            {({ processing }) => (
+              <>
+                <button
+                  type="submit"
+                  disabled={processing}
+                  onClick={(event) => {
+                    if (
+                      !window.confirm(
+                        `Delete ${league.name}? This removes the league itself along with everything in it. This cannot be undone.`
+                      )
+                    ) {
+                      event.preventDefault()
+                    }
+                  }}
+                >
+                  Delete league
+                </button>
+                <p>Removes the league itself, along with everything in it, permanently.</p>
+              </>
+            )}
+          </Form>
+        </>
+      )}
     </>
   )
 }

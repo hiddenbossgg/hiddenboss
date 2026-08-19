@@ -12,6 +12,10 @@ publish rankings.
 
 **Requirements:** Node 24 (`.nvmrc` pins 24.11.1) and Docker.
 
+Docker Desktop must be running before `docker compose up -d db` — on Windows/Mac it does not start
+itself, and `docker compose` fails with a daemon-connection error (or the worker logs an
+`ECONNREFUSED` connecting to Postgres) if it's not.
+
 ```bash
 nvm use                       # Node 24 — the framework refuses to install on 22
 npm install

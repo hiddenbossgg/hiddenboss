@@ -3,11 +3,19 @@ import { Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
 import RankingHistoryChart from '../../components/ranking_history_chart.js'
 import type { HistoryPoint } from '../../components/ranking_history_chart.js'
+import { formatLocation } from '../../lib/format_location.js'
 
 type Props = {
   league: { slug: string; name: string }
   canManage: boolean
-  player: { slug: string; displayTag: string; pronouns: string | null }
+  player: {
+    slug: string
+    displayTag: string
+    pronouns: string | null
+    city: string | null
+    state: string | null
+    country: string | null
+  }
   ranking: { slug: string; name: string } | null
   standing: {
     rank: number
@@ -76,7 +84,13 @@ const PlayerProfile: React.FC<Props> = ({
       <LeagueNav slug={league.slug} name={league.name} canManage={canManage} />
 
       <h1>{player.displayTag}</h1>
-      {player.pronouns && <p>{player.pronouns}</p>}
+      {(player.pronouns || formatLocation(player)) && (
+        <p>
+          {player.pronouns}
+          {player.pronouns && formatLocation(player) && ' · '}
+          {formatLocation(player)}
+        </p>
+      )}
 
       <h2>Ranking</h2>
       {standing && ranking ? (

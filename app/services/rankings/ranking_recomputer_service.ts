@@ -12,6 +12,7 @@ import { Glicko2 } from '#lib/rankings/glicko2'
 import { OpenSkill } from '#lib/rankings/openskill'
 import { SetSelectionService } from './set_selection_service.js'
 import type { RatableSet, RankingAlgorithm, Standing } from '#lib/rankings/contracts'
+import type { TournamentActivity } from '#lib/rankings/activity_requirements'
 
 export interface RecomputeResult {
   recompute: RankingRecompute
@@ -56,7 +57,19 @@ export class RankingRecomputerService {
     this.selection = options.selection ?? new SetSelectionService()
   }
 
-  async run(rankingId: string): Promise<RecomputeResult> {
+  /**
+   * `force` bypasses the fingerprint skip-check — for the rare case where the
+   * *replay logic itself* changed in a way the fingerprint cannot see (it
+   * only tracks algorithm config, requirements, and the sets themselves), so
+   * standings need rewriting even though nothing a fingerprint tracks moved.
+   *
+   * It deliberately does nothing else: `previousRecomputeId` still comes from
+   * `ranking.latestRecomputeId` exactly as a normal recompute, so the Move
+   * column keeps comparing against the last real recompute. Do not "force" a
+   * recompute by clearing `latestRecomputeId` by hand — that severs the same
+   * chain this option exists to protect.
+   */
+  async run(rankingId: string, options: { force?: boolean } = {}): Promise<RecomputeResult> {
     const ranking = await Ranking.findOrFail(rankingId)
     const league = await League.findOrFail(ranking.leagueId)
 
@@ -74,7 +87,7 @@ export class RankingRecomputerService {
     const previousRecomputeId = ranking.latestRecomputeId
 
     const latest = previousRecomputeId ? await RankingRecompute.find(previousRecomputeId) : null
-    if (latest?.status === 'ok' && latest.inputFingerprint === fingerprint) {
+    if (!options.force && latest?.status === 'ok' && latest.inputFingerprint === fingerprint) {
       const requeued = await this.settle(ranking, startedAt)
       return { recompute: latest, skipped: true, requeued }
     }
@@ -138,6 +151,7 @@ export class RankingRecomputerService {
 
     const standings = algorithm.finalize(state)
     const lastPlayed = this.lastPlayedAt(sets)
+    const tournamentActivity = this.tournamentActivity(sets)
 
     const created = await db.transaction(async (trx) => {
       recompute.useTransaction(trx)
@@ -153,7 +167,14 @@ export class RankingRecomputerService {
       })
       await recompute.save()
 
-      await this.writeStandings(trx, recompute, standings, lastPlayed, previousRecomputeId)
+      await this.writeStandings(
+        trx,
+        recompute,
+        standings,
+        lastPlayed,
+        tournamentActivity,
+        previousRecomputeId
+      )
       await this.writeSetDeltas(trx, ranking.id, setDeltas, changedTournaments, goneTournaments)
       await this.writeTournamentStandings(
         trx,
@@ -189,6 +210,7 @@ export class RankingRecomputerService {
     recompute: RankingRecompute,
     standings: Standing[],
     lastPlayed: Map<string, Date>,
+    tournamentActivity: Map<string, TournamentActivity[]>,
     previousRecomputeId: string | null
   ): Promise<void> {
     if (standings.length === 0) return
@@ -196,22 +218,27 @@ export class RankingRecomputerService {
     const previous = await this.previousRanks(trx, previousRecomputeId)
 
     await RankingStanding.createMany(
-      standings.map((standing, index) => ({
-        rankingRecomputeId: recompute.id,
-        leaguePlayerId: standing.leaguePlayerId,
-        rank: index + 1,
-        previousRank: previous.get(standing.leaguePlayerId) ?? null,
-        value: standing.value.toFixed(4),
-        deviation: standing.deviation === null ? null : standing.deviation.toFixed(4),
-        volatility: standing.volatility === null ? null : standing.volatility.toFixed(6),
-        wins: standing.wins,
-        losses: standing.losses,
-        setsPlayed: standing.setsPlayed,
-        eventsCounted: 0,
-        lastPlayedAt: lastPlayed.has(standing.leaguePlayerId)
-          ? DateTime.fromJSDate(lastPlayed.get(standing.leaguePlayerId)!)
-          : null,
-      })),
+      standings.map((standing, index) => {
+        const activity = tournamentActivity.get(standing.leaguePlayerId) ?? []
+
+        return {
+          rankingRecomputeId: recompute.id,
+          leaguePlayerId: standing.leaguePlayerId,
+          rank: index + 1,
+          previousRank: previous.get(standing.leaguePlayerId) ?? null,
+          value: standing.value.toFixed(4),
+          deviation: standing.deviation === null ? null : standing.deviation.toFixed(4),
+          volatility: standing.volatility === null ? null : standing.volatility.toFixed(6),
+          wins: standing.wins,
+          losses: standing.losses,
+          setsPlayed: standing.setsPlayed,
+          eventsCounted: activity.length,
+          tournamentActivity: activity,
+          lastPlayedAt: lastPlayed.has(standing.leaguePlayerId)
+            ? DateTime.fromJSDate(lastPlayed.get(standing.leaguePlayerId)!)
+            : null,
+        }
+      }),
       { client: trx }
     )
   }
@@ -438,6 +465,67 @@ export class RankingRecomputerService {
     }
 
     return seen
+  }
+
+  /**
+   * Distinct tournaments each player's rated sets came from, with each
+   * tournament's entrant count and the player's own set history there — the
+   * read-time input for a ranking's activity requirements ("3 tournaments
+   * with 8+ entrants", etc) and its DQ policy. When a tournament's sets come
+   * from more than one event, its largest reported entrant count wins: a
+   * player who reached the big bracket should count toward a "big
+   * tournament" clause.
+   *
+   * `setsPlayed` and `timesDisqualified` are per player per tournament, not
+   * per side of one set: a set where a player's side was not the
+   * disqualified side counts as played even if the other side was.
+   */
+  private tournamentActivity(sets: RatableSet[]): Map<string, TournamentActivity[]> {
+    const entrantCounts = new Map<string, number | null>()
+    for (const set of sets) {
+      const existing = entrantCounts.get(set.tournamentId)
+      if (existing === undefined || (set.entrantCount ?? -1) > (existing ?? -1)) {
+        entrantCounts.set(set.tournamentId, set.entrantCount)
+      }
+    }
+
+    interface Accumulator {
+      setsPlayed: number
+      timesDisqualified: number
+    }
+    const perPlayer = new Map<string, Map<string, Accumulator>>()
+
+    const record = (playerIds: string[], tournamentId: string, disqualified: boolean) => {
+      for (const playerId of playerIds) {
+        const tournaments = perPlayer.get(playerId) ?? new Map<string, Accumulator>()
+        const accumulator = tournaments.get(tournamentId) ?? { setsPlayed: 0, timesDisqualified: 0 }
+
+        if (disqualified) {
+          accumulator.timesDisqualified += 1
+        } else {
+          accumulator.setsPlayed += 1
+        }
+
+        tournaments.set(tournamentId, accumulator)
+        perPlayer.set(playerId, tournaments)
+      }
+    }
+
+    for (const set of sets) {
+      record(set.sideA, set.tournamentId, set.sideADisqualified)
+      record(set.sideB, set.tournamentId, set.sideBDisqualified)
+    }
+
+    return new Map(
+      [...perPlayer].map(([playerId, tournaments]) => [
+        playerId,
+        [...tournaments].map(([tournamentId, accumulator]) => ({
+          entrantCount: entrantCounts.get(tournamentId) ?? null,
+          setsPlayed: accumulator.setsPlayed,
+          timesDisqualified: accumulator.timesDisqualified,
+        })),
+      ])
+    )
   }
 
   private algorithmFor(ranking: Ranking): RankingAlgorithm<any> {

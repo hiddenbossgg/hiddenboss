@@ -60,12 +60,15 @@ router
     router.get('settings', [controllers.Leagues, 'edit']).as('leagues.edit')
     router.patch('/', [controllers.Leagues, 'update']).as('leagues.update')
     router.delete('/', [controllers.Leagues, 'destroy']).as('leagues.destroy')
+    router.post('clear', [controllers.Leagues, 'clear']).as('leagues.clear')
 
     router.get('imports', [controllers.Imports, 'index']).as('imports.index')
     router.post('imports', [controllers.Imports, 'store']).as('imports.store')
 
     router.get('rankings/new', [controllers.Rankings, 'create']).as('rankings.create')
     router.post('rankings', [controllers.Rankings, 'store']).as('rankings.store')
+    router.get('rankings/:ranking/edit', [controllers.Rankings, 'edit']).as('rankings.edit')
+    router.patch('rankings/:ranking', [controllers.Rankings, 'update']).as('rankings.update')
     router
       .post('rankings/:ranking/recompute', [controllers.Rankings, 'recompute'])
       .as('rankings.recompute')
@@ -75,6 +78,8 @@ router
      * event page, which is where the mistake is visible.
      */
     router.post('identity', [controllers.IdentityCorrections, 'update']).as('identity.update')
+
+    router.delete('events/:event', [controllers.Events, 'destroy']).as('events.destroy')
 
     router.get('credentials', [controllers.LeagueCredentials, 'index']).as('credentials.index')
     router

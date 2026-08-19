@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import { formatLocation } from '../../lib/format_location.js'
 
 type Props = {
   league: { slug: string; name: string }
@@ -9,6 +10,9 @@ type Props = {
   players: Array<{
     slug: string
     displayTag: string
+    city: string | null
+    state: string | null
+    country: string | null
     rank: number | null
     rating: number | null
     wins: number
@@ -38,6 +42,7 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
               <tr>
                 <th>#</th>
                 <th>Player</th>
+                <th>Location</th>
                 <th>Rating</th>
                 <th>W–L</th>
                 <th>Sets</th>
@@ -56,6 +61,7 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
                       {player.displayTag}
                     </Link>
                   </td>
+                  <td>{formatLocation(player) ?? '—'}</td>
                   <td>{player.rating ?? '—'}</td>
                   <td>
                     {player.wins}–{player.losses}

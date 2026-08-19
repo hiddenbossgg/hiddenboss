@@ -138,10 +138,16 @@ export class StartggAdapter implements PlatformAdapter {
       url: tournamentUrlFor(ref.url, tournament.slug),
       startAt: toDate(tournament.startAt),
       endAt: toDate(tournament.endAt),
-      location:
-        [tournament.city, tournament.addrState, tournament.countryCode]
-          .filter(Boolean)
-          .join(', ') || null,
+      country: tournament.countryCode ?? null,
+      state: tournament.addrState ?? null,
+      city: tournament.city ?? null,
+      /**
+       * Future work: start.gg exposes `tournament.venueAddress`, but adding
+       * it to `EVENT_QUERY` in queries.ts changes that query's request hash
+       * and orphans every recorded fixture. Query it, then re-record with
+       * `node ace record:platform-fixtures startgg <url> --credentials=...`.
+       */
+      address: null,
       isOnline: tournament.isOnline ?? null,
     })
 
@@ -256,6 +262,9 @@ export class StartggAdapter implements PlatformAdapter {
           gamerTag: participant.gamerTag,
           prefix: participant.prefix || null,
           pronouns: participant.user?.genderPronoun || null,
+          country: participant.user?.location?.country || null,
+          state: participant.user?.location?.state || null,
+          city: participant.user?.location?.city || null,
         })),
       }))
 

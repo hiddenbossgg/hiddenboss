@@ -20,12 +20,16 @@ export type ScannedRoutes = {
     'leagues.edit': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.update': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.destroy': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'leagues.clear': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
+    'rankings.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'rankings.recompute': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'identity.update': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'events.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'credentials.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'platform': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -47,6 +51,7 @@ export type ScannedRoutes = {
     'leagues.edit': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -67,6 +72,7 @@ export type ScannedRoutes = {
     'leagues.edit': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -83,6 +89,7 @@ export type ScannedRoutes = {
     'password.update': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
     'leagues.store': { paramsTuple?: []; params?: {} }
+    'leagues.clear': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'imports.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.recompute': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
@@ -90,9 +97,11 @@ export type ScannedRoutes = {
   }
   PATCH: {
     'leagues.update': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'rankings.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
   }
   DELETE: {
     'leagues.destroy': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'events.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
   }
   PUT: {
     'credentials.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'platform': ParamValue} }
