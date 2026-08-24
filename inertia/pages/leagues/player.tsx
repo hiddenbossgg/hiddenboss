@@ -178,13 +178,16 @@ const PlayerProfile: React.FC<Props> = ({
       )}
 
       {canManage && (
-        <PlayerLocationForm
-          league={league.slug}
-          player={player.slug}
-          city={player.city}
-          state={player.state}
-          country={player.country}
-        />
+        <details>
+          <summary>Edit location</summary>
+          <PlayerLocationForm
+            league={league.slug}
+            player={player.slug}
+            city={player.city}
+            state={player.state}
+            country={player.country}
+          />
+        </details>
       )}
 
       <h2>Ranking</h2>
