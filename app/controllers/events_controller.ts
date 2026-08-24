@@ -4,6 +4,7 @@ import LeagueEvent from '#models/league_event'
 import LeaguePolicy from '#policies/league_policy'
 import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import { StalenessService } from '#services/rankings/staleness_service'
+import { updateTournamentLocationValidator } from '#validators/tournament'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -266,6 +267,45 @@ export default class EventsController {
     session.flash('success', 'Removed the event from this league')
 
     return response.redirect().toRoute('events.index', { league: league.slug })
+  }
+
+  /**
+   * A league admin's manual correction to a tournament's location — imported
+   * platform data is sometimes wrong, missing, or just has a typo.
+   *
+   * Tournaments are canonical and shared across every league that counts
+   * them, so this correction is visible to those other leagues too — same as
+   * any other imported tournament field an admin fixes.
+   */
+  async updateLocation({ league, params, request, response, session }: HttpContext) {
+    const counted = await db
+      .from('league_events')
+      .where('league_id', league.id)
+      .where('event_id', params.event)
+      .first()
+
+    if (!counted) {
+      return response.notFound({ message: 'No such event in this league' })
+    }
+
+    const event = await Event.query().where('id', params.event).preload('tournament').first()
+
+    if (!event) {
+      return response.notFound({ message: 'No such event' })
+    }
+
+    const payload = await request.validateUsing(updateTournamentLocationValidator)
+
+    event.tournament.merge({
+      city: payload.city || null,
+      state: payload.state || null,
+      country: payload.country || null,
+    })
+    await event.tournament.save()
+
+    session.flash('success', `Updated ${event.tournament.name}`)
+
+    return response.redirect().toRoute('events.show', { league: league.slug, event: event.id })
   }
 }
 

@@ -174,6 +174,12 @@ const routes = {
     tokens: [{"old":"/:league/events/:event","type":1,"val":"league","end":""},{"old":"/:league/events/:event","type":0,"val":"events","end":""},{"old":"/:league/events/:event","type":1,"val":"event","end":""}],
     types: placeholder as Registry['events.destroy']['types'],
   },
+  'events.updateLocation': {
+    methods: ["PATCH"],
+    pattern: '/:league/events/:event/location',
+    tokens: [{"old":"/:league/events/:event/location","type":1,"val":"league","end":""},{"old":"/:league/events/:event/location","type":0,"val":"events","end":""},{"old":"/:league/events/:event/location","type":1,"val":"event","end":""},{"old":"/:league/events/:event/location","type":0,"val":"location","end":""}],
+    types: placeholder as Registry['events.updateLocation']['types'],
+  },
   'credentials.index': {
     methods: ["GET","HEAD"],
     pattern: '/:league/credentials',

@@ -343,6 +343,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['destroy']>>>
     }
   }
+  'events.updateLocation': {
+    methods: ["PATCH"]
+    pattern: '/:league/events/:event/location'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentLocationValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; event: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentLocationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateLocation']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateLocation']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'credentials.index': {
     methods: ["GET","HEAD"]
     pattern: '/:league/credentials'

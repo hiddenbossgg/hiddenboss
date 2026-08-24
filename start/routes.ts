@@ -87,6 +87,11 @@ router
 
     router.delete('events/:event', [controllers.Events, 'destroy']).as('events.destroy')
 
+    /** Correcting a tournament's location. Posted from the event page. */
+    router
+      .patch('events/:event/location', [controllers.Events, 'updateLocation'])
+      .as('events.updateLocation')
+
     router.get('credentials', [controllers.LeagueCredentials, 'index']).as('credentials.index')
     router
       .put('credentials/:platform', [controllers.LeagueCredentials, 'update'])
