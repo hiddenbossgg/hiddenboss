@@ -33,7 +33,13 @@ export interface CanonicalParticipant {
   gamerTag: string
   prefix: string | null
   pronouns: string | null
-  /** ISO 3166-1 alpha-2, kept verbatim from the platform. */
+  /**
+   * Exactly as the platform reported it — still unnormalised at this layer.
+   * `TournamentWriterService` resolves a display name to its ISO 3166-1
+   * alpha-2 code (`#lib/geo/country`) on the way into
+   * `platform_accounts.country`, so adapters and their tests see the raw
+   * value here. A code the dataset doesn't recognise is kept as-is.
+   */
   country: string | null
   /** State, province or region — whatever the platform reports, unnormalised. */
   state: string | null
@@ -135,7 +141,12 @@ export interface CanonicalTournament {
   url: string | null
   startAt: Date | null
   endAt: Date | null
-  /** ISO 3166-1 alpha-2, kept verbatim from the platform. */
+  /**
+   * Exactly as the platform reported it — still unnormalised at this layer,
+   * like `state` below. `TournamentWriterService` resolves a display name
+   * to its ISO 3166-1 alpha-2 code (`#lib/geo/country`) on the
+   * way into `tournaments.country`.
+   */
   country: string | null
   /**
    * State, province or region, exactly as the platform reported it — still

@@ -51,4 +51,20 @@ test.group('suggestLocations', () => {
     assert.isAbove(suggestions.length, 0)
     assert.isTrue(suggestions.every((suggestion) => suggestion.country === 'US'))
   })
+
+  /**
+   * A player's `country`/`state` come from a platform import, which reports
+   * a display name rather than the alpha-2 code a suggestion would carry —
+   * scoping must resolve either form to the same result.
+   */
+  test('scoping by a country display name works the same as scoping by its code', ({ assert }) => {
+    const byName = suggestLocations('city', 'Spoka', {
+      country: 'United States',
+      state: 'Washington',
+    })
+    const byCode = suggestLocations('city', 'Spoka', { country: 'US', state: 'WA' })
+
+    assert.isAbove(byName.length, 0)
+    assert.deepEqual(byName, byCode)
+  })
 })

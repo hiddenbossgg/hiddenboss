@@ -146,7 +146,7 @@ export class TournamentWriterService {
               gamerTag: participant.gamerTag,
               prefix: participant.prefix,
               pronouns: participant.pronouns,
-              country: participant.country,
+              country: normalizeCountry(participant.country),
               state: participant.state,
               city: participant.city,
               normalizedTag: PlatformAccount.normalizeTag(participant.gamerTag),
