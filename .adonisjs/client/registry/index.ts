@@ -162,6 +162,12 @@ const routes = {
     tokens: [{"old":"/:league/identity","type":1,"val":"league","end":""},{"old":"/:league/identity","type":0,"val":"identity","end":""}],
     types: placeholder as Registry['identity.update']['types'],
   },
+  'players.update': {
+    methods: ["PATCH"],
+    pattern: '/:league/players/:player',
+    tokens: [{"old":"/:league/players/:player","type":1,"val":"league","end":""},{"old":"/:league/players/:player","type":0,"val":"players","end":""},{"old":"/:league/players/:player","type":1,"val":"player","end":""}],
+    types: placeholder as Registry['players.update']['types'],
+  },
   'events.destroy': {
     methods: ["DELETE"],
     pattern: '/:league/events/:event',

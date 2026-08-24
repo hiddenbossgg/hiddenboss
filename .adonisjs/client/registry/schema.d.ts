@@ -319,6 +319,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/identity_corrections_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'players.update': {
+    methods: ["PATCH"]
+    pattern: '/:league/players/:player'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/player').updatePlayerLocationValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; player: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/player').updatePlayerLocationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/players_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/players_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'events.destroy': {
     methods: ["DELETE"]
     pattern: '/:league/events/:event'

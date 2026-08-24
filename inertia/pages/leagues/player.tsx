@@ -1,8 +1,11 @@
 import type React from 'react'
-import { Link } from '@adonisjs/inertia/react'
+import { useState } from 'react'
+import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
 import RankingHistoryChart from '../../components/ranking_history_chart.js'
 import type { HistoryPoint } from '../../components/ranking_history_chart.js'
+import LocationAutocompleteInput from '../../components/location_autocomplete_input.js'
+import { useLocationSuggestions } from '../../hooks/use_location_suggestions.js'
 import { formatLocation } from '../../lib/format_location.js'
 
 type Props = {
@@ -55,6 +58,88 @@ type Props = {
   }>
 }
 
+type LocationFormProps = {
+  league: string
+  player: string
+  city: string | null
+  state: string | null
+  country: string | null
+}
+
+/**
+ * Own component, not inlined below: it needs `useLocationSuggestions` state
+ * per field, which only makes sense attached to a stable component instance.
+ */
+const PlayerLocationForm: React.FC<LocationFormProps> = ({
+  league,
+  player,
+  city,
+  state,
+  country,
+}) => {
+  const [cityValue, setCityValue] = useState(city ?? '')
+  const [stateValue, setStateValue] = useState(state ?? '')
+  const [countryValue, setCountryValue] = useState(country ?? '')
+
+  const citySuggestions = useLocationSuggestions(league, 'city', cityValue, {
+    country: countryValue || undefined,
+    state: stateValue || undefined,
+  })
+  const stateSuggestions = useLocationSuggestions(league, 'state', stateValue, {
+    country: countryValue || undefined,
+  })
+  const countrySuggestions = useLocationSuggestions(league, 'country', countryValue)
+
+  return (
+    <Form route="players.update" routeParams={{ league, player }}>
+      {({ errors, processing }) => (
+        <>
+          <LocationAutocompleteInput
+            name="city"
+            ariaLabel="City"
+            placeholder="city"
+            value={cityValue}
+            suggestions={citySuggestions}
+            onChange={setCityValue}
+            onSelect={(suggestion) => {
+              setCityValue(suggestion.city ?? suggestion.label)
+              if (suggestion.state) setStateValue(suggestion.state)
+              if (suggestion.country) setCountryValue(suggestion.country)
+            }}
+          />{' '}
+          <LocationAutocompleteInput
+            name="state"
+            ariaLabel="State or province"
+            placeholder="state/province"
+            value={stateValue}
+            suggestions={stateSuggestions}
+            onChange={setStateValue}
+            onSelect={(suggestion) => {
+              setStateValue(suggestion.state ?? suggestion.label)
+              if (suggestion.country) setCountryValue(suggestion.country)
+            }}
+          />{' '}
+          <LocationAutocompleteInput
+            name="country"
+            ariaLabel="Country"
+            placeholder="country"
+            value={countryValue}
+            suggestions={countrySuggestions}
+            onChange={setCountryValue}
+            onSelect={(suggestion) => setCountryValue(suggestion.country ?? suggestion.label)}
+          />{' '}
+          <button type="submit" disabled={processing}>
+            Save location
+          </button>
+          {errors.city && <p role="alert">{errors.city}</p>}
+          {errors.state && <p role="alert">{errors.state}</p>}
+          {errors.country && <p role="alert">{errors.country}</p>}
+        </>
+      )}
+    </Form>
+  )
+}
+
 /** Groups consecutive matches under the event they were played in. */
 function byEvent(matches: Props['matches']) {
   const groups: Array<{ label: string; matches: Props['matches'] }> = []
@@ -90,6 +175,16 @@ const PlayerProfile: React.FC<Props> = ({
           {player.pronouns && formatLocation(player) && ' · '}
           {formatLocation(player)}
         </p>
+      )}
+
+      {canManage && (
+        <PlayerLocationForm
+          league={league.slug}
+          player={player.slug}
+          city={player.city}
+          state={player.state}
+          country={player.country}
+        />
       )}
 
       <h2>Ranking</h2>

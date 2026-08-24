@@ -2,6 +2,7 @@ import db from '@adonisjs/lucid/services/db'
 import LeaguePlayer from '#models/league_player'
 import Ranking from '#models/ranking'
 import LeaguePolicy from '#policies/league_policy'
+import { updatePlayerLocationValidator } from '#validators/player'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -240,6 +241,35 @@ export default class PlayersController {
         provisional: row.provisional,
       })),
     })
+  }
+
+  /**
+   * A league admin's manual correction to a player's location — imported
+   * platform data is sometimes wrong, missing, or just has a typo.
+   */
+  async update({ league, params, request, response, session }: HttpContext) {
+    const player = await LeaguePlayer.query()
+      .where('leagueId', league.id)
+      .where('slug', params.player)
+      .whereNull('mergedIntoId')
+      .first()
+
+    if (!player) {
+      return response.notFound({ message: 'No such player' })
+    }
+
+    const payload = await request.validateUsing(updatePlayerLocationValidator)
+
+    player.merge({
+      city: payload.city || null,
+      state: payload.state || null,
+      country: payload.country || null,
+    })
+    await player.save()
+
+    session.flash('success', `Updated ${player.displayTag}`)
+
+    return response.redirect().toRoute('players.show', { league: league.slug, player: player.slug })
   }
 }
 
