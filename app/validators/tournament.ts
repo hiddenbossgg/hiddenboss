@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { resolveCountryCode } from '#lib/geo/normalize_country'
+import { toAlpha2CountryCode } from '#lib/geo/country'
 
 const place = () => vine.string().trim().maxLength(100)
 
@@ -13,7 +13,7 @@ const place = () => vine.string().trim().maxLength(100)
 const countryCode = vine.createRule((value, _options, field) => {
   if (typeof value !== 'string' || value.trim() === '') return
 
-  const resolved = resolveCountryCode(value)
+  const resolved = toAlpha2CountryCode(value)
   if (!resolved) {
     field.report('country must be a recognized country name or code', 'countryCode', field)
     return

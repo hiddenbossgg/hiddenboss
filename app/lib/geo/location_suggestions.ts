@@ -4,7 +4,7 @@
  */
 import { City, Country, State } from 'country-state-city'
 import type { ICity } from 'country-state-city'
-import { resolveCountryCode } from '#lib/geo/normalize_country'
+import { normalizeCountry } from '#lib/geo/country'
 
 export type LocationField = 'country' | 'state' | 'city'
 
@@ -97,7 +97,7 @@ export function suggestLocations(
   const trimmed = query.trim().toLowerCase()
   if (trimmed.length < MIN_QUERY_LENGTH) return []
 
-  const countryCode = resolveCountryCode(scope.country ?? null)
+  const countryCode = normalizeCountry(scope.country ?? null)
 
   switch (field) {
     case 'country':
