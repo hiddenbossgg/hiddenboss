@@ -139,6 +139,24 @@ const TournamentLocationForm: React.FC<LocationFormProps> = ({
   )
 }
 
+const TournamentDateForm: React.FC<{ league: string; event: string; startAt: string | null }> = ({
+  league,
+  event,
+  startAt,
+}) => (
+  <Form route="events.updateDate" routeParams={{ league, event }}>
+    {({ errors, processing }) => (
+      <>
+        <input type="date" name="startAt" aria-label="Start date" defaultValue={startAt ?? ''} />{' '}
+        <button type="submit" disabled={processing}>
+          Save date
+        </button>
+        {errors.startAt && <p role="alert">{errors.startAt}</p>}
+      </>
+    )}
+  </Form>
+)
+
 /** Sentinel for "not one of the existing players", which has no id to carry. */
 const NEW_PLAYER = 'new'
 
@@ -235,6 +253,13 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
             state={event.state}
             country={event.country}
           />
+        </details>
+      )}
+
+      {canManage && (
+        <details>
+          <summary>Edit date</summary>
+          <TournamentDateForm league={league.slug} event={event.id} startAt={event.startAt} />
         </details>
       )}
 

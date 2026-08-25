@@ -355,6 +355,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateLocation']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'events.updateDate': {
+    methods: ["PATCH"]
+    pattern: '/:league/events/:event/date'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentDateValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; event: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentDateValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateDate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateDate']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'credentials.index': {
     methods: ["GET","HEAD"]
     pattern: '/:league/credentials'

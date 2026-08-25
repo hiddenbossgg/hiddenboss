@@ -4,7 +4,13 @@ import LeagueEvent from '#models/league_event'
 import LeaguePolicy from '#policies/league_policy'
 import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import { StalenessService } from '#services/rankings/staleness_service'
-import { updateTournamentLocationValidator } from '#validators/tournament'
+import {
+  updateTournamentDateValidator,
+  updateTournamentLocationValidator,
+} from '#validators/tournament'
+import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
+import { fromLocalDate, toLocalDate } from '#lib/time/local_date'
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -43,6 +49,8 @@ export default class EventsController {
       )
       .orderBy('t.start_at', 'desc')
 
+    const zone = league.timezone ?? DEFAULT_TIMEZONE
+
     return inertia.render('leagues/events', {
       league: { slug: league.slug, name: league.name },
       canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
@@ -56,7 +64,7 @@ export default class EventsController {
         completedSets: Number(row.completed_sets),
         platformKey: row.platform_key,
         url: row.url,
-        startAt: row.start_at ? isoDate(row.start_at) : null,
+        startAt: row.start_at ? isoDate(row.start_at, zone) : null,
         city: row.city,
         state: row.state,
         country: row.country,
@@ -186,6 +194,7 @@ export default class EventsController {
       : []
 
     const seen = new Set<string>()
+    const zone = league.timezone ?? DEFAULT_TIMEZONE
 
     return inertia.render('leagues/event', {
       league: { slug: league.slug, name: league.name },
@@ -200,7 +209,7 @@ export default class EventsController {
         entrantCount: event.entrantCount,
         platformKey: event.tournament.platformKey,
         url: event.tournament.url,
-        startAt: event.tournament.startAt?.toISODate() ?? null,
+        startAt: toLocalDate(event.tournament.startAt, zone),
         city: event.tournament.city,
         state: event.tournament.state,
         country: event.tournament.country,
@@ -278,20 +287,10 @@ export default class EventsController {
    * any other imported tournament field an admin fixes.
    */
   async updateLocation({ league, params, request, response, session }: HttpContext) {
-    const counted = await db
-      .from('league_events')
-      .where('league_id', league.id)
-      .where('event_id', params.event)
-      .first()
-
-    if (!counted) {
-      return response.notFound({ message: 'No such event in this league' })
-    }
-
-    const event = await Event.query().where('id', params.event).preload('tournament').first()
+    const event = await this.loadCountedEvent(league.id, params.event)
 
     if (!event) {
-      return response.notFound({ message: 'No such event' })
+      return response.notFound({ message: 'No such event in this league' })
     }
 
     const payload = await request.validateUsing(updateTournamentLocationValidator)
@@ -303,12 +302,69 @@ export default class EventsController {
     })
     await event.tournament.save()
 
+    /**
+     * Corrections that don't reorder or add/drop sets get silently skipped so we need to force
+     * a recompute.
+     */
+    await this.restaleAndForceRecompute(league.id)
+
     session.flash('success', `Updated ${event.tournament.name}`)
 
     return response.redirect().toRoute('events.show', { league: league.slug, event: event.id })
   }
+
+  /**
+   * A league admin's manual correction to a tournament's start date.
+   */
+  async updateDate({ league, params, request, response, session }: HttpContext) {
+    const event = await this.loadCountedEvent(league.id, params.event)
+
+    if (!event) {
+      return response.notFound({ message: 'No such event in this league' })
+    }
+
+    const payload = await request.validateUsing(updateTournamentDateValidator)
+
+    const zone = league.timezone ?? DEFAULT_TIMEZONE
+    event.tournament.merge({
+      startAt: fromLocalDate(payload.startAt?.toISODate() ?? null, zone),
+    })
+    await event.tournament.save()
+
+    /**
+     * A tournament's start date is the outer sort key for replay order
+     * (ratings are order-dependent) and the date plotted for its standing,
+     * so a correction needs a real recompute.
+     */
+    await this.restaleAndForceRecompute(league.id)
+
+    session.flash('success', `Updated ${event.tournament.name}`)
+
+    return response.redirect().toRoute('events.show', { league: league.slug, event: event.id })
+  }
+
+  private async loadCountedEvent(leagueId: string, eventId: string): Promise<Event | null> {
+    const counted = await db
+      .from('league_events')
+      .where('league_id', leagueId)
+      .where('event_id', eventId)
+      .first()
+
+    if (!counted) return null
+
+    return Event.query().where('id', eventId).preload('tournament').first()
+  }
+
+  private async restaleAndForceRecompute(leagueId: string): Promise<void> {
+    const auto = await new StalenessService().markLeagueStale(leagueId)
+    for (const rankingId of auto) {
+      await RecomputeRankingJob.dispatch({ rankingId, force: true })
+    }
+  }
 }
 
-function isoDate(value: unknown): string {
-  return new Date(value as string).toISOString().slice(0, 10)
+function isoDate(value: unknown, zone: string): string {
+  return DateTime.fromJSDate(new Date(value as string))
+    .setZone(zone)
+    .toISODate()!
 }

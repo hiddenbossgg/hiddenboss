@@ -32,3 +32,10 @@ export const updateTournamentLocationValidator = vine.create({
   state: place().optional(),
   country: place().use(countryCode()).optional(),
 })
+
+/**
+ * A league admin's manual correction to a tournament's start date.
+ */
+export const updateTournamentDateValidator = vine.create({
+  startAt: vine.date().optional(),
+})

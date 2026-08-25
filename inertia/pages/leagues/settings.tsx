@@ -8,11 +8,13 @@ type Props = {
     name: string
     description: string | null
     visibility: string
+    timezone: string | null
   }
+  timezones: string[]
   canDelete: boolean
 }
 
-const Settings: React.FC<Props> = ({ league, canDelete }) => {
+const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
   return (
     <>
       <LeagueNav slug={league.slug} name={league.name} />
@@ -44,6 +46,22 @@ const Settings: React.FC<Props> = ({ league, canDelete }) => {
                 <option value="public">Public — anyone can see standings</option>
                 <option value="private">Private — visible to admins only</option>
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="timezone">Time zone</label>
+              <select name="timezone" id="timezone" defaultValue={league.timezone ?? ''}>
+                <option value="">UTC (default)</option>
+                {timezones
+                  .filter((zone) => zone !== 'UTC')
+                  .map((zone) => (
+                    <option key={zone} value={zone}>
+                      {zone}
+                    </option>
+                  ))}
+              </select>
+              <small>Tournament dates are shown and edited in this zone. UTC by default.</small>
+              {errors.timezone && <p role="alert">{errors.timezone}</p>}
             </div>
 
             <button type="submit" disabled={processing}>

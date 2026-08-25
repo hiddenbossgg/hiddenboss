@@ -3,6 +3,8 @@ import LeaguePlayer from '#models/league_player'
 import Ranking from '#models/ranking'
 import LeaguePolicy from '#policies/league_policy'
 import { updatePlayerLocationValidator } from '#validators/player'
+import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -179,6 +181,8 @@ export default class PlayersController {
       .where('lpa.league_player_id', player.id)
       .select('pa.platform_key', 'pa.gamer_tag', 'pa.prefix', 'lpa.source', 'lpa.provisional')
 
+    const zone = league.timezone ?? DEFAULT_TIMEZONE
+
     return inertia.render('leagues/player', {
       league: { slug: league.slug, name: league.name },
       canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
@@ -201,7 +205,7 @@ export default class PlayersController {
           }
         : null,
       history: history.map((row) => ({
-        date: isoDate(row.occurred_at),
+        date: isoDate(row.occurred_at, zone),
         rank: row.rank,
         rating: Math.round(Number(row.value)),
       })),
@@ -221,7 +225,7 @@ export default class PlayersController {
           before: Math.round(Number(row.value_before)),
           after: Math.round(Number(row.value_after)),
           delta: Math.round(Number(row.delta)),
-          occurredAt: row.occurred_at ? isoDate(row.occurred_at) : null,
+          occurredAt: row.occurred_at ? isoDate(row.occurred_at, zone) : null,
         }
       }),
       entries: entries.map((row) => ({
@@ -231,7 +235,7 @@ export default class PlayersController {
         placement: row.placement,
         entrantCount: row.entrant_count,
         isDisqualified: row.is_disqualified,
-        startAt: row.start_at ? isoDate(row.start_at) : null,
+        startAt: row.start_at ? isoDate(row.start_at, zone) : null,
       })),
       accounts: accounts.map((row) => ({
         platformKey: row.platform_key,
@@ -357,6 +361,8 @@ async function sidesOf(
   return result
 }
 
-function isoDate(value: unknown): string {
-  return new Date(value as string).toISOString().slice(0, 10)
+function isoDate(value: unknown, zone: string): string {
+  return DateTime.fromJSDate(new Date(value as string))
+    .setZone(zone)
+    .toISODate()!
 }

@@ -1,7 +1,11 @@
 import type React from 'react'
 import { Form } from '@adonisjs/inertia/react'
 
-const CreateLeague: React.FC = () => {
+type Props = {
+  timezones: string[]
+}
+
+const CreateLeague: React.FC<Props> = ({ timezones }) => {
   return (
     <>
       <h1>Create a league</h1>
@@ -37,6 +41,22 @@ const CreateLeague: React.FC = () => {
                 <option value="public">Public — anyone can see standings</option>
                 <option value="private">Private — visible to admins only</option>
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="timezone">Time zone</label>
+              <select name="timezone" id="timezone" defaultValue="">
+                <option value="">UTC (default)</option>
+                {timezones
+                  .filter((zone) => zone !== 'UTC')
+                  .map((zone) => (
+                    <option key={zone} value={zone}>
+                      {zone}
+                    </option>
+                  ))}
+              </select>
+              <small>Tournament dates are shown and edited in this zone.</small>
+              {errors.timezone && <p role="alert">{errors.timezone}</p>}
             </div>
 
             <button type="submit" disabled={processing}>

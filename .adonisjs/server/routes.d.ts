@@ -33,6 +33,7 @@ export type ScannedRoutes = {
     'players.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'player': ParamValue} }
     'events.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
     'events.updateLocation': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
+    'events.updateDate': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'credentials.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'platform': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -105,6 +106,7 @@ export type ScannedRoutes = {
     'rankings.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'players.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'player': ParamValue} }
     'events.updateLocation': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
+    'events.updateDate': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
   }
   DELETE: {
     'leagues.destroy': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
