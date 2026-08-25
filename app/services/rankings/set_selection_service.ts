@@ -1,6 +1,8 @@
 import db from '@adonisjs/lucid/services/db'
 import type Ranking from '#models/ranking'
 import type { RatableSet } from '#lib/rankings/contracts'
+import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
+import { fromLocalDate } from '#lib/time/local_date'
 
 /**
  * Which sets a ranking counts, in the order they should be replayed.
@@ -45,7 +47,7 @@ export class SetSelectionService {
    * and rating systems are order-dependent, so an unstable order would mean a
    * recompute produced different standings from the same data.
    */
-  async forRanking(ranking: Ranking): Promise<RatableSet[]> {
+  async forRanking(ranking: Ranking, zone: string = DEFAULT_TIMEZONE): Promise<RatableSet[]> {
     const requirements = (ranking.requirements ?? {}) as SelectionRequirements
 
     const query = db
@@ -102,7 +104,7 @@ export class SetSelectionService {
          sets.id asc`
       )
 
-    this.applyDateRange(query, ranking, requirements)
+    this.applyDateRange(query, ranking, requirements, zone)
 
     if (requirements.entryKinds?.length) {
       query.whereIn('events.entry_kind', requirements.entryKinds)
@@ -148,13 +150,23 @@ export class SetSelectionService {
       .filter((set): set is RatableSet => set !== null)
   }
 
-  private applyDateRange(query: any, ranking: Ranking, requirements: SelectionRequirements) {
+  private applyDateRange(
+    query: any,
+    ranking: Ranking,
+    requirements: SelectionRequirements,
+    zone: string
+  ) {
     // Requirements win over the ranking's own dates when both are present.
-    const from = requirements.dateRange?.from ?? ranking.startsAt?.toISODate()
-    const to = requirements.dateRange?.to ?? ranking.endsAt?.toISODate()
+    const fromDate = requirements.dateRange?.from ?? ranking.startsAt?.toISODate()
+    const toDate = requirements.dateRange?.to ?? ranking.endsAt?.toISODate()
 
-    if (from) query.where('tournaments.start_at', '>=', from)
-    if (to) query.where('tournaments.start_at', '<=', `${to} 23:59:59`)
+    const from = fromLocalDate(fromDate ?? null, zone)
+    // Exclusive next-midnight rather than an inclusive `23:59:59`, so a DST
+    // transition day is still bounded correctly.
+    const to = toDate ? fromLocalDate(toDate, zone)!.plus({ days: 1 }) : null
+
+    if (from) query.where('tournaments.start_at', '>=', from.toJSDate())
+    if (to) query.where('tournaments.start_at', '<', to.toJSDate())
   }
 
   /**

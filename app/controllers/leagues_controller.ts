@@ -4,6 +4,8 @@ import LeagueEvent from '#models/league_event'
 import Ranking from '#models/ranking'
 import LeaguePolicy from '#policies/league_policy'
 import { LeagueClearingService } from '#services/leagues/league_clearing_service'
+import { StalenessService } from '#services/rankings/staleness_service'
+import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import db from '@adonisjs/lucid/services/db'
 import { createLeagueValidator, updateLeagueValidator } from '#validators/league'
 import { DEFAULT_TIMEZONE, TIMEZONES } from '#lib/geo/timezones'
@@ -121,6 +123,7 @@ export default class LeaguesController {
 
   async update({ league, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateLeagueValidator)
+    const timezoneChanged = payload.timezone !== undefined && payload.timezone !== league.timezone
 
     league.name = payload.name
     league.description = payload.description ?? null
@@ -131,6 +134,13 @@ export default class LeaguesController {
       league.timezone = payload.timezone
     }
     await league.save()
+
+    if (timezoneChanged) {
+      const auto = await new StalenessService().markLeagueRankingsWithDateRangeStale(league.id)
+      for (const rankingId of auto) {
+        await RecomputeRankingJob.dispatch({ rankingId })
+      }
+    }
 
     return response.redirect().toRoute('leagues.edit', { league: league.slug })
   }

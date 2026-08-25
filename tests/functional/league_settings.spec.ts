@@ -1,7 +1,9 @@
 import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { DateTime } from 'luxon'
 import League from '#models/league'
 import LeagueAdmin from '#models/league_admin'
+import Ranking from '#models/ranking'
 import User from '#models/user'
 
 /**
@@ -96,5 +98,103 @@ test.group('league settings', (group) => {
       .redirects(0)
 
     response.assertStatus(403)
+  })
+
+  /**
+   * `SetSelectionService` reanchors a ranking's date range against its
+   * league's current time zone on every recompute (see
+   * `ranking_date_range_timezone.spec.ts`), so a league-level zone change can
+   * change what such a ranking counts — but only for rankings that actually
+   * have a range; one with no range never reads it.
+   */
+  test('changing the time zone recomputes an auto ranking with a date range', async ({
+    client,
+    assert,
+  }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await Ranking.create({
+      leagueId: league.id,
+      slug: 'ranking',
+      name: 'Ranking',
+      algorithm: 'elo',
+      recomputeMode: 'auto',
+      startsAt: DateTime.fromISO('2026-01-01'),
+      published: true,
+    })
+
+    const response = await client
+      .patch(`/${league.slug}`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .fields({ name: league.name, timezone: 'America/New_York' })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    assert.isNotNull(
+      reloaded.latestRecomputeId,
+      'nothing else could have produced a recompute for a ranking with no prior one'
+    )
+  })
+
+  test('changing the time zone leaves a ranking with no date range untouched', async ({
+    client,
+    assert,
+  }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await Ranking.create({
+      leagueId: league.id,
+      slug: 'ranking',
+      name: 'Ranking',
+      algorithm: 'elo',
+      recomputeMode: 'auto',
+      published: true,
+    })
+
+    const response = await client
+      .patch(`/${league.slug}`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .fields({ name: league.name, timezone: 'America/New_York' })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    assert.isNull(reloaded.latestRecomputeId, 'a rangeless ranking never reads the time zone')
+    assert.isNull(reloaded.recomputeRequestedAt)
+  })
+
+  test('changing the time zone flags a manual ranking with a date range without recomputing it', async ({
+    client,
+    assert,
+  }) => {
+    const { owner, league } = await makeLeagueWithOwner()
+    const ranking = await Ranking.create({
+      leagueId: league.id,
+      slug: 'ranking',
+      name: 'Ranking',
+      algorithm: 'elo',
+      recomputeMode: 'manual',
+      endsAt: DateTime.fromISO('2026-06-30'),
+      published: true,
+    })
+
+    const response = await client
+      .patch(`/${league.slug}`)
+      .loginAs(owner)
+      .withCsrfToken()
+      .fields({ name: league.name, timezone: 'America/New_York' })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const reloaded = await Ranking.findOrFail(ranking.id)
+    assert.isNull(
+      reloaded.latestRecomputeId,
+      'manual rankings wait on an admin, even auto-stale ones'
+    )
+    assert.isNotNull(reloaded.recomputeRequestedAt)
   })
 })
