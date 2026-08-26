@@ -25,15 +25,18 @@ node ace migration:run
 node ace db:seed              # creates a login and a league to work with
 ```
 
-Then run **two** processes:
+Start the web server and background worker together:
 
 ```bash
-npm run dev                   # http://localhost:3333
-node ace queue:work           # background worker — imports do nothing without it
+npm run dev:all               # web app at http://localhost:3333, plus the background worker
 ```
 
 The worker is not optional. Clicking **Import** queues a job; with no worker running the import
 sits at `queued` forever and the page gives no clue why.
+
+`dev:all` is a small Node wrapper around Ace's `serve --hmr` and `queue:work` commands. It forwards
+their output and stops the remaining process when either one exits. Running the commands separately
+is still useful when debugging either process.
 
 Seeded login: **dev@hiddenboss.test** / **password**, with a league at `/dev-league`.
 

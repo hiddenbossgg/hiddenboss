@@ -11,6 +11,7 @@
     "start": "node bin/server.js",
     "build": "node ace build",
     "dev": "node ace serve --hmr",
+    "dev:all": "node scripts/dev.mjs",
     "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
