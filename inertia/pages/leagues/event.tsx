@@ -90,7 +90,7 @@ const TournamentLocationForm: React.FC<LocationFormProps> = ({
   const countrySuggestions = useLocationSuggestions(league, 'country', countryValue)
 
   return (
-    <Form route="events.updateLocation" routeParams={{ league, event }}>
+    <Form route="events.update" routeParams={{ league, event }}>
       {({ errors, processing }) => (
         <>
           <LocationAutocompleteInput
@@ -144,7 +144,7 @@ const TournamentDateForm: React.FC<{ league: string; event: string; startAt: str
   event,
   startAt,
 }) => (
-  <Form route="events.updateDate" routeParams={{ league, event }}>
+  <Form route="events.update" routeParams={{ league, event }}>
     {({ errors, processing }) => (
       <>
         <input type="date" name="startAt" aria-label="Start date" defaultValue={startAt ?? ''} />{' '}

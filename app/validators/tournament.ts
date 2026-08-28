@@ -23,19 +23,11 @@ const countryCode = vine.createRule((value, _options, field) => {
 })
 
 /**
- * A league admin's manual correction to a tournament's location — the same
- * override available for a player, for when a platform reports a tournament's
- * location wrong or not at all.
+ * A league admin's manual correction.
  */
-export const updateTournamentLocationValidator = vine.create({
+export const updateTournamentValidator = vine.create({
   city: place().optional(),
   state: place().optional(),
   country: place().use(countryCode()).optional(),
-})
-
-/**
- * A league admin's manual correction to a tournament's start date.
- */
-export const updateTournamentDateValidator = vine.create({
   startAt: vine.date().optional(),
 })

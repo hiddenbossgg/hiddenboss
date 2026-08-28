@@ -343,28 +343,16 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['destroy']>>>
     }
   }
-  'events.updateLocation': {
+  'events.update': {
     methods: ["PATCH"]
-    pattern: '/:league/events/:event/location'
+    pattern: '/:league/events/:event'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentLocationValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentValidator)>>
       paramsTuple: [ParamValue, ParamValue]
       params: { league: ParamValue; event: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentLocationValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateLocation']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateLocation']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'events.updateDate': {
-    methods: ["PATCH"]
-    pattern: '/:league/events/:event/date'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentDateValidator)>>
-      paramsTuple: [ParamValue, ParamValue]
-      params: { league: ParamValue; event: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentDateValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateDate']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['updateDate']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'credentials.index': {

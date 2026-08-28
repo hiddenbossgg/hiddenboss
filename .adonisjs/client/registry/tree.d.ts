@@ -52,8 +52,7 @@ export interface ApiDefinition {
   }
   events: {
     destroy: typeof routes['events.destroy']
-    updateLocation: typeof routes['events.updateLocation']
-    updateDate: typeof routes['events.updateDate']
+    update: typeof routes['events.update']
     index: typeof routes['events.index']
     show: typeof routes['events.show']
   }

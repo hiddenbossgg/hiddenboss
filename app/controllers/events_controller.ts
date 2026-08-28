@@ -4,10 +4,7 @@ import LeagueEvent from '#models/league_event'
 import LeaguePolicy from '#policies/league_policy'
 import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import { StalenessService } from '#services/rankings/staleness_service'
-import {
-  updateTournamentDateValidator,
-  updateTournamentLocationValidator,
-} from '#validators/tournament'
+import { updateTournamentValidator } from '#validators/tournament'
 import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
 import { fromLocalDate, toLocalDate } from '#lib/time/local_date'
 import { DateTime } from 'luxon'
@@ -279,62 +276,36 @@ export default class EventsController {
   }
 
   /**
-   * A league admin's manual correction to a tournament's location — imported
-   * platform data is sometimes wrong, missing, or just has a typo.
-   *
-   * Tournaments are canonical and shared across every league that counts
-   * them, so this correction is visible to those other leagues too — same as
-   * any other imported tournament field an admin fixes.
+   * A league admin's manual correction to tournament data.
    */
-  async updateLocation({ league, params, request, response, session }: HttpContext) {
+  async update({ league, params, request, response, session }: HttpContext) {
     const event = await this.loadCountedEvent(league.id, params.event)
 
     if (!event) {
       return response.notFound({ message: 'No such event in this league' })
     }
 
-    const payload = await request.validateUsing(updateTournamentLocationValidator)
+    const payload = await request.validateUsing(updateTournamentValidator)
 
+    /**
+     * The location and date dropdowns each submit only their own fields, so
+     * don't touch absent fields.
+     */
+    const zone = league.timezone ?? DEFAULT_TIMEZONE
     event.tournament.merge({
-      city: payload.city || null,
-      state: payload.state || null,
-      country: payload.country || null,
+      ...(payload.city !== undefined ? { city: payload.city || null } : {}),
+      ...(payload.state !== undefined ? { state: payload.state || null } : {}),
+      ...(payload.country !== undefined ? { country: payload.country || null } : {}),
+      ...(payload.startAt !== undefined
+        ? { startAt: fromLocalDate(payload.startAt.toISODate(), zone) }
+        : {}),
     })
     await event.tournament.save()
 
     /**
      * Corrections that don't reorder or add/drop sets get silently skipped so we need to force
-     * a recompute.
-     */
-    await this.restaleAndForceRecompute(league.id)
-
-    session.flash('success', `Updated ${event.tournament.name}`)
-
-    return response.redirect().toRoute('events.show', { league: league.slug, event: event.id })
-  }
-
-  /**
-   * A league admin's manual correction to a tournament's start date.
-   */
-  async updateDate({ league, params, request, response, session }: HttpContext) {
-    const event = await this.loadCountedEvent(league.id, params.event)
-
-    if (!event) {
-      return response.notFound({ message: 'No such event in this league' })
-    }
-
-    const payload = await request.validateUsing(updateTournamentDateValidator)
-
-    const zone = league.timezone ?? DEFAULT_TIMEZONE
-    event.tournament.merge({
-      startAt: fromLocalDate(payload.startAt?.toISODate() ?? null, zone),
-    })
-    await event.tournament.save()
-
-    /**
-     * A tournament's start date is the outer sort key for replay order
-     * (ratings are order-dependent) and the date plotted for its standing,
-     * so a correction needs a real recompute.
+     * a recompute. A start date correction additionally reorders replay (ratings are
+     * order-dependent) and moves the date plotted for the tournament's standing.
      */
     await this.restaleAndForceRecompute(league.id)
 

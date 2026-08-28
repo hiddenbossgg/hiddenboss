@@ -87,13 +87,10 @@ router
 
     router.delete('events/:event', [controllers.Events, 'destroy']).as('events.destroy')
 
-    /** Correcting a tournament's location. Posted from the event page. */
-    router
-      .patch('events/:event/location', [controllers.Events, 'updateLocation'])
-      .as('events.updateLocation')
-
-    /** Correcting a tournament's start date. Posted from the event page. */
-    router.patch('events/:event/date', [controllers.Events, 'updateDate']).as('events.updateDate')
+    /**
+     * Correcting tournament data
+     */
+    router.patch('events/:event', [controllers.Events, 'update']).as('events.update')
 
     router.get('credentials', [controllers.LeagueCredentials, 'index']).as('credentials.index')
     router
