@@ -40,4 +40,30 @@ export class StalenessService {
       .where('id', rankingId)
       .update({ recompute_requested_at: DateTime.now().toSQL() })
   }
+
+  /**
+   * A league time change requires a recompute since new tournaments may fall into or out of
+   * the ranking date range.
+   *
+   * @returns ids of rankings that recompute automatically
+   */
+  async markLeagueRankingsWithDateRangeStale(leagueId: string): Promise<string[]> {
+    const rankings = await Ranking.query()
+      .where('leagueId', leagueId)
+      .where((query) => query.whereNotNull('startsAt').orWhereNotNull('endsAt'))
+
+    if (rankings.length === 0) return []
+
+    await db
+      .from('rankings')
+      .whereIn(
+        'id',
+        rankings.map((ranking) => ranking.id)
+      )
+      .update({ recompute_requested_at: DateTime.now().toSQL() })
+
+    return rankings
+      .filter((ranking) => ranking.recomputeMode === 'auto')
+      .map((ranking) => ranking.id)
+  }
 }

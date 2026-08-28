@@ -319,6 +319,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/identity_corrections_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'players.update': {
+    methods: ["PATCH"]
+    pattern: '/:league/players/:player'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/player').updatePlayerLocationValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; player: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/player').updatePlayerLocationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/players_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/players_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'events.destroy': {
     methods: ["DELETE"]
     pattern: '/:league/events/:event'
@@ -329,6 +341,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['destroy']>>>
+    }
+  }
+  'events.update': {
+    methods: ["PATCH"]
+    pattern: '/:league/events/:event'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { league: ParamValue; event: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'credentials.index': {

@@ -4,6 +4,7 @@
  */
 import { City, Country, State } from 'country-state-city'
 import type { ICity } from 'country-state-city'
+import { normalizeCountry } from '#lib/geo/country'
 
 export type LocationField = 'country' | 'state' | 'city'
 
@@ -32,6 +33,23 @@ function suggestCountries(query: string): LocationSuggestion[] {
       label: `${country.name} (${country.isoCode})`,
       country: country.isoCode,
     }))
+}
+
+/**
+ * State scope values arrive the same way country ones do — either an ISO
+ * code or free text — so they are resolved the same way before filtering.
+ */
+function resolveStateCode(state: string | null, countryCode: string | null): string | null {
+  if (!state) return null
+  const trimmed = state.trim().toLowerCase()
+  if (!trimmed) return null
+
+  const pool = countryCode ? State.getStatesOfCountry(countryCode) : ALL_STATES
+  const match = pool.find(
+    (candidate) =>
+      candidate.isoCode.toLowerCase() === trimmed || candidate.name.toLowerCase() === trimmed
+  )
+  return match?.isoCode ?? null
 }
 
 function suggestStates(query: string, countryCode: string | null): LocationSuggestion[] {
@@ -79,12 +97,14 @@ export function suggestLocations(
   const trimmed = query.trim().toLowerCase()
   if (trimmed.length < MIN_QUERY_LENGTH) return []
 
+  const countryCode = normalizeCountry(scope.country ?? null)
+
   switch (field) {
     case 'country':
       return suggestCountries(trimmed)
     case 'state':
-      return suggestStates(trimmed, scope.country ?? null)
+      return suggestStates(trimmed, countryCode)
     case 'city':
-      return suggestCities(trimmed, scope.country ?? null, scope.state ?? null)
+      return suggestCities(trimmed, countryCode, resolveStateCode(scope.state ?? null, countryCode))
   }
 }

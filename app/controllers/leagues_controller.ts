@@ -4,8 +4,12 @@ import LeagueEvent from '#models/league_event'
 import Ranking from '#models/ranking'
 import LeaguePolicy from '#policies/league_policy'
 import { LeagueClearingService } from '#services/leagues/league_clearing_service'
+import { StalenessService } from '#services/rankings/staleness_service'
+import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import db from '@adonisjs/lucid/services/db'
 import { createLeagueValidator, updateLeagueValidator } from '#validators/league'
+import { DEFAULT_TIMEZONE, TIMEZONES } from '#lib/geo/timezones'
+import { toLocalDate } from '#lib/time/local_date'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -31,7 +35,7 @@ export default class LeaguesController {
   }
 
   async create({ inertia }: HttpContext) {
-    return inertia.render('leagues/create', {})
+    return inertia.render('leagues/create', { timezones: TIMEZONES })
   }
 
   /** Wrapped in a transaction: a league with no administrator would be unreachable through the UI. */
@@ -46,6 +50,7 @@ export default class LeaguesController {
           slug: payload.slug,
           description: payload.description ?? null,
           visibility: payload.visibility ?? 'public',
+          timezone: payload.timezone ?? null,
           createdByUserId: user.id,
         },
         { client: trx }
@@ -73,6 +78,8 @@ export default class LeaguesController {
       .where('published', true)
       .orderBy('name')
 
+    const zone = league.timezone ?? DEFAULT_TIMEZONE
+
     return inertia.render('leagues/show', {
       league: {
         slug: league.slug,
@@ -92,7 +99,7 @@ export default class LeaguesController {
           entryKind: link.event.entryKind,
           gameName: link.event.gameName,
           platformKey: link.event.tournament.platformKey,
-          startAt: link.event.tournament.startAt?.toISODate() ?? null,
+          startAt: toLocalDate(link.event.tournament.startAt, zone),
         }))
         .sort((a, b) => (b.startAt ?? '').localeCompare(a.startAt ?? '')),
       // Drives whether admin navigation is shown; the routes enforce it anyway.
@@ -107,20 +114,33 @@ export default class LeaguesController {
         name: league.name,
         description: league.description,
         visibility: league.visibility,
+        timezone: league.timezone,
       },
+      timezones: TIMEZONES,
       canDelete: await bouncer.with(LeaguePolicy).allows('delete', league),
     })
   }
 
   async update({ league, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateLeagueValidator)
+    const timezoneChanged = payload.timezone !== undefined && payload.timezone !== league.timezone
 
     league.name = payload.name
     league.description = payload.description ?? null
     if (payload.visibility) {
       league.visibility = payload.visibility
     }
+    if (payload.timezone !== undefined) {
+      league.timezone = payload.timezone
+    }
     await league.save()
+
+    if (timezoneChanged) {
+      const auto = await new StalenessService().markLeagueRankingsWithDateRangeStale(league.id)
+      for (const rankingId of auto) {
+        await RecomputeRankingJob.dispatch({ rankingId })
+      }
+    }
 
     return response.redirect().toRoute('leagues.edit', { league: league.slug })
   }

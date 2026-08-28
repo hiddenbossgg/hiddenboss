@@ -11,6 +11,7 @@ import { Elo } from '#lib/rankings/elo'
 import { Glicko2 } from '#lib/rankings/glicko2'
 import { OpenSkill } from '#lib/rankings/openskill'
 import { SetSelectionService } from './set_selection_service.js'
+import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
 import type { RatableSet, RankingAlgorithm, Standing } from '#lib/rankings/contracts'
 import type { TournamentActivity } from '#lib/rankings/activity_requirements'
 
@@ -80,7 +81,7 @@ export class RankingRecomputerService {
      */
     const startedAt = DateTime.now()
 
-    const sets = await this.selection.forRanking(ranking)
+    const sets = await this.selection.forRanking(ranking, league.timezone ?? DEFAULT_TIMEZONE)
     const fingerprint = this.fingerprint(ranking, league, sets)
 
     /** Captured before anything is written, so rank deltas compare correctly. */

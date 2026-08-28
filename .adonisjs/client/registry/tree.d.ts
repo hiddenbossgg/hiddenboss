@@ -45,17 +45,19 @@ export interface ApiDefinition {
   identity: {
     update: typeof routes['identity.update']
   }
+  players: {
+    update: typeof routes['players.update']
+    index: typeof routes['players.index']
+    show: typeof routes['players.show']
+  }
   events: {
     destroy: typeof routes['events.destroy']
+    update: typeof routes['events.update']
     index: typeof routes['events.index']
     show: typeof routes['events.show']
   }
   credentials: {
     index: typeof routes['credentials.index']
     update: typeof routes['credentials.update']
-  }
-  players: {
-    index: typeof routes['players.index']
-    show: typeof routes['players.show']
   }
 }

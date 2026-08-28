@@ -398,7 +398,7 @@ export class LeaguePlayerSchema extends BaseModel {
 }
 
 export class LeagueSchema extends BaseModel {
-  static $columns = ['correctionsVersion', 'createdAt', 'createdByUserId', 'description', 'id', 'identityVersion', 'name', 'slug', 'theme', 'updatedAt', 'visibility'] as const
+  static $columns = ['correctionsVersion', 'createdAt', 'createdByUserId', 'description', 'id', 'identityVersion', 'name', 'slug', 'theme', 'timezone', 'updatedAt', 'visibility'] as const
   $columns = LeagueSchema.$columns
   @column()
   declare correctionsVersion: number
@@ -418,6 +418,8 @@ export class LeagueSchema extends BaseModel {
   declare slug: string
   @column()
   declare theme: Record<string, any>
+  @column()
+  declare timezone: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()

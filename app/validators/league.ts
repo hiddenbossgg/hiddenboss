@@ -1,4 +1,5 @@
 import vine from '@vinejs/vine'
+import { isValidTimezone } from '#lib/geo/timezones'
 
 /**
  * Paths a league slug may not take.
@@ -52,11 +53,28 @@ const name = () => vine.string().trim().minLength(2).maxLength(120)
 const description = () => vine.string().trim().maxLength(2000).nullable()
 const visibility = () => vine.enum(['public', 'private'] as const)
 
+/**
+ * An IANA identifier, checked against the zones ICU knows
+ */
+const timezone = () =>
+  vine
+    .string()
+    .trim()
+    .use(
+      vine.createRule((value, _options, field) => {
+        if (typeof value !== 'string' || !isValidTimezone(value)) {
+          field.report('timezone must be a recognized time zone', 'timezone', field)
+        }
+      })()
+    )
+    .nullable()
+
 export const createLeagueValidator = vine.create({
   name: name(),
   slug: slug().notIn(RESERVED_LEAGUE_SLUGS).unique({ table: 'leagues', column: 'slug' }),
   description: description().optional(),
   visibility: visibility().optional(),
+  timezone: timezone().optional(),
 })
 
 /**
@@ -68,4 +86,5 @@ export const updateLeagueValidator = vine.create({
   name: name(),
   description: description().optional(),
   visibility: visibility().optional(),
+  timezone: timezone().optional(),
 })
