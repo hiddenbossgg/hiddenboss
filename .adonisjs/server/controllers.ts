@@ -5,6 +5,7 @@
 
 export const controllers = {
   Events: () => import('#controllers/events_controller'),
+  HeadToHead: () => import('#controllers/head_to_head_controller'),
   Home: () => import('#controllers/home_controller'),
   IdentityCorrections: () => import('#controllers/identity_corrections_controller'),
   Imports: () => import('#controllers/imports_controller'),

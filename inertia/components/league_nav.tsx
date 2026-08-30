@@ -33,6 +33,10 @@ const LeagueNav: React.FC<Props> = ({ slug, name, canManage = true }) => {
         Events
       </Link>
 
+      <Link route="h2h.index" routeParams={{ league: slug }}>
+        H2H
+      </Link>
+
       {canManage && (
         <>
           <Link route="imports.index" routeParams={{ league: slug }}>

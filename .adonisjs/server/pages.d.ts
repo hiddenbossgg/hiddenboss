@@ -23,6 +23,7 @@ declare module '@adonisjs/inertia/types' {
     'leagues/credentials': ExtractProps<(typeof import('../../inertia/pages/leagues/credentials.tsx'))['default']>
     'leagues/event': ExtractProps<(typeof import('../../inertia/pages/leagues/event.tsx'))['default']>
     'leagues/events': ExtractProps<(typeof import('../../inertia/pages/leagues/events.tsx'))['default']>
+    'leagues/h2h': ExtractProps<(typeof import('../../inertia/pages/leagues/h2h.tsx'))['default']>
     'leagues/imports': ExtractProps<(typeof import('../../inertia/pages/leagues/imports.tsx'))['default']>
     'leagues/index': ExtractProps<(typeof import('../../inertia/pages/leagues/index.tsx'))['default']>
     'leagues/player': ExtractProps<(typeof import('../../inertia/pages/leagues/player.tsx'))['default']>
