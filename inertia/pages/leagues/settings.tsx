@@ -77,12 +77,16 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
       </p>
 
       {canDelete && (
-        <>
-          <h2>Danger zone</h2>
+        <div className="danger-zone">
+          <strong>Danger zone</strong>
 
           <Form route="leagues.clear" routeParams={{ league: league.slug }}>
             {({ processing }) => (
-              <>
+              <div className="danger-action">
+                <p>
+                  Wipes rankings, players and imported events. Admins, credentials and the game list
+                  are kept, and re-importing brings data back.
+                </p>
                 <button
                   type="submit"
                   disabled={processing}
@@ -98,17 +102,14 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
                 >
                   Clear league data
                 </button>
-                <p>
-                  Wipes rankings, players and imported events. Admins, credentials and the game list
-                  are kept, and re-importing brings data back.
-                </p>
-              </>
+              </div>
             )}
           </Form>
 
           <Form route="leagues.destroy" routeParams={{ league: league.slug }}>
             {({ processing }) => (
-              <>
+              <div className="danger-action">
+                <p>Removes the league itself, along with everything in it, permanently.</p>
                 <button
                   type="submit"
                   disabled={processing}
@@ -124,11 +125,10 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
                 >
                   Delete league
                 </button>
-                <p>Removes the league itself, along with everything in it, permanently.</p>
-              </>
+              </div>
             )}
           </Form>
-        </>
+        </div>
       )}
     </>
   )

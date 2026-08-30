@@ -347,10 +347,10 @@ export interface Registry {
     methods: ["PATCH"]
     pattern: '/:league/events/:event'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/tournament').updateTournamentValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/event').updateEventValidator)>>
       paramsTuple: [ParamValue, ParamValue]
       params: { league: ParamValue; event: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/tournament').updateTournamentValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/event').updateEventValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/events_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
