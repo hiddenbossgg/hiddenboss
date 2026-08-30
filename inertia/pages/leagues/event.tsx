@@ -40,6 +40,7 @@ type Props = {
       platformAccountId: string | null
       gamerTag: string | null
       platformKey: string | null
+      profileUrl: string | null
       provisional: boolean
     }>
   }>
@@ -275,7 +276,13 @@ const IdentityTable: React.FC<{
                 <tr key={participant.platformAccountId!}>
                   <td>{entrant.name}</td>
                   <td>
-                    {participant.gamerTag ?? '—'}
+                    {participant.profileUrl && participant.gamerTag ? (
+                      <a href={participant.profileUrl} rel="noreferrer noopener" target="_blank">
+                        {participant.gamerTag}
+                      </a>
+                    ) : (
+                      (participant.gamerTag ?? '—')
+                    )}
                     {participant.platformKey && <> · {participant.platformKey}</>}
                   </td>
                   <td>

@@ -82,6 +82,16 @@ export interface RateLimit {
  */
 export type PlatformFetch = (input: string, init?: RequestInit) => Promise<Response>
 
+/**
+ * The parts of a stored platform account an adapter needs to point at that
+ * user's public page on the platform.
+ */
+export interface PlatformAccountRef {
+  externalUserId: string | null
+  profileSlug: string | null
+  gamerTag: string
+}
+
 export interface PlatformContext {
   /** Validated against the adapter's own schema before it gets here. */
   credentials: Record<string, string>
@@ -157,6 +167,11 @@ export interface PlatformAdapter {
    * are selected by key with a `payload` instead.
    */
   matchUrl(url: string): EventRef | null
+
+  /**
+   * The URL of one account's public profile on the platform.
+   */
+  profileUrl(account: PlatformAccountRef): string | null
 
   /**
    * Converts one event into canonical records, sending each to `sink` as it is

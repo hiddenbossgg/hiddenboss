@@ -19,6 +19,7 @@ import type {
 import type {
   CredentialsSpec,
   ImportSink,
+  PlatformAccountRef,
   PlatformAdapter,
   PlatformContext,
   EventRef,
@@ -107,6 +108,18 @@ export class StartggAdapter implements PlatformAdapter {
       slug: eventSlug ? `tournament/${tournamentSlug}/event/${eventSlug}` : tournamentSlug,
       url,
     }
+  }
+
+  /**
+   * `profileSlug` is start.gg's `user.discriminator` (the bare 8-hex code); the
+   * `user/` routing prefix is kept here rather than in stored data.
+   *
+   * Dormant for now: `EVENT_ENTRANTS_QUERY` does not yet request `discriminator`,
+   * so `profileSlug` is null on every import until the query is extended and the
+   * committed fixtures are re-recorded. Wired ahead so that is a one-line change.
+   */
+  profileUrl(account: PlatformAccountRef): string | null {
+    return account.profileSlug ? `https://www.start.gg/user/${account.profileSlug}` : null
   }
 
   async fetchEvent(ref: EventRef, context: PlatformContext, sink: ImportSink): Promise<void> {
@@ -259,6 +272,7 @@ export class StartggAdapter implements PlatformAdapter {
            * different person.
            */
           externalUserId: participant.user?.id ? String(participant.user.id) : null,
+          profileSlug: participant.user?.discriminator ?? null,
           gamerTag: participant.gamerTag,
           prefix: participant.prefix || null,
           pronouns: participant.user?.genderPronoun || null,

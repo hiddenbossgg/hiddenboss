@@ -206,6 +206,16 @@ test.group('import contract enforcement', () => {
       assert.isNull(adapter.matchUrl(url))
     }
   })
+
+  test('profileUrl is built from the stored handle and null without one', ({ assert }) => {
+    const adapter = new FakePlatformAdapter()
+
+    assert.equal(
+      adapter.profileUrl({ externalUserId: 'u1', profileSlug: 'alice', gamerTag: 'Alice' }),
+      'https://fake.test/u/alice'
+    )
+    assert.isNull(adapter.profileUrl({ externalUserId: 'u2', profileSlug: null, gamerTag: 'Bob' }))
+  })
 })
 
 test.group('platform registry', () => {
@@ -281,6 +291,7 @@ test.group('observed capabilities', () => {
         participants: [
           {
             externalUserId: null,
+            profileSlug: null,
             gamerTag: 'Alice',
             prefix: null,
             pronouns: null,

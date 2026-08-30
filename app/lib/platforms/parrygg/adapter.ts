@@ -12,6 +12,7 @@ import type {
   CredentialsSpec,
   EventRef,
   ImportSink,
+  PlatformAccountRef,
   PlatformAdapter,
   PlatformContext,
 } from '#lib/platforms/contracts'
@@ -83,6 +84,14 @@ export class ParryggAdapter implements PlatformAdapter {
       slug: event ? `${tournament}/${event}` : tournament,
       url,
     }
+  }
+
+  /**
+   * parry.gg looks a public profile up by the same user id it deduplicates
+   * accounts on, which is what `profileSlug` carries.
+   */
+  profileUrl(account: PlatformAccountRef): string | null {
+    return account.profileSlug ? `https://parry.gg/profile/${account.profileSlug}` : null
   }
 
   async fetchEvent(ref: EventRef, context: PlatformContext, sink: ImportSink): Promise<void> {
@@ -250,6 +259,8 @@ export class ParryggAdapter implements PlatformAdapter {
           isDisqualified: false,
           participants: (entrant.users ?? []).map((user: any) => ({
             externalUserId: user.id ? String(user.id) : null,
+            /** parry.gg keys public profiles by the same id it accounts on. */
+            profileSlug: user.id ? String(user.id) : null,
             gamerTag: user.gamerTag,
             prefix: null,
             pronouns: user.pronouns || null,

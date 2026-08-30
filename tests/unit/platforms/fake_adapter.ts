@@ -3,6 +3,7 @@ import logger from '@adonisjs/core/services/logger'
 import type {
   CredentialsSpec,
   ImportSink,
+  PlatformAccountRef,
   PlatformAdapter,
   PlatformContext,
   EventRef,
@@ -37,6 +38,10 @@ export class FakePlatformAdapter implements PlatformAdapter {
     if (!match) return null
 
     return { platform: this.key, slug: match[1], url }
+  }
+
+  profileUrl(account: PlatformAccountRef): string | null {
+    return account.profileSlug ? `https://fake.test/u/${account.profileSlug}` : null
   }
 
   async fetchEvent(ref: EventRef, _context: PlatformContext, sink: ImportSink): Promise<void> {
@@ -89,6 +94,7 @@ export class FakePlatformAdapter implements PlatformAdapter {
         participants: [
           {
             externalUserId: 'u1',
+            profileSlug: 'alice',
             gamerTag: 'Alice',
             prefix: null,
             pronouns: 'she/her',
@@ -107,6 +113,7 @@ export class FakePlatformAdapter implements PlatformAdapter {
         participants: [
           {
             externalUserId: 'u2',
+            profileSlug: null,
             gamerTag: 'Bob',
             prefix: 'TSM',
             pronouns: null,
