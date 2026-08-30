@@ -50,10 +50,6 @@ function hasLocationRequirement(requirements: ActivityRequirement[]): boolean {
   )
 }
 
-/**
- * Normalises `minEntrants` and `location` to explicit `null`s rather than an
- * absent key, so a stored clause always matches `ActivityRequirement`.
- */
 function normaliseActivityRequirements(
   requirements:
     | Array<{
@@ -92,9 +88,6 @@ export default class RankingsController {
 
   /**
    * A ranking's standings.
-   *
-   * Read from the latest completed run rather than computed here — that is what
-   * keeps this a single indexed read and makes the page cacheable.
    */
   async show({ league, params, bouncer, response, inertia }: HttpContext) {
     const ranking = await Ranking.query()
@@ -106,34 +99,18 @@ export default class RankingsController {
       return response.notFound({ message: 'No such ranking' })
     }
 
-    const allStandings = ranking.latestRecomputeId
+    const standings = ranking.latestRecomputeId
       ? await RankingStanding.query()
           .where('rankingRecomputeId', ranking.latestRecomputeId)
           .preload('leaguePlayer')
           .orderBy('rank')
       : []
 
-    /**
-     * Applied here rather than at recompute time — a player becomes
-     * ineligible because the requirements changed, not because any data did.
-     * Rank numbers are left as computed, so a player sitting just under a
-     * clause does not shift everyone below them.
-     *
-     * `flagInactive` chooses how that ineligibility is shown: dropped from
-     * the page entirely (the default), or kept and marked, which a league
-     * wants when players are close and visibility matters more than a clean
-     * cutoff.
-     */
     const requirements = activityRequirementsOf(ranking)
     const dqPolicy = (ranking.dqPolicy ?? DEFAULT_DQ_POLICY) as DqPolicy
     const inactive = (standing: RankingStanding) =>
       requirements.length > 0 &&
       !meetsActivityRequirements(standing.tournamentActivity ?? [], requirements, dqPolicy)
-
-    const standings =
-      requirements.length > 0 && !ranking.flagInactive
-        ? allStandings.filter((standing) => !inactive(standing))
-        : allStandings
 
     return inertia.render('leagues/ranking', {
       league: { slug: league.slug, name: league.name },
@@ -148,12 +125,9 @@ export default class RankingsController {
         startsAt: ranking.startsAt?.toISODate() ?? null,
         endsAt: ranking.endsAt?.toISODate() ?? null,
         activityRequirements: requirements,
-        flagInactive: ranking.flagInactive,
         dqPolicy,
         /**
-         * A worker is replaying this ranking right now. Distinct from
-         * `isStale`, which is also true for a manual ranking waiting on an
-         * admin — polling on that alone would never stop.
+         * A worker is replaying this ranking right now.
          */
         isRecomputing:
           (await RankingRecompute.query()
@@ -166,6 +140,9 @@ export default class RankingsController {
         previousRank: standing.previousRank,
         player: standing.leaguePlayer.displayTag,
         playerSlug: standing.leaguePlayer.slug,
+        city: standing.leaguePlayer.city,
+        state: standing.leaguePlayer.state,
+        country: standing.leaguePlayer.country,
         // Postgres returns numeric as a string; ratings are whole numbers here.
         rating: Math.round(Number(standing.value)),
         wins: standing.wins,
@@ -195,7 +172,6 @@ export default class RankingsController {
       startsAt: payload.startsAt ?? null,
       endsAt: payload.endsAt ?? null,
       activityRequirements: normaliseActivityRequirements(payload.activityRequirements),
-      flagInactive: payload.flagInactive ?? false,
       dqPolicy: payload.dqPolicy ?? DEFAULT_DQ_POLICY,
       published: true,
     })
@@ -227,7 +203,6 @@ export default class RankingsController {
         startsAt: ranking.startsAt?.toISODate() ?? null,
         endsAt: ranking.endsAt?.toISODate() ?? null,
         activityRequirements: activityRequirementsOf(ranking),
-        flagInactive: ranking.flagInactive,
         dqPolicy: (ranking.dqPolicy ?? DEFAULT_DQ_POLICY) as DqPolicy,
       },
     })
@@ -259,16 +234,13 @@ export default class RankingsController {
       startsAt: payload.startsAt ?? null,
       endsAt: payload.endsAt ?? null,
       activityRequirements: newActivityRequirements,
-      flagInactive: payload.flagInactive ?? false,
       dqPolicy: payload.dqPolicy ?? DEFAULT_DQ_POLICY,
     })
     await ranking.save()
 
     /**
      * The date range bounds which sets are selected for rating, so a change
-     * needs replaying. minEntrants and the DQ policy are a read-time filter
-     * over data every standing already stores, so on their own they never
-     * need a recompute.
+     * needs replaying.
      */
     if (needsRecompute) {
       await new StalenessService().request(ranking.id)

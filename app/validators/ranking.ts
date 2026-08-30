@@ -56,8 +56,6 @@ export const createRankingValidator = vine.create({
    * entrants and 5 tournaments of any size.
    */
   activityRequirements: vine.array(activityRequirement).optional(),
-  /** false (default): drop them from the page. true: keep them, flagged. */
-  flagInactive: vine.boolean().optional(),
   /** Only matters once activity requirements are set. Omitted means the default. */
   dqPolicy: dqPolicy.optional(),
 })
@@ -71,6 +69,5 @@ export const updateRankingValidator = vine.create({
   startsAt: vine.date().optional(),
   endsAt: vine.date().optional(),
   activityRequirements: vine.array(activityRequirement).optional(),
-  flagInactive: vine.boolean().optional(),
   dqPolicy: dqPolicy.optional(),
 })
