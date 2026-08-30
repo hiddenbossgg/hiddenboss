@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
 import RankingHistoryChart from '../../components/ranking_history_chart.js'
@@ -30,9 +30,10 @@ type Props = {
   history: HistoryPoint[]
   matches: Array<{
     setId: string
+    eventId: string
     label: string
     round: string | null
-    opponent: string | null
+    opponents: Array<{ slug: string; displayTag: string }>
     won: boolean
     score: string | null
     before: number
@@ -58,9 +59,10 @@ type Props = {
   }>
 }
 
-type LocationFormProps = {
+type PlayerEditFormProps = {
   league: string
   player: string
+  displayTag: string
   city: string | null
   state: string | null
   country: string | null
@@ -70,9 +72,10 @@ type LocationFormProps = {
  * Own component, not inlined below: it needs `useLocationSuggestions` state
  * per field, which only makes sense attached to a stable component instance.
  */
-const PlayerLocationForm: React.FC<LocationFormProps> = ({
+const PlayerEditForm: React.FC<PlayerEditFormProps> = ({
   league,
   player,
+  displayTag,
   city,
   state,
   country,
@@ -94,43 +97,52 @@ const PlayerLocationForm: React.FC<LocationFormProps> = ({
     <Form route="players.update" routeParams={{ league, player }}>
       {({ errors, processing }) => (
         <>
-          <LocationAutocompleteInput
-            name="city"
-            ariaLabel="City"
-            placeholder="city"
-            value={cityValue}
-            suggestions={citySuggestions}
-            onChange={setCityValue}
-            onSelect={(suggestion) => {
-              setCityValue(suggestion.city ?? suggestion.label)
-              if (suggestion.state) setStateValue(suggestion.state)
-              if (suggestion.country) setCountryValue(suggestion.country)
-            }}
-          />{' '}
-          <LocationAutocompleteInput
-            name="state"
-            ariaLabel="State or province"
-            placeholder="state/province"
-            value={stateValue}
-            suggestions={stateSuggestions}
-            onChange={setStateValue}
-            onSelect={(suggestion) => {
-              setStateValue(suggestion.state ?? suggestion.label)
-              if (suggestion.country) setCountryValue(suggestion.country)
-            }}
-          />{' '}
-          <LocationAutocompleteInput
-            name="country"
-            ariaLabel="Country"
-            placeholder="country"
-            value={countryValue}
-            suggestions={countrySuggestions}
-            onChange={setCountryValue}
-            onSelect={(suggestion) => setCountryValue(suggestion.country ?? suggestion.label)}
-          />{' '}
+          <label>
+            Tag <input type="text" name="displayTag" defaultValue={displayTag} />
+          </label>
+          <label>
+            Location
+            <div className="location-fields">
+              <LocationAutocompleteInput
+                name="city"
+                ariaLabel="City"
+                placeholder="city"
+                value={cityValue}
+                suggestions={citySuggestions}
+                onChange={setCityValue}
+                onSelect={(suggestion) => {
+                  setCityValue(suggestion.city ?? suggestion.label)
+                  if (suggestion.state) setStateValue(suggestion.state)
+                  if (suggestion.country) setCountryValue(suggestion.country)
+                }}
+              />
+              <LocationAutocompleteInput
+                name="state"
+                ariaLabel="State or province"
+                placeholder="state/province"
+                value={stateValue}
+                suggestions={stateSuggestions}
+                onChange={setStateValue}
+                onSelect={(suggestion) => {
+                  setStateValue(suggestion.state ?? suggestion.label)
+                  if (suggestion.country) setCountryValue(suggestion.country)
+                }}
+              />
+              <LocationAutocompleteInput
+                name="country"
+                ariaLabel="Country"
+                placeholder="country"
+                value={countryValue}
+                suggestions={countrySuggestions}
+                onChange={setCountryValue}
+                onSelect={(suggestion) => setCountryValue(suggestion.country ?? suggestion.label)}
+              />
+            </div>
+          </label>
           <button type="submit" disabled={processing}>
-            Save location
+            Save
           </button>
+          {errors.displayTag && <p role="alert">{errors.displayTag}</p>}
           {errors.city && <p role="alert">{errors.city}</p>}
           {errors.state && <p role="alert">{errors.state}</p>}
           {errors.country && <p role="alert">{errors.country}</p>}
@@ -142,12 +154,12 @@ const PlayerLocationForm: React.FC<LocationFormProps> = ({
 
 /** Groups consecutive matches under the event they were played in. */
 function byEvent(matches: Props['matches']) {
-  const groups: Array<{ label: string; matches: Props['matches'] }> = []
+  const groups: Array<{ eventId: string; label: string; matches: Props['matches'] }> = []
 
   for (const match of matches) {
     const last = groups[groups.length - 1]
     if (last?.label === match.label) last.matches.push(match)
-    else groups.push({ label: match.label, matches: [match] })
+    else groups.push({ eventId: match.eventId, label: match.label, matches: [match] })
   }
 
   return groups
@@ -179,10 +191,11 @@ const PlayerProfile: React.FC<Props> = ({
 
       {canManage && (
         <details>
-          <summary>Edit location</summary>
-          <PlayerLocationForm
+          <summary>Edit player</summary>
+          <PlayerEditForm
             league={league.slug}
             player={player.slug}
+            displayTag={player.displayTag}
             city={player.city}
             state={player.state}
             country={player.country}
@@ -214,7 +227,11 @@ const PlayerProfile: React.FC<Props> = ({
       ) : (
         byEvent(matches).map((group) => (
           <div key={group.label}>
-            <h3>{group.label}</h3>
+            <h3>
+              <Link route="events.show" routeParams={{ league: league.slug, event: group.eventId }}>
+                {group.label}
+              </Link>
+            </h3>
             <div className="table-scroll">
               <table>
                 <thead>
@@ -231,7 +248,21 @@ const PlayerProfile: React.FC<Props> = ({
                   {group.matches.map((match) => (
                     <tr key={match.setId}>
                       <td>{match.won ? 'Win' : 'Loss'}</td>
-                      <td>{match.opponent ?? '—'}</td>
+                      <td>
+                        {match.opponents.length === 0
+                          ? '—'
+                          : match.opponents.map((opponent, index) => (
+                              <Fragment key={opponent.slug}>
+                                {index > 0 && ' & '}
+                                <Link
+                                  route="players.show"
+                                  routeParams={{ league: league.slug, player: opponent.slug }}
+                                >
+                                  {opponent.displayTag}
+                                </Link>
+                              </Fragment>
+                            ))}
+                      </td>
                       <td>{match.score ?? '—'}</td>
                       <td>{match.round ?? '—'}</td>
                       {/* The point of ranking_set_deltas: not just that it moved, but by how much. */}

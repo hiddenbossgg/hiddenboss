@@ -82,7 +82,7 @@ router
      */
     router.post('identity', [controllers.IdentityCorrections, 'update']).as('identity.update')
 
-    /** Correcting a player's location. Posted from the player page. */
+    /** Correcting a player's tag and location. Posted from the player page. */
     router.patch('players/:player', [controllers.Players, 'update']).as('players.update')
 
     router.delete('events/:event', [controllers.Events, 'destroy']).as('events.destroy')

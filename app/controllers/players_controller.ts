@@ -2,8 +2,9 @@ import db from '@adonisjs/lucid/services/db'
 import LeaguePlayer from '#models/league_player'
 import Ranking from '#models/ranking'
 import LeaguePolicy from '#policies/league_policy'
-import { updatePlayerLocationValidator } from '#validators/player'
+import { updatePlayerValidator } from '#validators/player'
 import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
+import { normalizeCountry, normalizeState } from '#lib/geo/country'
 import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -122,6 +123,7 @@ export default class PlayersController {
             's.entrant_a_id',
             's.entrant_b_id',
             's.winner_entrant_id',
+            'e.id as event_id',
             'e.name as event_name',
             't.name as tournament_name'
           )
@@ -217,9 +219,10 @@ export default class PlayersController {
 
         return {
           setId: row.set_id,
+          eventId: row.event_id,
           label: `${row.tournament_name} — ${row.event_name}`,
           round: row.full_round_text,
-          opponent: side?.opponents.get(player.id) ?? null,
+          opponents: side?.opponents.get(player.id) ?? [],
           won: row.winner_entrant_id === (playerIsA ? row.entrant_a_id : row.entrant_b_id),
           score: mine === null && theirs === null ? null : `${mine ?? '—'}–${theirs ?? '—'}`,
           before: Math.round(Number(row.value_before)),
@@ -248,8 +251,7 @@ export default class PlayersController {
   }
 
   /**
-   * A league admin's manual correction to a player's location — imported
-   * platform data is sometimes wrong, missing, or just has a typo.
+   * A league admin's manual correction to a player
    */
   async update({ league, params, request, response, session }: HttpContext) {
     const player = await LeaguePlayer.query()
@@ -262,12 +264,14 @@ export default class PlayersController {
       return response.notFound({ message: 'No such player' })
     }
 
-    const payload = await request.validateUsing(updatePlayerLocationValidator)
+    const payload = await request.validateUsing(updatePlayerValidator)
 
+    const country = normalizeCountry(payload.country || null)
     player.merge({
+      displayTag: payload.displayTag,
       city: payload.city || null,
-      state: payload.state || null,
-      country: payload.country || null,
+      state: normalizeState(payload.state || null, country),
+      country,
     })
     await player.save()
 
@@ -278,11 +282,7 @@ export default class PlayersController {
 }
 
 /**
- * Which ranking a profile is read against.
- *
- * A rating only means something relative to one ranking, and a league runs
- * several — seasons, all-time, algorithm comparisons. An explicit slug wins;
- * otherwise the first published ranking that has actually been computed.
+ * Resolve ranking a profile is read against.
  */
 async function resolveRanking(leagueId: string, slug: unknown): Promise<Ranking | null> {
   if (typeof slug === 'string' && slug.length > 0) {
@@ -298,18 +298,16 @@ async function resolveRanking(leagueId: string, slug: unknown): Promise<Ranking 
     .first()
 }
 
+type Opponent = { slug: string; displayTag: string }
+
 /**
  * Who played on each side of the given sets.
- *
- * Read in one query rather than per row: a set names entrants, an entrant is
- * 1..N participants, and each participant maps to a league player, so working
- * out an opponent is three joins deep. Doubles is why the opponent is a list.
  */
 async function sidesOf(
   leagueId: string,
   setIds: string[]
-): Promise<Map<string, { aPlayers: Set<string>; opponents: Map<string, string> }>> {
-  const result = new Map<string, { aPlayers: Set<string>; opponents: Map<string, string> }>()
+): Promise<Map<string, { aPlayers: Set<string>; opponents: Map<string, Opponent[]> }>> {
+  const result = new Map<string, { aPlayers: Set<string>; opponents: Map<string, Opponent[]> }>()
   if (setIds.length === 0) return result
 
   const rows = await db
@@ -327,6 +325,7 @@ async function sidesOf(
       's.entrant_a_id',
       'en.id as entrant_id',
       'lp.id as player_id',
+      'lp.slug',
       'lp.display_tag'
     )
 
@@ -339,20 +338,22 @@ async function sidesOf(
 
   for (const [setId, list] of bySet) {
     const aPlayers = new Set<string>()
-    const opponents = new Map<string, string>()
+    const opponents = new Map<string, Opponent[]>()
 
     for (const row of list) {
       if (row.entrant_id === row.entrant_a_id) aPlayers.add(row.player_id)
 
-      const others = [
-        ...new Set(
-          list
-            .filter((other) => other.entrant_id !== row.entrant_id)
-            .map((other) => other.display_tag)
-        ),
-      ]
+      /**
+       * Everyone on the other entrant, deduped by player.
+       */
+      const others = new Map<string, Opponent>()
+      for (const other of list) {
+        if (other.entrant_id !== row.entrant_id) {
+          others.set(other.player_id, { slug: other.slug, displayTag: other.display_tag })
+        }
+      }
 
-      if (others.length > 0) opponents.set(row.player_id, others.join(' & '))
+      if (others.size > 0) opponents.set(row.player_id, [...others.values()])
     }
 
     result.set(setId, { aPlayers, opponents })

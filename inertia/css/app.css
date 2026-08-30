@@ -546,6 +546,21 @@ main > .hero:first-child {
   position: relative;
   display: inline-block;
 }
+
+/**
+ * The three location inputs under one "Location" label in an edit form — kept
+ * on their own row below the label so they read like every other stacked
+ * field, and sharing the row width in equal parts.
+ */
+.location-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.location-fields .location-autocomplete {
+  flex: 1;
+  min-width: 140px;
+}
 .location-suggestions {
   position: absolute;
   z-index: 10;
