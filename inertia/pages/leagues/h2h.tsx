@@ -154,12 +154,14 @@ const H2h: React.FC<Props> = ({ league, canManage, ranking, rankings, players, m
     rowId: string,
     colId: string
   ): { label: string; result: 'win' | 'loss' | 'even' | null } => {
+    // A player against themselves is the only cell that gets a dash.
     if (rowId === colId) return { label: '—', result: null }
 
     const lo = rowId < colId ? rowId : colId
     const hi = rowId < colId ? colId : rowId
     const matchup = byPair.get(`${lo}|${hi}`)
-    if (!matchup) return { label: '—', result: null }
+    // A pair that has never met reads as a 0–0 record, left uncolored.
+    if (!matchup) return { label: '0 – 0', result: null }
 
     const rowWins = rowId === matchup.loId ? matchup.loWins : matchup.hiWins
     const colWins = rowId === matchup.loId ? matchup.hiWins : matchup.loWins
