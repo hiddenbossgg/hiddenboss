@@ -485,9 +485,16 @@ td {
 .h2h-table thead th {
   text-align: center;
 }
+/**
+ * Starts ~70vh tall and can be dragged taller (or shorter) by its bottom
+ * edge — the browser's own resize grip, no JS. `min-height` keeps it from
+ * being collapsed away; no `max-height`, so it can grow past the viewport.
+ */
 .h2h-scroll {
   overflow: auto;
-  max-height: 70vh;
+  height: 70vh;
+  min-height: 180px;
+  resize: vertical;
 }
 .h2h-table thead th {
   position: sticky;
