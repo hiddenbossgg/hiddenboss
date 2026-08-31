@@ -229,6 +229,27 @@ textarea[data-invalid='true'] {
   margin-top: 16px;
 }
 
+/**
+ * A disclosure panel ("Edit event", "Edit player", "Filter players"). Once
+ * open, a border boxes its contents off from the page around it; collapsed,
+ * only the summary shows and there is nothing to frame.
+ */
+.edit-panel {
+  margin-top: 16px;
+}
+.edit-panel summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+.edit-panel[open] {
+  border: 1px solid var(--gray-4);
+  border-radius: 8px;
+  padding: 16px;
+}
+.edit-panel[open] summary {
+  margin-bottom: 16px;
+}
+
 /** Set off from the count line above it. */
 .players-sort {
   margin-top: 16px;

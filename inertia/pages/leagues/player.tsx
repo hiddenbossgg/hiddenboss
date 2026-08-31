@@ -251,7 +251,7 @@ const PlayerProfile: React.FC<Props> = ({
       )}
 
       {canManage && (
-        <details>
+        <details className="edit-panel">
           <summary>Edit player</summary>
           <PlayerEditForm
             league={league.slug}

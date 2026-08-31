@@ -282,7 +282,7 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
       )}
 
       {players.length > 0 && (
-        <details className="list-filters">
+        <details className="list-filters edit-panel">
           <summary>Filter players</summary>
 
           <p>
