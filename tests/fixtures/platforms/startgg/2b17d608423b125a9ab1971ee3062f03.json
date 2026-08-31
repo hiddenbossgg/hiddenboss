@@ -2,7 +2,7 @@
   "request": {
     "url": "https://api.start.gg/gql/alpha",
     "method": "POST",
-    "body": "{\"query\":\"\\n  query EventEntrantsQuery($eventId: ID!, $page: Int!, $perPage: Int!) {\\n    event(id: $eventId) {\\n      entrants(query: { page: $page, perPage: $perPage }) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          name\\n          isDisqualified\\n          seeds {\\n            seedNum\\n          }\\n          standing {\\n            placement\\n          }\\n          participants {\\n            id\\n            gamerTag\\n            prefix\\n            user {\\n              id\\n              genderPronoun\\n              location {\\n                country\\n                state\\n                city\\n              }\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"eventId\":1668078,\"page\":1,\"perPage\":50}}"
+    "body": "{\"query\":\"\\n  query EventEntrantsQuery($eventId: ID!, $page: Int!, $perPage: Int!) {\\n    event(id: $eventId) {\\n      entrants(query: { page: $page, perPage: $perPage }) {\\n        pageInfo {\\n          totalPages\\n        }\\n        nodes {\\n          id\\n          name\\n          isDisqualified\\n          seeds {\\n            seedNum\\n          }\\n          standing {\\n            placement\\n          }\\n          participants {\\n            id\\n            gamerTag\\n            prefix\\n            user {\\n              id\\n              discriminator\\n              genderPronoun\\n              location {\\n                country\\n                state\\n                city\\n              }\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n\",\"variables\":{\"eventId\":1668078,\"page\":1,\"perPage\":50}}"
   },
   "status": 200,
   "body": {
@@ -32,6 +32,7 @@
                   "prefix": "",
                   "user": {
                     "id": 1402401,
+                    "discriminator": "1a2d95b5",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -57,6 +58,7 @@
                   "prefix": "",
                   "user": {
                     "id": 455811,
+                    "discriminator": "b006a932",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -82,6 +84,7 @@
                   "prefix": "CSUF",
                   "user": {
                     "id": 944605,
+                    "discriminator": "a725d5f4",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -107,6 +110,7 @@
                   "prefix": null,
                   "user": {
                     "id": 3440139,
+                    "discriminator": "20992fe7",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -132,6 +136,7 @@
                   "prefix": null,
                   "user": {
                     "id": 3440138,
+                    "discriminator": "b3fee4f1",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -157,6 +162,7 @@
                   "prefix": "",
                   "user": {
                     "id": 2134847,
+                    "discriminator": "e4c6b8a8",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -182,6 +188,7 @@
                   "prefix": null,
                   "user": {
                     "id": 2157674,
+                    "discriminator": "2f09197f",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -207,6 +214,7 @@
                   "prefix": "CSULB OFM",
                   "user": {
                     "id": 1883005,
+                    "discriminator": "031a6483",
                     "genderPronoun": "He/Him",
                     "location": null
                   }
@@ -232,6 +240,7 @@
                   "prefix": "UCI",
                   "user": {
                     "id": 687692,
+                    "discriminator": "7c236143",
                     "genderPronoun": "He/Him",
                     "location": null
                   }
@@ -257,6 +266,7 @@
                   "prefix": "UCI/POW",
                   "user": {
                     "id": 1579703,
+                    "discriminator": "0ad66499",
                     "genderPronoun": "He/Him",
                     "location": null
                   }
@@ -282,6 +292,7 @@
                   "prefix": "",
                   "user": {
                     "id": 1802387,
+                    "discriminator": "9921647b",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -307,6 +318,7 @@
                   "prefix": "WOD",
                   "user": {
                     "id": 1185523,
+                    "discriminator": "3616c4f3",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -332,6 +344,7 @@
                   "prefix": "GLDD",
                   "user": {
                     "id": 41382,
+                    "discriminator": "0171867d",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -357,6 +370,7 @@
                   "prefix": "",
                   "user": {
                     "id": 1466177,
+                    "discriminator": "109b2746",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -382,6 +396,7 @@
                   "prefix": "",
                   "user": {
                     "id": 1393743,
+                    "discriminator": "11067f5a",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -407,6 +422,7 @@
                   "prefix": "",
                   "user": {
                     "id": 1418674,
+                    "discriminator": "e1a63914",
                     "genderPronoun": null,
                     "location": null
                   }
@@ -432,6 +448,7 @@
                   "prefix": null,
                   "user": {
                     "id": 3116320,
+                    "discriminator": "dd49dc3b",
                     "genderPronoun": null,
                     "location": null
                   }

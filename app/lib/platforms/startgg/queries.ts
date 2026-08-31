@@ -113,6 +113,7 @@ export const EVENT_ENTRANTS_QUERY = `
             prefix
             user {
               id
+              discriminator
               genderPronoun
               location {
                 country

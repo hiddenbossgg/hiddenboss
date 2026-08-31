@@ -54,10 +54,12 @@ type Props = {
   }>
   accounts: Array<{
     platformKey: string
+    platformName: string
     gamerTag: string
     prefix: string | null
     source: string
     provisional: boolean
+    weakIdentity: boolean
     profileUrl: string | null
   }>
 }
@@ -337,8 +339,8 @@ const PlayerProfile: React.FC<Props> = ({
 
       <h2>Accounts ({accounts.length})</h2>
       <ul>
-        {accounts.map((account) => (
-          <li key={`${account.platformKey}-${account.gamerTag}`}>
+        {accounts.map((account, index) => (
+          <li key={`${account.platformKey}-${account.gamerTag}-${index}`}>
             {account.prefix ? `${account.prefix} | ` : ''}
             {account.profileUrl ? (
               <a href={account.profileUrl} rel="noreferrer noopener" target="_blank">
@@ -347,7 +349,9 @@ const PlayerProfile: React.FC<Props> = ({
             ) : (
               account.gamerTag
             )}{' '}
-            · {account.platformKey}
+            {account.weakIdentity
+              ? `· ${account.platformName} entrant, no linked account`
+              : `· ${account.platformName}`}
             {account.provisional && ' · needs review'}
           </li>
         ))}
