@@ -319,6 +319,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/identity_corrections_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'players.merge': {
+    methods: ["GET","HEAD"]
+    pattern: '/:league/players/merge'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { league: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/player_merges_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/player_merges_controller').default['show']>>>
+    }
+  }
+  'players.merge.store': {
+    methods: ["POST"]
+    pattern: '/:league/players/merge'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/identity').mergePlayersValidator)>>
+      paramsTuple: [ParamValue]
+      params: { league: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/identity').mergePlayersValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/player_merges_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/player_merges_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'players.update': {
     methods: ["PATCH"]
     pattern: '/:league/players/:player'

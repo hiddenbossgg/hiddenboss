@@ -30,6 +30,8 @@ export type ScannedRoutes = {
     'rankings.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'rankings.recompute': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'identity.update': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'players.merge': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'players.merge.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'players.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'player': ParamValue} }
     'events.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
     'events.update': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
@@ -57,6 +59,7 @@ export type ScannedRoutes = {
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.locations': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
+    'players.merge': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -80,6 +83,7 @@ export type ScannedRoutes = {
     'rankings.create': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.locations': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.edit': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
+    'players.merge': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'credentials.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'leagues.show': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
@@ -102,6 +106,7 @@ export type ScannedRoutes = {
     'rankings.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'rankings.recompute': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'ranking': ParamValue} }
     'identity.update': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
+    'players.merge.store': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
   }
   PATCH: {
     'leagues.update': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
