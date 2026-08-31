@@ -198,6 +198,7 @@ export default class PlayersController {
       league: { slug: league.slug, name: league.name },
       canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
       player: {
+        id: player.id,
         slug: player.slug,
         displayTag: player.displayTag,
         pronouns: player.pronouns,

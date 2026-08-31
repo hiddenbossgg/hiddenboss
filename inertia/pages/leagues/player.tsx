@@ -13,6 +13,7 @@ type Props = {
   league: { slug: string; name: string }
   canManage: boolean
   player: {
+    id: string
     slug: string
     displayTag: string
     pronouns: string | null
@@ -251,17 +252,28 @@ const PlayerProfile: React.FC<Props> = ({
       )}
 
       {canManage && (
-        <details className="edit-panel">
-          <summary>Edit player</summary>
-          <PlayerEditForm
-            league={league.slug}
-            player={player.slug}
-            displayTag={player.displayTag}
-            city={player.city}
-            state={player.state}
-            country={player.country}
-          />
-        </details>
+        <>
+          <details className="edit-panel">
+            <summary>Edit player</summary>
+            <PlayerEditForm
+              league={league.slug}
+              player={player.slug}
+              displayTag={player.displayTag}
+              city={player.city}
+              state={player.state}
+              country={player.country}
+            />
+          </details>
+          <p>
+            <Link
+              route="players.merge"
+              routeParams={{ league: league.slug }}
+              data={{ a: player.id }}
+            >
+              Merge with another player
+            </Link>
+          </p>
+        </>
       )}
 
       <h2>Ranking</h2>

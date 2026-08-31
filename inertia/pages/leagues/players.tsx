@@ -263,6 +263,14 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
         {ranking && <> · rated against {ranking.name}</>}
       </p>
 
+      {canManage && players.length > 1 && (
+        <p>
+          <Link route="players.merge" routeParams={{ league: league.slug }}>
+            Merge players
+          </Link>
+        </p>
+      )}
+
       {players.length > 0 && (
         <p className="players-sort">
           <label>

@@ -82,6 +82,13 @@ router
      */
     router.post('identity', [controllers.IdentityCorrections, 'update']).as('identity.update')
 
+    /**
+     * Merging two league players into one. Literal `players/merge` is registered
+     * before the `players/:player` sibling so it is not read as a player slug.
+     */
+    router.get('players/merge', [controllers.PlayerMerges, 'show']).as('players.merge')
+    router.post('players/merge', [controllers.PlayerMerges, 'store']).as('players.merge.store')
+
     /** Correcting a player's tag and location. Posted from the player page. */
     router.patch('players/:player', [controllers.Players, 'update']).as('players.update')
 
