@@ -255,6 +255,7 @@ textarea[data-invalid='true'] {
 }
 
 /** Set off from the count line above it. */
+.events-sort,
 .players-sort {
   margin-top: 16px;
 }
