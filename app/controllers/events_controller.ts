@@ -71,7 +71,17 @@ export default class EventsController {
     })
   }
 
-  async show({ league, bouncer, params, response, inertia }: HttpContext) {
+  async show(ctx: HttpContext) {
+    const { league, params, bouncer, inertia } = ctx
+
+    /**
+     * The `:event` param is a bare UUID; a bad one would otherwise reach
+     * Postgres as invalid syntax and surface as a 500.
+     */
+    if (!isUuid(params.event)) {
+      return this.renderEventNotFound(ctx)
+    }
+
     /**
      * Scoped through `league_events` rather than looked up directly: canonical
      * events are instance-wide, so a league may only read the ones it counts.
@@ -83,13 +93,13 @@ export default class EventsController {
       .first()
 
     if (!counted) {
-      return response.notFound({ message: 'No such event in this league' })
+      return this.renderEventNotFound(ctx)
     }
 
     const event = await Event.query().where('id', params.event).preload('tournament').first()
 
     if (!event) {
-      return response.notFound({ message: 'No such event' })
+      return this.renderEventNotFound(ctx)
     }
 
     /**
@@ -264,10 +274,12 @@ export default class EventsController {
    * this league's `league_events` row.
    */
   async destroy({ league, params, response, session }: HttpContext) {
-    const counted = await LeagueEvent.query()
-      .where('leagueId', league.id)
-      .where('eventId', params.event)
-      .first()
+    const counted = isUuid(params.event)
+      ? await LeagueEvent.query()
+          .where('leagueId', league.id)
+          .where('eventId', params.event)
+          .first()
+      : null
 
     if (!counted) {
       return response.notFound({ message: 'No such event in this league' })
@@ -327,7 +339,17 @@ export default class EventsController {
     return response.redirect().toRoute('events.show', { league: league.slug, event: event.id })
   }
 
+  private async renderEventNotFound(ctx: HttpContext) {
+    ctx.response.status(404)
+    return ctx.inertia.render('leagues/event_not_found', {
+      league: { slug: ctx.league.slug, name: ctx.league.name },
+      canManage: await ctx.bouncer.with(LeaguePolicy).allows('manage', ctx.league),
+    })
+  }
+
   private async loadCountedEvent(leagueId: string, eventId: string): Promise<Event | null> {
+    if (!isUuid(eventId)) return null
+
     const counted = await db
       .from('league_events')
       .where('league_id', leagueId)
@@ -345,6 +367,11 @@ export default class EventsController {
       await RecomputeRankingJob.dispatch({ rankingId, force: true })
     }
   }
+}
+
+/** The `:event` route param is a bare UUID; anything else can't be an event id. */
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
 }
 
 function isoDate(value: unknown, zone: string): string {

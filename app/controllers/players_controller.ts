@@ -84,7 +84,12 @@ export default class PlayersController {
     }
 
     if (!player) {
-      return response.notFound({ message: 'No such player' })
+      response.status(404)
+      return inertia.render('leagues/player_not_found', {
+        league: { slug: league.slug, name: league.name },
+        canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
+        slug: params.player,
+      })
     }
 
     const ranking = await resolveRanking(league.id, request.input('ranking'))

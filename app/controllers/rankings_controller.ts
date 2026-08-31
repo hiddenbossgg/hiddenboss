@@ -96,7 +96,12 @@ export default class RankingsController {
       .first()
 
     if (!ranking) {
-      return response.notFound({ message: 'No such ranking' })
+      response.status(404)
+      return inertia.render('leagues/ranking_not_found', {
+        league: { slug: league.slug, name: league.name },
+        canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
+        slug: params.ranking,
+      })
     }
 
     const standings = ranking.latestRecomputeId
@@ -185,14 +190,19 @@ export default class RankingsController {
       .toRoute('rankings.show', { league: league.slug, ranking: ranking.slug })
   }
 
-  async edit({ league, params, response, inertia }: HttpContext) {
+  async edit({ league, params, bouncer, response, inertia }: HttpContext) {
     const ranking = await Ranking.query()
       .where('leagueId', league.id)
       .where('slug', params.ranking)
       .first()
 
     if (!ranking) {
-      return response.notFound({ message: 'No such ranking' })
+      response.status(404)
+      return inertia.render('leagues/ranking_not_found', {
+        league: { slug: league.slug, name: league.name },
+        canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
+        slug: params.ranking,
+      })
     }
 
     return inertia.render('leagues/ranking_edit', {

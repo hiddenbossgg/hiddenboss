@@ -1,7 +1,13 @@
 import League from '#models/league'
 import LeaguePolicy from '#policies/league_policy'
+import { Exception } from '@adonisjs/core/exceptions'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
+
+/** Thrown rather than `response.notFound(...)` so it renders the 404 status page. */
+function notFound(slug: string): never {
+  throw new Exception(`No league found for "${slug}"`, { status: 404, code: 'E_LEAGUE_NOT_FOUND' })
+}
 
 /**
  * Resolves the `:league` route parameter, authorises it, and puts it on the
@@ -18,7 +24,7 @@ export default class LeagueMiddleware {
     const league = await League.findBy('slug', slug)
 
     if (!league) {
-      return ctx.response.notFound({ message: `No league found for "${slug}"` })
+      notFound(slug)
     }
 
     /**
@@ -28,7 +34,7 @@ export default class LeagueMiddleware {
     const action = options.authorize ?? 'view'
     if (!(await ctx.bouncer.with(LeaguePolicy).allows(action, league))) {
       if (action === 'view') {
-        return ctx.response.notFound({ message: `No league found for "${slug}"` })
+        notFound(slug)
       }
 
       return ctx.response.forbidden({ message: 'You do not administer this league' })

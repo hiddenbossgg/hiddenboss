@@ -10,19 +10,28 @@ export default class HttpExceptionHandler extends ExceptionHandler {
   protected debug = !app.inProduction
 
   /**
-   * Status pages are used to display a custom HTML pages for certain error
-   * codes. You might want to enable them in production only, but feel
-   * free to enable them in development as well.
+   * On in every environment, so a mistyped URL or an unexpected error renders a
+   * real page rather than raw JSON. `debug` still wins for the codes not mapped
+   * below, so a dev 500 keeps its Youch stack trace.
    */
-  protected renderStatusPages = app.inProduction
+  protected renderStatusPages = true
 
   /**
-   * Status pages is a collection of error code range and a callback
-   * to return the HTML contents to send as a response.
+   * A 404 is a normal outcome here — a mistyped slug, an old link — not
+   * something to investigate, so it is handled without a log line. (The base
+   * list is `[400, 422, 401]`.)
+   */
+  protected ignoreStatuses = [400, 401, 404, 422]
+
+  /**
+   * `500..599` is only a status page in production; leaving it unmapped in
+   * development lets `renderErrorAsHTML` fall through to the debug stack trace.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
     '404': (_, { inertia }) => inertia.render('errors/not_found', {}),
-    '500..599': (_, { inertia }) => inertia.render('errors/server_error', {}),
+    ...(app.inProduction
+      ? { '500..599': (_, { inertia }) => inertia.render('errors/server_error', {}) }
+      : {}),
   }
 
   /**
