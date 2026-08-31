@@ -208,6 +208,10 @@ textarea[data-invalid='true'] {
 .ranking-recompute-form {
   margin-top: 12px;
 }
+/** Sets the "Create a ranking" button off from the list or table above it. */
+.ranking-create {
+  margin-top: 16px;
+}
 
 /**
  * A collapsed name/location filter panel above a player table (rankings and
