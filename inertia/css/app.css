@@ -310,9 +310,22 @@ button:hover {
   flex-direction: column;
   gap: 24px;
 }
-.danger-zone > strong {
+.danger-zone > strong,
+.danger-zone > summary {
   color: #fb2c36;
   font-size: 14px;
+  font-weight: 700;
+}
+/* On the settings page the zone is a disclosure, collapsed by default so the
+   destructive actions aren't the first thing in reach. */
+.danger-zone > summary {
+  cursor: pointer;
+}
+/* Collapsed, the box holds only the summary line — drop the flex layout and
+   its column gap, and pad just enough to clear the text. */
+details.danger-zone:not([open]) {
+  display: block;
+  padding: 6px 14px;
 }
 .danger-zone .danger-action {
   display: flex;

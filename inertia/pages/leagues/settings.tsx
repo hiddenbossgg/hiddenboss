@@ -78,8 +78,8 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
       </p>
 
       {canDelete && (
-        <div className="danger-zone">
-          <strong>Danger zone</strong>
+        <details className="danger-zone">
+          <summary>Destructive actions</summary>
 
           <Form route="leagues.clear" routeParams={{ league: league.slug }}>
             {({ processing }) => (
@@ -117,7 +117,7 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
               </div>
             )}
           </Form>
-        </div>
+        </details>
       )}
     </>
   )
