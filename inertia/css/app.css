@@ -284,6 +284,9 @@ textarea[data-invalid='true'] {
 .pager-bottom {
   margin-top: 0px;
 }
+.h2h-download {
+  margin-top: 16px;
+}
 input[data-invalid='true'] + div,
 textarea[data-invalid='true'] + div {
   color: #fb2c36;
