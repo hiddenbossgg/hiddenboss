@@ -17,6 +17,17 @@ type PageSizeOption = '20' | '50' | '100' | 'custom'
 const PRESET_PAGE_SIZES: PageSizeOption[] = ['20', '50', '100']
 const DEFAULT_PAGE_SIZE = 50
 
+type SortMode = 'rating-desc' | 'rating-asc' | 'alpha' | 'alpha-desc'
+
+const SORT_LABELS: Record<SortMode, string> = {
+  'rating-desc': 'Rating (high to low)',
+  'rating-asc': 'Rating (low to high)',
+  'alpha': 'Alphabetical (A–Z)',
+  'alpha-desc': 'Alphabetical (Z–A)',
+}
+const SORT_MODES = Object.keys(SORT_LABELS) as SortMode[]
+const DEFAULT_SORT_MODE: SortMode = 'rating-desc'
+
 type Props = {
   league: { slug: string; name: string }
   canManage: boolean
@@ -42,6 +53,12 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
   )
   const [stateFilter, setStateFilter] = useState(() => initialQueryParams().get('state') ?? '')
   const [cityFilter, setCityFilter] = useState(() => initialQueryParams().get('city') ?? '')
+  const [sortMode, setSortMode] = useState<SortMode>(() => {
+    const fromUrl = initialQueryParams().get('sort')
+    return (SORT_MODES as string[]).includes(fromUrl ?? '')
+      ? (fromUrl as SortMode)
+      : DEFAULT_SORT_MODE
+  })
 
   // `pageSize` from the URL is a plain row count — whichever preset it matches,
   // or "custom" carrying that exact number, so the link doesn't care whether the
@@ -94,6 +111,10 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
     setCustomPageSize(Number.isFinite(parsed) && parsed > 0 ? parsed : 1)
     setPage(0)
   }
+  const changeSortMode = (mode: SortMode) => {
+    setSortMode(mode)
+    setPage(0)
+  }
 
   const countrySuggestions = useLocationSuggestions(league.slug, 'country', countryFilter)
   const stateSuggestions = useLocationSuggestions(league.slug, 'state', stateFilter, {
@@ -128,18 +149,44 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
     countryFilter.trim() !== '' || stateFilter.trim() !== '' || cityFilter.trim() !== ''
   const isFiltering = isSearching || isRegionFiltering
 
-  const filtered = players
-    .filter(
-      (player) =>
-        !isSearching ||
-        searchTerms.some((term) => player.displayTag.toLowerCase() === term.toLowerCase())
-    )
-    .filter(
-      (player) =>
-        locationFieldMatches(player.country, countryFilter) &&
-        locationFieldMatches(player.state, stateFilter) &&
-        locationFieldMatches(player.city, cityFilter)
-    )
+  // Rank is the rating position (1 = best); an unrated player has none, so they
+  // always trail — alphabetically among themselves — whichever way it's sorted.
+  // Same rule as the head-to-head page.
+  const sortPlayers = (list: Props['players']): Props['players'] => {
+    const byRating = (a: Props['players'][number], b: Props['players'][number], sign: 1 | -1) => {
+      if (a.rank !== null && b.rank !== null) return (a.rank - b.rank) * sign
+      if (a.rank !== null) return -1
+      if (b.rank !== null) return 1
+      return a.displayTag.localeCompare(b.displayTag)
+    }
+
+    const sorted = [...list]
+    switch (sortMode) {
+      case 'rating-desc':
+        return sorted.sort((a, b) => byRating(a, b, 1))
+      case 'rating-asc':
+        return sorted.sort((a, b) => byRating(a, b, -1))
+      case 'alpha':
+        return sorted.sort((a, b) => a.displayTag.localeCompare(b.displayTag))
+      case 'alpha-desc':
+        return sorted.sort((a, b) => b.displayTag.localeCompare(a.displayTag))
+    }
+  }
+
+  const filtered = sortPlayers(
+    players
+      .filter(
+        (player) =>
+          !isSearching ||
+          searchTerms.some((term) => player.displayTag.toLowerCase() === term.toLowerCase())
+      )
+      .filter(
+        (player) =>
+          locationFieldMatches(player.country, countryFilter) &&
+          locationFieldMatches(player.state, stateFilter) &&
+          locationFieldMatches(player.city, cityFilter)
+      )
+  )
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
   const currentPage = Math.min(page, pageCount - 1)
@@ -164,10 +211,13 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
     sync('state', stateFilter)
     sync('city', cityFilter)
 
+    if (sortMode !== DEFAULT_SORT_MODE) params.set('sort', sortMode)
+    else params.delete('sort')
+
     const query = params.toString()
     const url = `${window.location.pathname}${query ? `?${query}` : ''}`
     window.history.replaceState(window.history.state, '', url)
-  }, [currentPage, pageSize, search, countryFilter, stateFilter, cityFilter])
+  }, [currentPage, pageSize, search, countryFilter, stateFilter, cityFilter, sortMode])
 
   const shown = filtered.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
 
@@ -212,6 +262,24 @@ const Players: React.FC<Props> = ({ league, canManage, ranking, players }) => {
         )}
         {ranking && <> · rated against {ranking.name}</>}
       </p>
+
+      {players.length > 0 && (
+        <p className="players-sort">
+          <label>
+            Sort{' '}
+            <select
+              value={sortMode}
+              onChange={(event) => changeSortMode(event.target.value as SortMode)}
+            >
+              {SORT_MODES.map((mode) => (
+                <option key={mode} value={mode}>
+                  {SORT_LABELS[mode]}
+                </option>
+              ))}
+            </select>
+          </label>
+        </p>
+      )}
 
       {players.length > 0 && (
         <details className="list-filters">
