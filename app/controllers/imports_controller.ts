@@ -37,6 +37,7 @@ export default class ImportsController {
         label: record.event?.name
           ? `${record.tournament?.name ?? ''} — ${record.event.name}`.replace(/^ — /, '')
           : (record.tournament?.name ?? record.targetUrl ?? 'Pending'),
+        eventId: record.eventId,
         targetUrl: record.targetUrl,
         status: record.status,
         stage: record.stage,
