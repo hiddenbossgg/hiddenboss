@@ -1,8 +1,22 @@
 import type React from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import LocationAutocompleteInput from '../../components/location_autocomplete_input.js'
+import { useLocationSuggestions } from '../../hooks/use_location_suggestions.js'
 import { useLiveUpdates } from '../../hooks/use_live_updates.js'
+import { formatLocation } from '../../lib/format_location.js'
+
+/** Reads the page's own query string once, for the initial state below. */
+function initialQueryParams(): URLSearchParams {
+  if (typeof window === 'undefined') return new URLSearchParams()
+  return new URLSearchParams(window.location.search)
+}
+
+type PageSizeOption = '20' | '50' | '100' | 'custom'
+
+const PRESET_PAGE_SIZES: PageSizeOption[] = ['20', '50', '100']
+const DEFAULT_PAGE_SIZE = 50
 
 type Props = {
   league: { slug: string; name: string }
@@ -18,7 +32,6 @@ type Props = {
     startsAt: string | null
     endsAt: string | null
     activityRequirements: Array<{ count: number; minEntrants: number | null }>
-    flagInactive: boolean
     dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq'
   }
   standings: Array<{
@@ -26,6 +39,9 @@ type Props = {
     previousRank: number | null
     player: string
     playerSlug: string
+    city: string | null
+    state: string | null
+    country: string | null
     rating: number
     wins: number
     losses: number
@@ -60,6 +76,164 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
   const working = ranking.isRecomputing || (requested && ranking.isStale)
   const { gaveUp } = useLiveUpdates(working, { only: ['ranking', 'standings'] })
 
+  const [excludeInactive, setExcludeInactive] = useState(
+    () => initialQueryParams().get('excludeInactive') === '1'
+  )
+  const [search, setSearch] = useState(() => initialQueryParams().get('players') ?? '')
+  const [countryFilter, setCountryFilter] = useState(
+    () => initialQueryParams().get('country') ?? ''
+  )
+  const [stateFilter, setStateFilter] = useState(() => initialQueryParams().get('state') ?? '')
+  const [cityFilter, setCityFilter] = useState(() => initialQueryParams().get('city') ?? '')
+
+  // `pageSize` from the URL is a plain row count
+  const [pageSizeOption, setPageSizeOption] = useState<PageSizeOption>(() => {
+    const fromUrl = Number.parseInt(initialQueryParams().get('pageSize') ?? '', 10)
+    if (!Number.isFinite(fromUrl) || fromUrl <= 0) return '50'
+    return PRESET_PAGE_SIZES.includes(String(fromUrl) as PageSizeOption)
+      ? (String(fromUrl) as PageSizeOption)
+      : 'custom'
+  })
+  const [customPageSize, setCustomPageSize] = useState(() => {
+    const fromUrl = Number.parseInt(initialQueryParams().get('pageSize') ?? '', 10)
+    return Number.isFinite(fromUrl) && fromUrl > 0 ? fromUrl : DEFAULT_PAGE_SIZE
+  })
+  const pageSize =
+    pageSizeOption === 'custom' ? Math.max(1, customPageSize) : Number(pageSizeOption)
+
+  const [page, setPage] = useState(() => {
+    const fromUrl = Number.parseInt(initialQueryParams().get('offset') ?? '', 10)
+    return Number.isFinite(fromUrl) && fromUrl > 0 ? Math.floor(fromUrl / pageSize) : 0
+  })
+
+  const changeExcludeInactive = (value: boolean) => {
+    setExcludeInactive(value)
+    setPage(0)
+  }
+  const changeSearch = (value: string) => {
+    setSearch(value)
+    setPage(0)
+  }
+  const changeCountryFilter = (value: string) => {
+    setCountryFilter(value)
+    setPage(0)
+  }
+  const changeStateFilter = (value: string) => {
+    setStateFilter(value)
+    setPage(0)
+  }
+  const changeCityFilter = (value: string) => {
+    setCityFilter(value)
+    setPage(0)
+  }
+  const changePageSizeOption = (value: PageSizeOption) => {
+    setPageSizeOption(value)
+    setPage(0)
+  }
+  const changeCustomPageSize = (raw: string) => {
+    const parsed = Number.parseInt(raw, 10)
+    setCustomPageSize(Number.isFinite(parsed) && parsed > 0 ? parsed : 1)
+    setPage(0)
+  }
+
+  const countrySuggestions = useLocationSuggestions(league.slug, 'country', countryFilter)
+  const stateSuggestions = useLocationSuggestions(league.slug, 'state', stateFilter, {
+    country: countryFilter || undefined,
+  })
+  const citySuggestions = useLocationSuggestions(league.slug, 'city', cityFilter, {
+    country: countryFilter || undefined,
+    state: stateFilter || undefined,
+  })
+
+  const searchTerms = search
+    .split(';')
+    .map((term) => term.trim())
+    .filter((term) => term.length > 0)
+  const isSearching = searchTerms.length > 0
+  const unmatchedTerms = searchTerms.filter(
+    (term) => !standings.some((standing) => standing.player.toLowerCase() === term.toLowerCase())
+  )
+
+  const locationFieldMatches = (actual: string | null, expected: string): boolean => {
+    if (expected.trim() === '') return true
+    if (actual === null) return false
+    return actual.trim().toLowerCase() === expected.trim().toLowerCase()
+  }
+  const isRegionFiltering =
+    countryFilter.trim() !== '' || stateFilter.trim() !== '' || cityFilter.trim() !== ''
+  const matchesRegion = (standing: Props['standings'][number]): boolean =>
+    locationFieldMatches(standing.country, countryFilter) &&
+    locationFieldMatches(standing.state, stateFilter) &&
+    locationFieldMatches(standing.city, cityFilter)
+
+  const filtered = (
+    excludeInactive ? standings.filter((standing) => !standing.inactive) : standings
+  ).filter(matchesRegion)
+
+  const searched = isSearching
+    ? filtered.filter((standing) =>
+        searchTerms.some((term) => standing.player.toLowerCase() === term.toLowerCase())
+      )
+    : filtered
+
+  const isFiltering = isSearching || isRegionFiltering || excludeInactive
+
+  const pageCount = Math.max(1, Math.ceil(searched.length / pageSize))
+  const currentPage = Math.min(page, pageCount - 1)
+
+  // Keeps the address bar in sync without a navigation.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const offset = currentPage * pageSize
+
+    if (offset > 0) params.set('offset', String(offset))
+    else params.delete('offset')
+
+    if (pageSize !== DEFAULT_PAGE_SIZE) params.set('pageSize', String(pageSize))
+    else params.delete('pageSize')
+
+    if (search.trim() !== '') params.set('players', search)
+    else params.delete('players')
+
+    if (excludeInactive) params.set('excludeInactive', '1')
+    else params.delete('excludeInactive')
+
+    if (countryFilter.trim() !== '') params.set('country', countryFilter)
+    else params.delete('country')
+
+    if (stateFilter.trim() !== '') params.set('state', stateFilter)
+    else params.delete('state')
+
+    if (cityFilter.trim() !== '') params.set('city', cityFilter)
+    else params.delete('city')
+
+    const query = params.toString()
+    const url = `${window.location.pathname}${query ? `?${query}` : ''}`
+    window.history.replaceState(window.history.state, '', url)
+  }, [currentPage, pageSize, search, excludeInactive, countryFilter, stateFilter, cityFilter])
+
+  const shown = searched.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+
+  const renderPager = (extraClassName?: string) =>
+    searched.length > pageSize && (
+      <p className={extraClassName ? `pager ${extraClassName}` : 'pager'}>
+        <button type="button" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
+          Previous
+        </button>
+        <span>
+          Page {currentPage + 1} of {pageCount} ({searched.length} player
+          {searched.length === 1 ? '' : 's'})
+        </span>
+        <button
+          type="button"
+          disabled={currentPage >= pageCount - 1}
+          onClick={() => setPage(currentPage + 1)}
+        >
+          Next
+        </button>
+      </p>
+    )
+
   return (
     <>
       <LeagueNav slug={league.slug} name={league.name} canManage={canManage} />
@@ -82,7 +256,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                 )
                 .join(', and ')}
               {DQ_POLICY_LABEL[ranking.dqPolicy]}
-              {ranking.flagInactive ? ' — otherwise they are flagged inactive.' : '.'}
+              {' — otherwise they are flagged inactive.'}
             </>
           )}
         </p>
@@ -110,7 +284,15 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
 
       {canManage && (
         <>
+          <Link
+            className="ranking-edit-link"
+            route="rankings.edit"
+            routeParams={{ league: league.slug, ranking: ranking.slug }}
+          >
+            Edit date range &amp; activity requirements
+          </Link>{' '}
           <Form
+            className="ranking-recompute-form"
             route="rankings.recompute"
             routeParams={{ league: league.slug, ranking: ranking.slug }}
             onSuccess={() => setRequested(true)}
@@ -120,15 +302,82 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                 {working ? 'Updating…' : 'Update rankings'}
               </button>
             )}
-          </Form>{' '}
-          <Link route="rankings.edit" routeParams={{ league: league.slug, ranking: ranking.slug }}>
-            Edit date range &amp; activity requirements
-          </Link>
+          </Form>
         </>
       )}
 
-      {standings.length === 0 ? (
-        <p>No standings yet.</p>
+      <details className="list-filters">
+        <summary>Filter players</summary>
+
+        <p>
+          <label>
+            Show only{' '}
+            <input
+              type="text"
+              className="h2h-search-input"
+              placeholder="e.g. Armada; Hungrybox; PPMD"
+              value={search}
+              onChange={(event) => changeSearch(event.target.value)}
+            />
+          </label>
+          {unmatchedTerms.length > 0 && <> — no player named {unmatchedTerms.join(', ')}</>}
+        </p>
+
+        <p>
+          <label>
+            Region{' '}
+            <LocationAutocompleteInput
+              name="country"
+              ariaLabel="Country"
+              placeholder="any country"
+              value={countryFilter}
+              suggestions={countrySuggestions}
+              onChange={changeCountryFilter}
+              onSelect={(suggestion) => changeCountryFilter(suggestion.country ?? suggestion.label)}
+            />{' '}
+            <LocationAutocompleteInput
+              name="state"
+              ariaLabel="State or province"
+              placeholder="any state/province"
+              value={stateFilter}
+              suggestions={stateSuggestions}
+              onChange={changeStateFilter}
+              onSelect={(suggestion) => changeStateFilter(suggestion.state ?? suggestion.label)}
+            />{' '}
+            <LocationAutocompleteInput
+              name="city"
+              ariaLabel="City"
+              placeholder="any city"
+              value={cityFilter}
+              suggestions={citySuggestions}
+              onChange={changeCityFilter}
+              onSelect={(suggestion) => changeCityFilter(suggestion.city ?? suggestion.label)}
+            />
+          </label>
+        </p>
+      </details>
+
+      <p className="ranking-exclude-inactive">
+        <label className="checkbox-field">
+          <input
+            type="checkbox"
+            checked={excludeInactive}
+            onChange={(event) => changeExcludeInactive(event.target.checked)}
+          />
+          Exclude inactive players
+        </label>
+      </p>
+
+      {renderPager()}
+
+      {searched.length === 0 ? (
+        <p>
+          {standings.length === 0
+            ? 'No standings yet.'
+            : isFiltering
+              ? 'No players match your filters.'
+              : 'No standings yet.'}
+        </p>
       ) : (
         <div className="table-scroll">
           <table>
@@ -137,6 +386,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                 <th>#</th>
                 <th>Move</th>
                 <th>Player</th>
+                <th>Location</th>
                 <th>Rating</th>
                 <th>W–L</th>
                 <th>Sets</th>
@@ -144,7 +394,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
               </tr>
             </thead>
             <tbody>
-              {standings.map((standing) => (
+              {shown.map((standing) => (
                 <tr key={standing.playerSlug}>
                   <td>{standing.rank}</td>
                   <td>{rankDelta(standing.rank, standing.previousRank)}</td>
@@ -157,6 +407,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
                     </Link>
                     {standing.inactive && ' · inactive'}
                   </td>
+                  <td>{formatLocation(standing) ?? '—'}</td>
                   <td>{standing.rating}</td>
                   <td>
                     {standing.wins}–{standing.losses}
@@ -169,6 +420,35 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
           </table>
         </div>
       )}
+
+      {renderPager('pager-bottom')}
+
+      <p>
+        <label>
+          Rows per page{' '}
+          <select
+            value={pageSizeOption}
+            onChange={(event) => changePageSizeOption(event.target.value as PageSizeOption)}
+          >
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+        {pageSizeOption === 'custom' && (
+          <>
+            {' '}
+            <input
+              className="h2h-page-size-input"
+              type="number"
+              min={1}
+              value={customPageSize}
+              onChange={(event) => changeCustomPageSize(event.target.value)}
+            />
+          </>
+        )}
+      </p>
     </>
   )
 }

@@ -669,7 +669,7 @@ export class RankingTournamentStandingSchema extends BaseModel {
 }
 
 export class RankingSchema extends BaseModel {
-  static $columns = ['activityRequirements', 'algorithm', 'config', 'createdAt', 'description', 'dqPolicy', 'endsAt', 'flagInactive', 'id', 'latestRecomputeId', 'leagueId', 'name', 'published', 'recomputeMode', 'recomputeRequestedAt', 'requirements', 'slug', 'staleTournamentCount', 'startsAt', 'tournamentHashes', 'updatedAt'] as const
+  static $columns = ['activityRequirements', 'algorithm', 'config', 'createdAt', 'description', 'dqPolicy', 'endsAt', 'id', 'latestRecomputeId', 'leagueId', 'name', 'published', 'recomputeMode', 'recomputeRequestedAt', 'requirements', 'slug', 'staleTournamentCount', 'startsAt', 'tournamentHashes', 'updatedAt'] as const
   $columns = RankingSchema.$columns
   @column()
   declare activityRequirements: Record<string, any>
@@ -685,8 +685,6 @@ export class RankingSchema extends BaseModel {
   declare dqPolicy: string
   @column.dateTime()
   declare endsAt: DateTime | null
-  @column()
-  declare flagInactive: boolean
   @column({ isPrimary: true })
   declare id: string
   @column()

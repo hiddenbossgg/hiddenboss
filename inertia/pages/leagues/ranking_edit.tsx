@@ -11,7 +11,6 @@ type Props = {
     startsAt: string | null
     endsAt: string | null
     activityRequirements: Array<{ count: number; minEntrants: number | null }>
-    flagInactive: boolean
     dqPolicy: 'exclude_no_shows' | 'exclude_double_dq' | 'exclude_any_dq'
   }
 }
@@ -49,19 +48,6 @@ const EditRanking: React.FC<Props> = ({ league, ranking }) => {
               initial={ranking.activityRequirements}
               errors={errors}
             />
-
-            <div>
-              <label htmlFor="flagInactive">
-                <input
-                  type="checkbox"
-                  name="flagInactive"
-                  id="flagInactive"
-                  defaultChecked={ranking.flagInactive}
-                />
-                Flag inactive players instead of hiding them
-              </label>
-              <small>Only matters if activity requirements are set above.</small>
-            </div>
 
             <div>
               <label htmlFor="dqPolicy">When a player is DQ&apos;d</label>

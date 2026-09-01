@@ -63,8 +63,14 @@ test.group('ranking activity filter', (group) => {
     }>
   }
 
-  test('drops players failing a requirement by default', async ({ client, assert }) => {
-    const league = await seedTwoWeeklies('hide-default')
+  /**
+   * Nobody is dropped server-side any more — the standings page always sends
+   * everyone, flagged. Hiding an inactive player is a viewer's own "exclude
+   * inactive players" checkbox on the page, not a per-ranking setting, so
+   * there is nothing left to assert here at the HTTP layer.
+   */
+  test('keeps everyone and flags who fails a requirement', async ({ client, assert }) => {
+    const league = await seedTwoWeeklies('activity-flag')
     const ranking = await Ranking.create({
       leagueId: league.id,
       slug: 'ranking',
@@ -72,31 +78,6 @@ test.group('ranking activity filter', (group) => {
       algorithm: 'elo',
       recomputeMode: 'manual',
       activityRequirements: [{ count: 2, minEntrants: null }],
-      published: true,
-    })
-    await new RankingRecomputerService().run(ranking.id)
-
-    const standings = await standingsFor(client, league, ranking)
-
-    assert.sameMembers(
-      standings.map((standing) => standing.player),
-      ['Alice', 'Bob']
-    )
-  })
-
-  test('keeps and flags players failing a requirement when toggled on', async ({
-    client,
-    assert,
-  }) => {
-    const league = await seedTwoWeeklies('flag-toggle')
-    const ranking = await Ranking.create({
-      leagueId: league.id,
-      slug: 'ranking',
-      name: 'Ranking',
-      algorithm: 'elo',
-      recomputeMode: 'manual',
-      activityRequirements: [{ count: 2, minEntrants: null }],
-      flagInactive: true,
       published: true,
     })
     await new RankingRecomputerService().run(ranking.id)
@@ -133,7 +114,6 @@ test.group('ranking activity filter', (group) => {
         { count: 1, minEntrants: 4 },
         { count: 2, minEntrants: null },
       ],
-      flagInactive: true,
       published: true,
     })
     await new RankingRecomputerService().run(ranking.id)
@@ -179,7 +159,6 @@ test.group('ranking activity filter', (group) => {
       algorithm: 'elo',
       recomputeMode: 'manual',
       activityRequirements: [{ count: 2, minEntrants: null }],
-      flagInactive: true,
       published: true,
     })
     await new RankingRecomputerService().run(ranking.id)
@@ -233,7 +212,6 @@ Eve,Hank,,,yes,
         algorithm: 'elo',
         recomputeMode: 'manual',
         activityRequirements: [{ count: 1, minEntrants: null }],
-        flagInactive: true,
         dqPolicy,
         published: true,
       })

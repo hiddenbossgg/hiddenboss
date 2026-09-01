@@ -182,6 +182,77 @@ input[data-invalid='true'],
 textarea[data-invalid='true'] {
   border-color: #fb2c36;
 }
+
+/**
+ * A checkbox next to its own label text, e.g. a page filter — distinct from
+ * the stacked label-above-input shape the rules above are built for, which
+ * would otherwise stretch a checkbox to a 40px square.
+ */
+.checkbox-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.checkbox-field input {
+  width: auto;
+  height: auto;
+  border: none;
+}
+
+/** Sets the ranking's edit link off from the description paragraph above it. */
+.ranking-edit-link {
+  margin-top: 12px;
+}
+/** ...and the recompute button off from that link. */
+.ranking-recompute-form {
+  margin-top: 12px;
+}
+
+/**
+ * A collapsed name/location filter panel above a player table (rankings and
+ * players pages) — set off from what's above since nothing here affects the
+ * data itself, only what's shown.
+ */
+.list-filters {
+  margin-top: 16px;
+}
+.list-filters summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+.list-filters p:first-of-type {
+  margin-top: 12px;
+}
+/** Set off from the filters above, same as they're set off from the recompute controls. */
+.ranking-exclude-inactive {
+  margin-top: 16px;
+}
+
+.h2h-search-input {
+  max-width: 480px;
+}
+
+.h2h-page-size-input {
+  width: 80px;
+  height: 32px;
+  padding: 0 10px;
+}
+
+/** Prev/Next controls for pager nav. */
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.pager button {
+  width: auto;
+  padding: 6px 14px;
+}
+.pager-bottom {
+  margin-top: 0px;
+}
 input[data-invalid='true'] + div,
 textarea[data-invalid='true'] + div {
   color: #fb2c36;
@@ -270,7 +341,7 @@ button:hover {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 16px 0 30px;
+  margin: 16px 0 16px;
   font-size: 15px;
 }
 th,

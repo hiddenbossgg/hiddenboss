@@ -68,14 +68,6 @@ const CreateRanking: React.FC<Props> = ({ league }) => {
             <ActivityRequirementsEditor league={league.slug} initial={[]} errors={errors} />
 
             <div>
-              <label htmlFor="flagInactive">
-                <input type="checkbox" name="flagInactive" id="flagInactive" />
-                Flag inactive players instead of hiding them
-              </label>
-              <small>Only matters if activity requirements are set above.</small>
-            </div>
-
-            <div>
               <label htmlFor="dqPolicy">When a player is DQ&apos;d</label>
               <select name="dqPolicy" id="dqPolicy" defaultValue="exclude_no_shows">
                 <option value="exclude_no_shows">
