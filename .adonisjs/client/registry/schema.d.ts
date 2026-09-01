@@ -323,10 +323,10 @@ export interface Registry {
     methods: ["PATCH"]
     pattern: '/:league/players/:player'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/player').updatePlayerLocationValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/player').updatePlayerValidator)>>
       paramsTuple: [ParamValue, ParamValue]
       params: { league: ParamValue; player: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/player').updatePlayerLocationValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/player').updatePlayerValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/players_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/players_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
