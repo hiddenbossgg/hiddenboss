@@ -463,4 +463,16 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/events_controller').default['show']>>>
     }
   }
+  'h2h.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/:league/h2h'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { league: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/head_to_head_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/head_to_head_controller').default['index']>>>
+    }
+  }
 }

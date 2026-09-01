@@ -234,6 +234,12 @@ const routes = {
     tokens: [{"old":"/:league/events/:event","type":1,"val":"league","end":""},{"old":"/:league/events/:event","type":0,"val":"events","end":""},{"old":"/:league/events/:event","type":1,"val":"event","end":""}],
     types: placeholder as Registry['events.show']['types'],
   },
+  'h2h.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/:league/h2h',
+    tokens: [{"old":"/:league/h2h","type":1,"val":"league","end":""},{"old":"/:league/h2h","type":0,"val":"h2h","end":""}],
+    types: placeholder as Registry['h2h.index']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

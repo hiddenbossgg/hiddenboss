@@ -60,4 +60,7 @@ export interface ApiDefinition {
     index: typeof routes['credentials.index']
     update: typeof routes['credentials.update']
   }
+  h2H: {
+    index: typeof routes['h2h.index']
+  }
 }

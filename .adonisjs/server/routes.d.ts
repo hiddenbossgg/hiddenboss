@@ -42,6 +42,7 @@ export type ScannedRoutes = {
     'players.show': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'player': ParamValue} }
     'events.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'events.show': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
+    'h2h.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -64,6 +65,7 @@ export type ScannedRoutes = {
     'players.show': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'player': ParamValue} }
     'events.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'events.show': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
+    'h2h.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
@@ -86,6 +88,7 @@ export type ScannedRoutes = {
     'players.show': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'player': ParamValue} }
     'events.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
     'events.show': { paramsTuple: [ParamValue,ParamValue]; params: {'league': ParamValue,'event': ParamValue} }
+    'h2h.index': { paramsTuple: [ParamValue]; params: {'league': ParamValue} }
   }
   POST: {
     'new_account.store': { paramsTuple?: []; params?: {} }

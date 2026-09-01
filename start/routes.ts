@@ -115,6 +115,7 @@ router
     router.get('players/:player', [controllers.Players, 'show']).as('players.show')
     router.get('events', [controllers.Events, 'index']).as('events.index')
     router.get('events/:event', [controllers.Events, 'show']).as('events.show')
+    router.get('h2h', [controllers.HeadToHead, 'index']).as('h2h.index')
   })
   .prefix(':league')
   .use(middleware.league())
