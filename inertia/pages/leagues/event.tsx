@@ -2,6 +2,7 @@ import type React from 'react'
 import { useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import PlayerLinkList from '../../components/player_link_list.js'
 import AutocompleteInput from '../../components/autocomplete_input.js'
 import LocationAutocompleteInput from '../../components/location_autocomplete_input.js'
 import { useLocationSuggestions } from '../../hooks/use_location_suggestions.js'
@@ -250,6 +251,63 @@ function scoreOf(set: Props['sets'][number]) {
   return `${set.scoreA ?? '—'}–${set.scoreB ?? '—'}`
 }
 
+const IdentityTable: React.FC<{
+  leagueSlug: string
+  players: Props['players']
+  entrants: Props['entrants']
+}> = ({ leagueSlug, players, entrants }) => {
+  return (
+    <div className="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Entrant</th>
+            <th>Imported account</th>
+            <th>Counts as</th>
+            <th>Reassign to</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entrants.flatMap((entrant) =>
+            entrant.players
+              .filter((participant) => participant.platformAccountId !== null)
+              .map((participant) => (
+                <tr key={participant.platformAccountId!}>
+                  <td>{entrant.name}</td>
+                  <td>
+                    {participant.gamerTag ?? '—'}
+                    {participant.platformKey && <> · {participant.platformKey}</>}
+                  </td>
+                  <td>
+                    {participant.slug ? (
+                      <Link
+                        route="players.show"
+                        routeParams={{ league: leagueSlug, player: participant.slug }}
+                      >
+                        {participant.tag}
+                      </Link>
+                    ) : (
+                      participant.tag
+                    )}
+                    {participant.provisional && ' · needs review'}
+                  </td>
+                  <td>
+                    <ReassignForm
+                      leagueSlug={leagueSlug}
+                      platformAccountId={participant.platformAccountId!}
+                      gamerTag={participant.gamerTag}
+                      players={players}
+                    />
+                  </td>
+                </tr>
+              ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const EventResults: React.FC<Props> = ({ league, canManage, event, players, entrants, sets }) => {
   return (
     <>
@@ -331,24 +389,13 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
                 </td>
                 <td>{entrant.name}</td>
                 <td>
-                  {/* An entrant is 1..N players, so doubles teams link to both. */}
-                  {entrant.players.length === 0
-                    ? '—'
-                    : entrant.players.map((player, index) => (
-                        <span key={`${entrant.id}-${player.tag}`}>
-                          {index > 0 && ' & '}
-                          {player.slug ? (
-                            <Link
-                              route="players.show"
-                              routeParams={{ league: league.slug, player: player.slug }}
-                            >
-                              {player.tag}
-                            </Link>
-                          ) : (
-                            player.tag
-                          )}
-                        </span>
-                      ))}
+                  <PlayerLinkList
+                    leagueSlug={league.slug}
+                    players={entrant.players.map((player) => ({
+                      slug: player.slug,
+                      label: player.tag,
+                    }))}
+                  />
                 </td>
                 <td>{entrant.seed ?? '—'}</td>
               </tr>
@@ -366,54 +413,7 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
             change is logged.
           </p>
 
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Entrant</th>
-                  <th>Imported account</th>
-                  <th>Counts as</th>
-                  <th>Reassign to</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entrants.flatMap((entrant) =>
-                  entrant.players
-                    .filter((participant) => participant.platformAccountId !== null)
-                    .map((participant) => (
-                      <tr key={participant.platformAccountId!}>
-                        <td>{entrant.name}</td>
-                        <td>
-                          {participant.gamerTag ?? '—'}
-                          {participant.platformKey && <> · {participant.platformKey}</>}
-                        </td>
-                        <td>
-                          {participant.slug ? (
-                            <Link
-                              route="players.show"
-                              routeParams={{ league: league.slug, player: participant.slug }}
-                            >
-                              {participant.tag}
-                            </Link>
-                          ) : (
-                            participant.tag
-                          )}
-                          {participant.provisional && ' · needs review'}
-                        </td>
-                        <td>
-                          <ReassignForm
-                            leagueSlug={league.slug}
-                            platformAccountId={participant.platformAccountId!}
-                            gamerTag={participant.gamerTag}
-                            players={players}
-                          />
-                        </td>
-                      </tr>
-                    ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <IdentityTable leagueSlug={league.slug} players={players} entrants={entrants} />
         </>
       )}
 

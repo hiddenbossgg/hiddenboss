@@ -1,7 +1,8 @@
 import type React from 'react'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import PlayerLinkList from '../../components/player_link_list.js'
 import RankingHistoryChart from '../../components/ranking_history_chart.js'
 import type { HistoryPoint } from '../../components/ranking_history_chart.js'
 import LocationAutocompleteInput from '../../components/location_autocomplete_input.js'
@@ -165,6 +166,65 @@ function byEvent(matches: Props['matches']) {
   return groups
 }
 
+const MatchLog: React.FC<{ leagueSlug: string; matches: Props['matches'] }> = ({
+  leagueSlug,
+  matches,
+}) => {
+  if (matches.length === 0) return <p>No rated sets yet.</p>
+
+  return (
+    <>
+      {byEvent(matches).map((group) => (
+        <div key={group.label}>
+          <h3>
+            <Link route="events.show" routeParams={{ league: leagueSlug, event: group.eventId }}>
+              {group.label}
+            </Link>
+          </h3>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Result</th>
+                  <th>Opponent</th>
+                  <th>Score</th>
+                  <th>Round</th>
+                  <th>Rating</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.matches.map((match) => (
+                  <tr key={match.setId}>
+                    <td>{match.won ? 'Win' : 'Loss'}</td>
+                    <td>
+                      <PlayerLinkList
+                        leagueSlug={leagueSlug}
+                        players={match.opponents.map((opponent) => ({
+                          slug: opponent.slug,
+                          label: opponent.displayTag,
+                        }))}
+                      />
+                    </td>
+                    <td>{match.score ?? '—'}</td>
+                    <td>{match.round ?? '—'}</td>
+                    {/* The point of ranking_set_deltas: not just that it moved, but by how much. */}
+                    <td>
+                      {match.after} ({match.delta >= 0 ? '+' : ''}
+                      {match.delta})
+                    </td>
+                    <td>{match.occurredAt ?? '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+
 const PlayerProfile: React.FC<Props> = ({
   league,
   canManage,
@@ -222,63 +282,7 @@ const PlayerProfile: React.FC<Props> = ({
       )}
 
       <h2>Matches ({matches.length})</h2>
-      {matches.length === 0 ? (
-        <p>No rated sets yet.</p>
-      ) : (
-        byEvent(matches).map((group) => (
-          <div key={group.label}>
-            <h3>
-              <Link route="events.show" routeParams={{ league: league.slug, event: group.eventId }}>
-                {group.label}
-              </Link>
-            </h3>
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Result</th>
-                    <th>Opponent</th>
-                    <th>Score</th>
-                    <th>Round</th>
-                    <th>Rating</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {group.matches.map((match) => (
-                    <tr key={match.setId}>
-                      <td>{match.won ? 'Win' : 'Loss'}</td>
-                      <td>
-                        {match.opponents.length === 0
-                          ? '—'
-                          : match.opponents.map((opponent, index) => (
-                              <Fragment key={opponent.slug}>
-                                {index > 0 && ' & '}
-                                <Link
-                                  route="players.show"
-                                  routeParams={{ league: league.slug, player: opponent.slug }}
-                                >
-                                  {opponent.displayTag}
-                                </Link>
-                              </Fragment>
-                            ))}
-                      </td>
-                      <td>{match.score ?? '—'}</td>
-                      <td>{match.round ?? '—'}</td>
-                      {/* The point of ranking_set_deltas: not just that it moved, but by how much. */}
-                      <td>
-                        {match.after} ({match.delta >= 0 ? '+' : ''}
-                        {match.delta})
-                      </td>
-                      <td>{match.occurredAt ?? '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ))
-      )}
+      <MatchLog leagueSlug={league.slug} matches={matches} />
 
       <h2>Events ({entries.length})</h2>
       {entries.length === 0 ? (
