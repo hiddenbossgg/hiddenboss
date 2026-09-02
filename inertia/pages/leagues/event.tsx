@@ -6,6 +6,7 @@ import AutocompleteInput from '../../components/autocomplete_input.js'
 import LocationAutocompleteInput from '../../components/location_autocomplete_input.js'
 import { useLocationSuggestions } from '../../hooks/use_location_suggestions.js'
 import { formatLocation } from '../../lib/format_location.js'
+import { confirmSubmit } from '../../lib/confirm_submit.js'
 
 type Props = {
   league: { slug: string; name: string }
@@ -297,15 +298,9 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
                   <button
                     type="submit"
                     disabled={processing}
-                    onClick={(clickEvent) => {
-                      if (
-                        !window.confirm(
-                          `Remove ${event.name} from ${league.name}? It drops from every ranking's next recompute. Nothing is deleted — pasting the same link re-imports it.`
-                        )
-                      ) {
-                        clickEvent.preventDefault()
-                      }
-                    }}
+                    onClick={confirmSubmit(
+                      `Remove ${event.name} from ${league.name}? It drops from every ranking's next recompute. Nothing is deleted — pasting the same link re-imports it.`
+                    )}
                   >
                     Remove from league
                   </button>

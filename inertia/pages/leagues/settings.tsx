@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Form } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import { confirmSubmit } from '../../lib/confirm_submit.js'
 
 type Props = {
   league: {
@@ -90,15 +91,9 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
                 <button
                   type="submit"
                   disabled={processing}
-                  onClick={(event) => {
-                    if (
-                      !window.confirm(
-                        `Clear ${league.name}? This deletes every ranking, player and imported event in this league. Admins, credentials and the league itself stay — you can re-import from scratch.`
-                      )
-                    ) {
-                      event.preventDefault()
-                    }
-                  }}
+                  onClick={confirmSubmit(
+                    `Clear ${league.name}? This deletes every ranking, player and imported event in this league. Admins, credentials and the league itself stay — you can re-import from scratch.`
+                  )}
                 >
                   Clear league data
                 </button>
@@ -113,15 +108,9 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
                 <button
                   type="submit"
                   disabled={processing}
-                  onClick={(event) => {
-                    if (
-                      !window.confirm(
-                        `Delete ${league.name}? This removes the league itself along with everything in it. This cannot be undone.`
-                      )
-                    ) {
-                      event.preventDefault()
-                    }
-                  }}
+                  onClick={confirmSubmit(
+                    `Delete ${league.name}? This removes the league itself along with everything in it. This cannot be undone.`
+                  )}
                 >
                   Delete league
                 </button>
