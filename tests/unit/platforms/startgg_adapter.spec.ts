@@ -86,6 +86,25 @@ test.group('startgg adapter', () => {
     assert.isNull(adapter.matchUrl('not a url'))
   })
 
+  test('builds a profile URL from the stored discriminator', ({ assert }) => {
+    const adapter = new StartggAdapter()
+
+    // `profileSlug` is the bare discriminator; the `user/` segment is added here.
+    assert.equal(
+      adapter.profileUrl({
+        externalUserId: '1402401',
+        profileSlug: '8958b6cd',
+        gamerTag: 'Jello',
+      }),
+      'https://www.start.gg/user/8958b6cd'
+    )
+
+    // An account imported before the discriminator was captured has nothing to link to.
+    assert.isNull(
+      adapter.profileUrl({ externalUserId: '1402401', profileSlug: null, gamerTag: 'Jello' })
+    )
+  })
+
   test('declares the credentials it needs', ({ assert }) => {
     const adapter = new StartggAdapter()
 

@@ -5,6 +5,7 @@ import LeaguePolicy from '#policies/league_policy'
 import { updatePlayerValidator } from '#validators/player'
 import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
 import { normalizeCountry, normalizeState } from '#lib/geo/country'
+import { platforms } from '#lib/platforms/registry'
 import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -181,7 +182,15 @@ export default class PlayersController {
       .from('league_player_accounts as lpa')
       .innerJoin('platform_accounts as pa', 'pa.id', 'lpa.platform_account_id')
       .where('lpa.league_player_id', player.id)
-      .select('pa.platform_key', 'pa.gamer_tag', 'pa.prefix', 'lpa.source', 'lpa.provisional')
+      .select(
+        'pa.platform_key',
+        'pa.gamer_tag',
+        'pa.prefix',
+        'pa.external_user_id',
+        'pa.profile_slug',
+        'lpa.source',
+        'lpa.provisional'
+      )
 
     const zone = league.timezone ?? DEFAULT_TIMEZONE
 
@@ -246,6 +255,17 @@ export default class PlayersController {
         prefix: row.prefix,
         source: row.source,
         provisional: row.provisional,
+        /**
+         * The adapter turns whatever it stored for this account into a link to
+         * the person's page on that platform, or null if it has none.
+         */
+        profileUrl: platforms.has(row.platform_key)
+          ? platforms.get(row.platform_key).profileUrl({
+              externalUserId: row.external_user_id,
+              profileSlug: row.profile_slug,
+              gamerTag: row.gamer_tag,
+            })
+          : null,
       })),
     })
   }

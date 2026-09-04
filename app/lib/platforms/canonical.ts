@@ -30,15 +30,17 @@ export type BracketType =
  */
 export interface CanonicalParticipant {
   externalUserId: string | null
+  /**
+   * Opaque handle for this person's public page on the platform — start.gg's user.discriminator,
+   * parry.gg's user id, whatever a platform looks a public profile up by. Often the same value as
+   * `externalUserId`.
+   */
+  profileSlug: string | null
   gamerTag: string
   prefix: string | null
   pronouns: string | null
   /**
    * Exactly as the platform reported it — still unnormalised at this layer.
-   * `TournamentWriterService` resolves a display name to its ISO 3166-1
-   * alpha-2 code (`#lib/geo/country`) on the way into
-   * `platform_accounts.country`, so adapters and their tests see the raw
-   * value here. A code the dataset doesn't recognise is kept as-is.
    */
   country: string | null
   /** State, province or region — whatever the platform reports, unnormalised. */
@@ -142,18 +144,12 @@ export interface CanonicalTournament {
   startAt: Date | null
   endAt: Date | null
   /**
-   * Exactly as the platform reported it — still unnormalised at this layer,
-   * like `state` below. `TournamentWriterService` resolves a display name
-   * to its ISO 3166-1 alpha-2 code (`#lib/geo/country`) on the
-   * way into `tournaments.country`.
+   * Exactly as the platform reported it — still unnormalised at this layer.
    */
   country: string | null
   /**
    * State, province or region, exactly as the platform reported it — still
-   * unnormalised at this layer. `TournamentWriterService` is what converts a
-   * spelled-out name to its ISO 3166-2 code (`#lib/geo/country`) on
-   * the way into `tournaments.state`, so adapters and their tests see the
-   * raw value here.
+   * unnormalised at this layer.
    */
   state: string | null
   city: string | null

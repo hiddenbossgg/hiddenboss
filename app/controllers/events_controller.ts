@@ -7,6 +7,7 @@ import { StalenessService } from '#services/rankings/staleness_service'
 import { updateEventValidator } from '#validators/event'
 import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
 import { fromLocalDate, toLocalDate } from '#lib/time/local_date'
+import { platforms } from '#lib/platforms/registry'
 import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -115,6 +116,8 @@ export default class EventsController {
         'pa.id as platform_account_id',
         'pa.gamer_tag',
         'pa.platform_key',
+        'pa.external_user_id',
+        'pa.profile_slug',
         'lpa.source',
         'lpa.provisional'
       )
@@ -157,6 +160,7 @@ export default class EventsController {
         platformAccountId: string | null
         gamerTag: string | null
         platformKey: string | null
+        profileUrl: string | null
         provisional: boolean
       }>
     >()
@@ -169,6 +173,18 @@ export default class EventsController {
         platformAccountId: row.platform_account_id,
         gamerTag: row.gamer_tag,
         platformKey: row.platform_key,
+        /**
+         * The adapter turns whatever it stored for this account into a link to
+         * the person's page on that platform, or null if it has none.
+         */
+        profileUrl:
+          row.platform_key && platforms.has(row.platform_key)
+            ? platforms.get(row.platform_key).profileUrl({
+                externalUserId: row.external_user_id,
+                profileSlug: row.profile_slug,
+                gamerTag: row.gamer_tag,
+              })
+            : null,
         provisional: row.provisional ?? false,
       })
       rosters.set(row.id, list)

@@ -144,6 +144,7 @@ export class TournamentWriterService {
             { platformKey: this.platformKey, externalUserId },
             {
               gamerTag: participant.gamerTag,
+              profileSlug: participant.profileSlug,
               prefix: participant.prefix,
               pronouns: participant.pronouns,
               country: normalizeCountry(participant.country),

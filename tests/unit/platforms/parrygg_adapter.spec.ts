@@ -68,6 +68,23 @@ test.group('parrygg adapter', () => {
     await assert.rejects(() => validator.validate({}))
   })
 
+  test('builds a profile URL from the stored user id', ({ assert }) => {
+    const adapter = new ParryggAdapter()
+
+    assert.equal(
+      adapter.profileUrl({
+        externalUserId: '019585f3-1ccf-7c90-bff6-7fdd9a2e5178',
+        profileSlug: '019585f3-1ccf-7c90-bff6-7fdd9a2e5178',
+        gamerTag: 'Dial M',
+      }),
+      'https://parry.gg/profile/019585f3-1ccf-7c90-bff6-7fdd9a2e5178'
+    )
+
+    assert.isNull(
+      adapter.profileUrl({ externalUserId: null, profileSlug: null, gamerTag: 'Unregistered' })
+    )
+  })
+
   test('satisfies the import contract against recorded responses', async ({ assert }) => {
     const sink = await recordedSink()
 
@@ -99,6 +116,8 @@ test.group('parrygg adapter', () => {
       assert.isAbove(entrant.participants.length, 0)
       for (const participant of entrant.participants) {
         assert.isNotNull(participant.externalUserId, `${entrant.name} has an unidentified player`)
+        // parry.gg looks a public profile up by the same id it accounts on.
+        assert.equal(participant.profileSlug, participant.externalUserId)
       }
     }
   }).skip(!recorded, 'no parry.gg fixtures recorded yet')

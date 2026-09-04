@@ -446,7 +446,7 @@ export class PhaseSchema extends BaseModel {
 }
 
 export class PlatformAccountSchema extends BaseModel {
-  static $columns = ['city', 'country', 'createdAt', 'externalUserId', 'gamerTag', 'globalPlayerId', 'id', 'normalizedTag', 'platformKey', 'prefix', 'pronouns', 'raw', 'state', 'updatedAt', 'weakIdentity'] as const
+  static $columns = ['city', 'country', 'createdAt', 'externalUserId', 'gamerTag', 'globalPlayerId', 'id', 'normalizedTag', 'platformKey', 'prefix', 'profileSlug', 'pronouns', 'raw', 'state', 'updatedAt', 'weakIdentity'] as const
   $columns = PlatformAccountSchema.$columns
   @column()
   declare city: string | null
@@ -468,6 +468,8 @@ export class PlatformAccountSchema extends BaseModel {
   declare platformKey: string
   @column()
   declare prefix: string | null
+  @column()
+  declare profileSlug: string | null
   @column()
   declare pronouns: string | null
   @column()

@@ -85,6 +85,7 @@ test.group('TournamentWriterService country normalisation', (group) => {
         participants: [
           {
             externalUserId: 'user-1',
+            profileSlug: null,
             gamerTag: 'Someone',
             prefix: null,
             pronouns: null,
@@ -105,5 +106,41 @@ test.group('TournamentWriterService country normalisation', (group) => {
     assert.equal(account.country, 'US')
     // Only country is normalised — state stays raw, matching the canonical contract.
     assert.equal(account.state, 'Washington')
+  })
+
+  test("a participant's profile handle is stored verbatim on their account", async ({ assert }) => {
+    const writer = new TournamentWriterService('startgg')
+    await writer.writeTournament(tournament({ externalId: 'tourney-4' }))
+    await writer.writeEvent(event)
+
+    const entrants: CanonicalEntrant[] = [
+      {
+        externalId: 'entrant-1',
+        name: 'Jello',
+        seed: null,
+        placement: null,
+        isDisqualified: false,
+        participants: [
+          {
+            externalUserId: 'user-jello',
+            profileSlug: '8958b6cd',
+            gamerTag: 'Jello',
+            prefix: null,
+            pronouns: null,
+            country: null,
+            state: null,
+            city: null,
+          },
+        ],
+      },
+    ]
+    await writer.writeEntrants(event.externalId, entrants)
+
+    const account = await PlatformAccount.query()
+      .where('platformKey', 'startgg')
+      .where('externalUserId', 'user-jello')
+      .firstOrFail()
+
+    assert.equal(account.profileSlug, '8958b6cd')
   })
 })

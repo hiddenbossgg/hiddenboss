@@ -4,6 +4,7 @@ import { toAlpha2CountryCode } from '#lib/geo/country'
 import type { CanonicalEntrant, CanonicalSet, EntryKind, SetState } from '#lib/platforms/canonical'
 import type {
   ImportSink,
+  PlatformAccountRef,
   PlatformAdapter,
   PlatformContext,
   EventRef,
@@ -48,6 +49,11 @@ export class ManualAdapter implements PlatformAdapter {
 
   /** Not addressed by URL; selected by key with a payload instead. */
   matchUrl(): EventRef | null {
+    return null
+  }
+
+  /** A CSV names no platform, so there is no profile to link to. */
+  profileUrl(_account: PlatformAccountRef): string | null {
     return null
   }
 
@@ -168,6 +174,7 @@ export class ManualAdapter implements PlatformAdapter {
           {
             // No cross-tournament identity exists in a CSV.
             externalUserId: null,
+            profileSlug: null,
             gamerTag: name,
             prefix: row.prefix || null,
             pronouns: row.pronouns || null,

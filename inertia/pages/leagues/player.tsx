@@ -57,6 +57,7 @@ type Props = {
     prefix: string | null
     source: string
     provisional: boolean
+    profileUrl: string | null
   }>
 }
 
@@ -327,7 +328,14 @@ const PlayerProfile: React.FC<Props> = ({
         {accounts.map((account) => (
           <li key={`${account.platformKey}-${account.gamerTag}`}>
             {account.prefix ? `${account.prefix} | ` : ''}
-            {account.gamerTag} · {account.platformKey}
+            {account.profileUrl ? (
+              <a href={account.profileUrl} rel="noreferrer noopener" target="_blank">
+                {account.gamerTag}
+              </a>
+            ) : (
+              account.gamerTag
+            )}{' '}
+            · {account.platformKey}
             {account.provisional && ' · needs review'}
           </li>
         ))}

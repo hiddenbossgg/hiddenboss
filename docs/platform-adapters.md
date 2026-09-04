@@ -40,6 +40,7 @@ interface PlatformAdapter {
   rateLimit: RateLimit
 
   matchUrl(url: string): EventRef | null
+  profileUrl(account: PlatformAccountRef): string | null
   fetchEvent(ref: EventRef, context: PlatformContext, sink: ImportSink): Promise<void>
 }
 
@@ -143,6 +144,18 @@ for a mismatch between the two is a missing label, never an accepted bad value.
 imports that are not addressed by a link — an uploaded CSV, most obviously — share this contract
 rather than needing a parallel one. Such adapters return `null` from `matchUrl` and are selected by
 key instead.
+
+### Linking back to a platform profile
+
+`profileUrl(account)` turns a stored `platform_accounts` row into a link to that person's page on the
+platform, or `null` when the platform has no such page. It must be pure — no I/O — because it only
+reshapes what the import already wrote. What it reads is `profileSlug`, an opaque per-platform handle
+on `CanonicalParticipant`: start.gg's `user.discriminator`, parry.gg's user id, whatever a platform 
+looks a public profile up by. It is often the same value as `externalUserId` and distinct only where 
+a platform separates its account id from its profile key; a platform with no public page leaves it 
+`null` and `profileUrl` returns `null` in turn. The `user/` (or equivalent) path segment is the 
+adapter's to add in `profileUrl`, not something stored — the same split `matchUrl` already uses for 
+tournament slugs.
 
 ## The contract is enforced at runtime
 
