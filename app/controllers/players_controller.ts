@@ -84,7 +84,12 @@ export default class PlayersController {
     }
 
     if (!player) {
-      return response.notFound({ message: 'No such player' })
+      response.status(404)
+      return inertia.render('leagues/player_not_found', {
+        league: { slug: league.slug, name: league.name },
+        canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
+        slug: params.player,
+      })
     }
 
     const ranking = await resolveRanking(league.id, request.input('ranking'))
@@ -188,6 +193,7 @@ export default class PlayersController {
         'pa.prefix',
         'pa.external_user_id',
         'pa.profile_slug',
+        'pa.weak_identity',
         'lpa.source',
         'lpa.provisional'
       )
@@ -198,6 +204,7 @@ export default class PlayersController {
       league: { slug: league.slug, name: league.name },
       canManage: await bouncer.with(LeaguePolicy).allows('manage', league),
       player: {
+        id: player.id,
         slug: player.slug,
         displayTag: player.displayTag,
         pronouns: player.pronouns,
@@ -251,21 +258,25 @@ export default class PlayersController {
       })),
       accounts: accounts.map((row) => ({
         platformKey: row.platform_key,
+        platformName: platforms.has(row.platform_key)
+          ? platforms.get(row.platform_key).displayName
+          : row.platform_key,
         gamerTag: row.gamer_tag,
         prefix: row.prefix,
         source: row.source,
         provisional: row.provisional,
         /**
-         * The adapter turns whatever it stored for this account into a link to
-         * the person's page on that platform, or null if it has none.
+         * A weak-identity row is a bracket entrant the platform never tied to an account.
          */
-        profileUrl: platforms.has(row.platform_key)
-          ? platforms.get(row.platform_key).profileUrl({
-              externalUserId: row.external_user_id,
-              profileSlug: row.profile_slug,
-              gamerTag: row.gamer_tag,
-            })
-          : null,
+        weakIdentity: row.weak_identity,
+        profileUrl:
+          row.weak_identity || !platforms.has(row.platform_key)
+            ? null
+            : platforms.get(row.platform_key).profileUrl({
+                externalUserId: row.external_user_id,
+                profileSlug: row.profile_slug,
+                gamerTag: row.gamer_tag,
+              }),
       })),
     })
   }

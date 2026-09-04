@@ -14,6 +14,7 @@ export const controllers = {
   LocationSuggestions: () => import('#controllers/location_suggestions_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   PasswordResets: () => import('#controllers/password_resets_controller'),
+  PlayerMerges: () => import('#controllers/player_merges_controller'),
   Players: () => import('#controllers/players_controller'),
   Rankings: () => import('#controllers/rankings_controller'),
   Session: () => import('#controllers/session_controller'),

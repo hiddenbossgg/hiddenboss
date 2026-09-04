@@ -22,3 +22,20 @@ export const reassignAccountValidator = vine.create({
     .optional()
     .requiredIfMissing('leaguePlayerId'),
 })
+
+const resolution = () => vine.string().trim().maxLength(100).nullable().optional()
+
+/**
+ * Merging one league player into another. Beyond the two ids, the form sends a chosen value for
+ * every field the two rows disagree on. Validate these chosen conflict resolutions.
+ */
+export const mergePlayersValidator = vine.create({
+  survivorId: vine.string().uuid(),
+  mergedId: vine.string().uuid(),
+  displayTag: resolution(),
+  city: resolution(),
+  state: resolution(),
+  country: resolution(),
+  pronouns: resolution(),
+  globalPlayerId: vine.string().uuid().nullable().optional(),
+})

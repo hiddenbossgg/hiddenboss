@@ -162,6 +162,18 @@ const routes = {
     tokens: [{"old":"/:league/identity","type":1,"val":"league","end":""},{"old":"/:league/identity","type":0,"val":"identity","end":""}],
     types: placeholder as Registry['identity.update']['types'],
   },
+  'players.merge': {
+    methods: ["GET","HEAD"],
+    pattern: '/:league/players/merge',
+    tokens: [{"old":"/:league/players/merge","type":1,"val":"league","end":""},{"old":"/:league/players/merge","type":0,"val":"players","end":""},{"old":"/:league/players/merge","type":0,"val":"merge","end":""}],
+    types: placeholder as Registry['players.merge']['types'],
+  },
+  'players.merge.store': {
+    methods: ["POST"],
+    pattern: '/:league/players/merge',
+    tokens: [{"old":"/:league/players/merge","type":1,"val":"league","end":""},{"old":"/:league/players/merge","type":0,"val":"players","end":""},{"old":"/:league/players/merge","type":0,"val":"merge","end":""}],
+    types: placeholder as Registry['players.merge.store']['types'],
+  },
   'players.update': {
     methods: ["PATCH"],
     pattern: '/:league/players/:player',

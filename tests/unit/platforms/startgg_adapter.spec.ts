@@ -193,6 +193,28 @@ test.group('startgg adapter', () => {
   }).skip(!recorded, 'no start.gg fixtures recorded yet')
 
   /**
+   * `user.discriminator` is what `profileUrl` builds a start.gg profile link
+   * from. It rides along on the entrants query, so every identified participant
+   * should carry one through to `profileSlug`.
+   */
+  test('carries the user discriminator through as the profile slug', async ({ assert }) => {
+    const sink = await recordedSink()
+
+    const identified = sink.allEntrants
+      .flatMap((entrant) => entrant.participants)
+      .filter((participant) => participant.externalUserId !== null)
+
+    assert.isAbove(identified.length, 0)
+    for (const participant of identified) {
+      assert.match(
+        participant.profileSlug ?? '',
+        /^[0-9a-f]{8}$/,
+        `${participant.gamerTag} has no discriminator`
+      )
+    }
+  }).skip(!recorded, 'no start.gg fixtures recorded yet')
+
+  /**
    * Several people entered both events. Since each event is its own import, the
    * account id is the only thing tying them together — and it must, because that
    * is what lets identity resolution recognise them without any tag matching.

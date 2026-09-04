@@ -154,12 +154,14 @@ const H2h: React.FC<Props> = ({ league, canManage, ranking, rankings, players, m
     rowId: string,
     colId: string
   ): { label: string; result: 'win' | 'loss' | 'even' | null } => {
+    // A player against themselves is the only cell that gets a dash.
     if (rowId === colId) return { label: '—', result: null }
 
     const lo = rowId < colId ? rowId : colId
     const hi = rowId < colId ? colId : rowId
     const matchup = byPair.get(`${lo}|${hi}`)
-    if (!matchup) return { label: '—', result: null }
+    // A pair that has never met reads as a 0–0 record, left uncolored.
+    if (!matchup) return { label: '0 – 0', result: null }
 
     const rowWins = rowId === matchup.loId ? matchup.loWins : matchup.hiWins
     const colWins = rowId === matchup.loId ? matchup.hiWins : matchup.loWins
@@ -275,6 +277,29 @@ const H2h: React.FC<Props> = ({ league, canManage, ranking, rankings, players, m
     `${player.displayTag}${player.rating !== null ? ` (${player.rating})` : ''}${
       player.inactive ? ' · inactive' : ''
     }`
+
+  const csvField = (value: string): string =>
+    /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value
+
+  const downloadCsv = () => {
+    const header = ['', ...shown.map((col) => col.displayTag)]
+    const body = shown.map((row) => [
+      rowLabel(row),
+      ...shown.map((col) => cell(row.id, col.id).label),
+    ])
+    const csv = [header, ...body].map((cols) => cols.map(csvField).join(',')).join('\r\n')
+
+    // Lead with a UTF-8 BOM for correct Excel decoding
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${league.slug}-head-to-head${ranking ? `-${ranking.slug}` : ''}.csv`
+    document.body.append(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
 
   const renderPager = (extraClassName?: string) =>
     searched.length > pageSize && (
@@ -439,6 +464,14 @@ const H2h: React.FC<Props> = ({ league, canManage, ranking, rankings, players, m
       )}
 
       {renderPager('pager-bottom')}
+
+      {shown.length >= 2 && (
+        <p className="h2h-download">
+          <button type="button" onClick={downloadCsv}>
+            Download CSV
+          </button>
+        </p>
+      )}
 
       <p>
         <label>

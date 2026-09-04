@@ -10,6 +10,7 @@ type Props = {
     id: string
     platformKey: string
     label: string
+    eventId: string | null
     targetUrl: string | null
     status: string
     stage: string | null
@@ -102,8 +103,27 @@ const Imports: React.FC<Props> = ({ league, platforms, imports }) => {
             <tbody>
               {imports.map((record) => (
                 <tr key={record.id}>
-                  <td>{record.platformKey}</td>
-                  <td>{record.label}</td>
+                  <td>
+                    {record.targetUrl ? (
+                      <a href={record.targetUrl} rel="noreferrer noopener" target="_blank">
+                        {record.platformKey}
+                      </a>
+                    ) : (
+                      record.platformKey
+                    )}
+                  </td>
+                  <td>
+                    {record.eventId ? (
+                      <Link
+                        route="events.show"
+                        routeParams={{ league: league.slug, event: record.eventId }}
+                      >
+                        {record.label}
+                      </Link>
+                    ) : (
+                      record.label
+                    )}
+                  </td>
                   <td>
                     {record.status}
                     {record.stage && record.status === 'running' && <span> ({record.stage})</span>}

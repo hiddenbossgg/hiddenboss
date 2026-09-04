@@ -5,6 +5,12 @@ platforms, resolves player identity, publishes rankings.
 
 Read `docs/platform-adapters.md` before touching anything under `app/lib/platforms/`.
 
+## Code comments
+
+Comment only for non-trivial rationale — a non-obvious "why", a constraint, a gotcha, a workaround.
+Do not add comments that restate what the code does. Prefer zero comments in a diff over narrating
+each step.
+
 ## Environment
 
 - **Node 24 is required.** `@adonisjs/core@7` and `@adonisjs/ace@14` declare `engines.node >=24`,

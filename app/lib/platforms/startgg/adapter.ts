@@ -111,12 +111,8 @@ export class StartggAdapter implements PlatformAdapter {
   }
 
   /**
-   * `profileSlug` is start.gg's `user.discriminator` (the bare 8-hex code); the
-   * `user/` routing prefix is kept here rather than in stored data.
-   *
-   * Dormant for now: `EVENT_ENTRANTS_QUERY` does not yet request `discriminator`,
-   * so `profileSlug` is null on every import until the query is extended and the
-   * committed fixtures are re-recorded. Wired ahead so that is a one-line change.
+   * `profileSlug` is start.gg's `user.discriminator` (the bare 8-hex code). Null for a bracket
+   * entrant with no attached user.
    */
   profileUrl(account: PlatformAccountRef): string | null {
     return account.profileSlug ? `https://www.start.gg/user/${account.profileSlug}` : null

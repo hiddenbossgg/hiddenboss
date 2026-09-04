@@ -46,6 +46,9 @@ export interface ApiDefinition {
     update: typeof routes['identity.update']
   }
   players: {
+    merge: typeof routes['players.merge'] & {
+      store: typeof routes['players.merge.store']
+    }
     update: typeof routes['players.update']
     index: typeof routes['players.index']
     show: typeof routes['players.show']

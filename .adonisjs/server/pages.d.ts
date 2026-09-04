@@ -21,15 +21,19 @@ declare module '@adonisjs/inertia/types' {
     'home': ExtractProps<(typeof import('../../inertia/pages/home.tsx'))['default']>
     'leagues/create': ExtractProps<(typeof import('../../inertia/pages/leagues/create.tsx'))['default']>
     'leagues/credentials': ExtractProps<(typeof import('../../inertia/pages/leagues/credentials.tsx'))['default']>
+    'leagues/event_not_found': ExtractProps<(typeof import('../../inertia/pages/leagues/event_not_found.tsx'))['default']>
     'leagues/event': ExtractProps<(typeof import('../../inertia/pages/leagues/event.tsx'))['default']>
     'leagues/events': ExtractProps<(typeof import('../../inertia/pages/leagues/events.tsx'))['default']>
     'leagues/h2h': ExtractProps<(typeof import('../../inertia/pages/leagues/h2h.tsx'))['default']>
     'leagues/imports': ExtractProps<(typeof import('../../inertia/pages/leagues/imports.tsx'))['default']>
     'leagues/index': ExtractProps<(typeof import('../../inertia/pages/leagues/index.tsx'))['default']>
+    'leagues/player_not_found': ExtractProps<(typeof import('../../inertia/pages/leagues/player_not_found.tsx'))['default']>
     'leagues/player': ExtractProps<(typeof import('../../inertia/pages/leagues/player.tsx'))['default']>
+    'leagues/players_merge': ExtractProps<(typeof import('../../inertia/pages/leagues/players_merge.tsx'))['default']>
     'leagues/players': ExtractProps<(typeof import('../../inertia/pages/leagues/players.tsx'))['default']>
     'leagues/ranking_create': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking_create.tsx'))['default']>
     'leagues/ranking_edit': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking_edit.tsx'))['default']>
+    'leagues/ranking_not_found': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking_not_found.tsx'))['default']>
     'leagues/ranking': ExtractProps<(typeof import('../../inertia/pages/leagues/ranking.tsx'))['default']>
     'leagues/rankings': ExtractProps<(typeof import('../../inertia/pages/leagues/rankings.tsx'))['default']>
     'leagues/settings': ExtractProps<(typeof import('../../inertia/pages/leagues/settings.tsx'))['default']>

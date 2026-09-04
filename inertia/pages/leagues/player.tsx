@@ -13,6 +13,7 @@ type Props = {
   league: { slug: string; name: string }
   canManage: boolean
   player: {
+    id: string
     slug: string
     displayTag: string
     pronouns: string | null
@@ -53,10 +54,12 @@ type Props = {
   }>
   accounts: Array<{
     platformKey: string
+    platformName: string
     gamerTag: string
     prefix: string | null
     source: string
     provisional: boolean
+    weakIdentity: boolean
     profileUrl: string | null
   }>
 }
@@ -251,17 +254,28 @@ const PlayerProfile: React.FC<Props> = ({
       )}
 
       {canManage && (
-        <details className="edit-panel">
-          <summary>Edit player</summary>
-          <PlayerEditForm
-            league={league.slug}
-            player={player.slug}
-            displayTag={player.displayTag}
-            city={player.city}
-            state={player.state}
-            country={player.country}
-          />
-        </details>
+        <>
+          <details className="edit-panel">
+            <summary>Edit player</summary>
+            <PlayerEditForm
+              league={league.slug}
+              player={player.slug}
+              displayTag={player.displayTag}
+              city={player.city}
+              state={player.state}
+              country={player.country}
+            />
+          </details>
+          <p>
+            <Link
+              route="players.merge"
+              routeParams={{ league: league.slug }}
+              data={{ a: player.id }}
+            >
+              Merge with another player
+            </Link>
+          </p>
+        </>
       )}
 
       <h2>Ranking</h2>
@@ -325,8 +339,8 @@ const PlayerProfile: React.FC<Props> = ({
 
       <h2>Accounts ({accounts.length})</h2>
       <ul>
-        {accounts.map((account) => (
-          <li key={`${account.platformKey}-${account.gamerTag}`}>
+        {accounts.map((account, index) => (
+          <li key={`${account.platformKey}-${account.gamerTag}-${index}`}>
             {account.prefix ? `${account.prefix} | ` : ''}
             {account.profileUrl ? (
               <a href={account.profileUrl} rel="noreferrer noopener" target="_blank">
@@ -335,7 +349,9 @@ const PlayerProfile: React.FC<Props> = ({
             ) : (
               account.gamerTag
             )}{' '}
-            · {account.platformKey}
+            {account.weakIdentity
+              ? `· ${account.platformName} entrant, no linked account`
+              : `· ${account.platformName}`}
             {account.provisional && ' · needs review'}
           </li>
         ))}
