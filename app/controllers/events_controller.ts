@@ -4,7 +4,7 @@ import LeagueEvent from '#models/league_event'
 import LeaguePolicy from '#policies/league_policy'
 import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import { StalenessService } from '#services/rankings/staleness_service'
-import { updateTournamentValidator } from '#validators/tournament'
+import { updateEventValidator } from '#validators/event'
 import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
 import { fromLocalDate, toLocalDate } from '#lib/time/local_date'
 import { DateTime } from 'luxon'
@@ -276,7 +276,7 @@ export default class EventsController {
   }
 
   /**
-   * A league admin's manual correction to tournament data.
+   * A league admin's manual correction to an event and its tournament.
    */
   async update({ league, params, request, response, session }: HttpContext) {
     const event = await this.loadCountedEvent(league.id, params.event)
@@ -285,21 +285,18 @@ export default class EventsController {
       return response.notFound({ message: 'No such event in this league' })
     }
 
-    const payload = await request.validateUsing(updateTournamentValidator)
+    const payload = await request.validateUsing(updateEventValidator)
 
-    /**
-     * The location and date dropdowns each submit only their own fields, so
-     * don't touch absent fields.
-     */
     const zone = league.timezone ?? DEFAULT_TIMEZONE
+    event.name = payload.eventName
     event.tournament.merge({
-      ...(payload.city !== undefined ? { city: payload.city || null } : {}),
-      ...(payload.state !== undefined ? { state: payload.state || null } : {}),
-      ...(payload.country !== undefined ? { country: payload.country || null } : {}),
-      ...(payload.startAt !== undefined
-        ? { startAt: fromLocalDate(payload.startAt.toISODate(), zone) }
-        : {}),
+      name: payload.tournamentName,
+      city: payload.city || null,
+      state: payload.state || null,
+      country: payload.country || null,
+      startAt: payload.startAt ? fromLocalDate(payload.startAt.toISODate(), zone) : null,
     })
+    await event.save()
     await event.tournament.save()
 
     /**

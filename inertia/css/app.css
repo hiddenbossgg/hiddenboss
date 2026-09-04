@@ -272,6 +272,43 @@ button:hover {
   background: var(--gray-10);
 }
 
+/**
+ * Destructive actions set apart from the edits above them.
+ */
+.danger-zone {
+  margin-top: 32px;
+  border: 1px solid #fb2c36;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.danger-zone > strong {
+  color: #fb2c36;
+  font-size: 14px;
+}
+.danger-zone .danger-action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.danger-zone .danger-action p {
+  font-size: 14px;
+  color: var(--gray-7);
+}
+.danger-zone form + form {
+  border-top: 1px solid #fb2c3640;
+  padding-top: 24px;
+}
+.danger-zone button {
+  background: #fb2c36;
+}
+.danger-zone button:hover {
+  background: #fb2c36;
+  filter: brightness(0.92);
+}
+
 /* Alerts */
 .alert {
   background: #fff;
@@ -541,8 +578,8 @@ main > .hero:first-child {
   background: var(--gray-4);
 }
 
-/* Location autocomplete, on the activity requirements editor. */
-.location-autocomplete {
+/* Text input with a suggestion dropdown (autocomplete_input.tsx). */
+.autocomplete {
   position: relative;
   display: inline-block;
 }
@@ -557,11 +594,11 @@ main > .hero:first-child {
   flex-wrap: wrap;
   gap: 8px;
 }
-.location-fields .location-autocomplete {
+.location-fields .autocomplete {
   flex: 1;
   min-width: 140px;
 }
-.location-suggestions {
+.autocomplete-menu {
   position: absolute;
   z-index: 10;
   top: calc(100% + 4px);
@@ -575,10 +612,10 @@ main > .hero:first-child {
   box-shadow: 0 4px 12px oklch(0% 0 0 / 12%);
   list-style: none;
 }
-.location-suggestions li + li {
+.autocomplete-menu li + li {
   border-top: 1px solid var(--gray-3);
 }
-.location-suggestions button {
+.autocomplete-menu button {
   width: 100%;
   height: auto;
   text-align: left;
@@ -588,7 +625,7 @@ main > .hero:first-child {
   padding: 8px 12px;
   border-radius: 0;
 }
-.location-suggestions button:hover,
-.location-suggestions li[aria-selected='true'] button {
+.autocomplete-menu button:hover,
+.autocomplete-menu li[aria-selected='true'] button {
   background: var(--gray-2);
 }

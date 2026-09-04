@@ -2,9 +2,12 @@ import type React from 'react'
 import { useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import PlayerLinkList from '../../components/player_link_list.js'
+import AutocompleteInput from '../../components/autocomplete_input.js'
 import LocationAutocompleteInput from '../../components/location_autocomplete_input.js'
 import { useLocationSuggestions } from '../../hooks/use_location_suggestions.js'
 import { formatLocation } from '../../lib/format_location.js'
+import { confirmSubmit } from '../../lib/confirm_submit.js'
 
 type Props = {
   league: { slug: string; name: string }
@@ -57,9 +60,12 @@ type Props = {
   }>
 }
 
-type LocationFormProps = {
+type EventEditFormProps = {
   league: string
   event: string
+  eventName: string
+  tournamentName: string
+  startAt: string | null
   city: string | null
   state: string | null
   country: string | null
@@ -69,9 +75,12 @@ type LocationFormProps = {
  * Own component, not inlined below: it needs `useLocationSuggestions` state
  * per field, which only makes sense attached to a stable component instance.
  */
-const TournamentLocationForm: React.FC<LocationFormProps> = ({
+const EventEditForm: React.FC<EventEditFormProps> = ({
   league,
   event,
+  eventName,
+  tournamentName,
+  startAt,
   city,
   state,
   country,
@@ -93,43 +102,61 @@ const TournamentLocationForm: React.FC<LocationFormProps> = ({
     <Form route="events.update" routeParams={{ league, event }}>
       {({ errors, processing }) => (
         <>
-          <LocationAutocompleteInput
-            name="city"
-            ariaLabel="City"
-            placeholder="city"
-            value={cityValue}
-            suggestions={citySuggestions}
-            onChange={setCityValue}
-            onSelect={(suggestion) => {
-              setCityValue(suggestion.city ?? suggestion.label)
-              if (suggestion.state) setStateValue(suggestion.state)
-              if (suggestion.country) setCountryValue(suggestion.country)
-            }}
-          />{' '}
-          <LocationAutocompleteInput
-            name="state"
-            ariaLabel="State or province"
-            placeholder="state/province"
-            value={stateValue}
-            suggestions={stateSuggestions}
-            onChange={setStateValue}
-            onSelect={(suggestion) => {
-              setStateValue(suggestion.state ?? suggestion.label)
-              if (suggestion.country) setCountryValue(suggestion.country)
-            }}
-          />{' '}
-          <LocationAutocompleteInput
-            name="country"
-            ariaLabel="Country"
-            placeholder="country"
-            value={countryValue}
-            suggestions={countrySuggestions}
-            onChange={setCountryValue}
-            onSelect={(suggestion) => setCountryValue(suggestion.country ?? suggestion.label)}
-          />{' '}
+          <label>
+            Event name <input type="text" name="eventName" defaultValue={eventName} />
+          </label>
+          <label>
+            Tournament name{' '}
+            <input type="text" name="tournamentName" defaultValue={tournamentName} />
+          </label>
+          <label>
+            Date <input type="date" name="startAt" defaultValue={startAt ?? ''} />
+          </label>
+          <label>
+            Location
+            <div className="location-fields">
+              <LocationAutocompleteInput
+                name="city"
+                ariaLabel="City"
+                placeholder="city"
+                value={cityValue}
+                suggestions={citySuggestions}
+                onChange={setCityValue}
+                onSelect={(suggestion) => {
+                  setCityValue(suggestion.city ?? suggestion.label)
+                  if (suggestion.state) setStateValue(suggestion.state)
+                  if (suggestion.country) setCountryValue(suggestion.country)
+                }}
+              />
+              <LocationAutocompleteInput
+                name="state"
+                ariaLabel="State or province"
+                placeholder="state/province"
+                value={stateValue}
+                suggestions={stateSuggestions}
+                onChange={setStateValue}
+                onSelect={(suggestion) => {
+                  setStateValue(suggestion.state ?? suggestion.label)
+                  if (suggestion.country) setCountryValue(suggestion.country)
+                }}
+              />
+              <LocationAutocompleteInput
+                name="country"
+                ariaLabel="Country"
+                placeholder="country"
+                value={countryValue}
+                suggestions={countrySuggestions}
+                onChange={setCountryValue}
+                onSelect={(suggestion) => setCountryValue(suggestion.country ?? suggestion.label)}
+              />
+            </div>
+          </label>
           <button type="submit" disabled={processing}>
-            Save location
+            Save
           </button>
+          {errors.eventName && <p role="alert">{errors.eventName}</p>}
+          {errors.tournamentName && <p role="alert">{errors.tournamentName}</p>}
+          {errors.startAt && <p role="alert">{errors.startAt}</p>}
           {errors.city && <p role="alert">{errors.city}</p>}
           {errors.state && <p role="alert">{errors.state}</p>}
           {errors.country && <p role="alert">{errors.country}</p>}
@@ -139,35 +166,11 @@ const TournamentLocationForm: React.FC<LocationFormProps> = ({
   )
 }
 
-const TournamentDateForm: React.FC<{ league: string; event: string; startAt: string | null }> = ({
-  league,
-  event,
-  startAt,
-}) => (
-  <Form route="events.update" routeParams={{ league, event }}>
-    {({ errors, processing }) => (
-      <>
-        <input type="date" name="startAt" aria-label="Start date" defaultValue={startAt ?? ''} />{' '}
-        <button type="submit" disabled={processing}>
-          Save date
-        </button>
-        {errors.startAt && <p role="alert">{errors.startAt}</p>}
-      </>
-    )}
-  </Form>
-)
-
-/** Sentinel for "not one of the existing players", which has no id to carry. */
-const NEW_PLAYER = 'new'
+type PlayerSuggestion = { label: string; id: string }
 
 /**
  * Moves one imported account to another player, or splits it out into a player
  * created for it.
- *
- * The new-player case is the only fix for automatic resolution having put two
- * people under one name: there is no existing row to pick, so without it the
- * mistake that loses information is the one that cannot be corrected. The tag
- * defaults to the account's own, which is what the import would have named it.
  */
 const ReassignForm: React.FC<{
   leagueSlug: string
@@ -175,40 +178,66 @@ const ReassignForm: React.FC<{
   gamerTag: string | null
   players: Props['players']
 }> = ({ leagueSlug, platformAccountId, gamerTag, players }) => {
-  const [target, setTarget] = useState('')
-  const creating = target === NEW_PLAYER
+  const [creating, setCreating] = useState(false)
+  const [query, setQuery] = useState('')
+  const [selectedId, setSelectedId] = useState('')
+
+  const needle = query.trim().toLowerCase()
+  const matches: PlayerSuggestion[] = needle
+    ? players
+        .filter((player) => player.displayTag.toLowerCase().includes(needle))
+        .slice(0, 8)
+        .map((player) => ({ label: player.displayTag, id: player.id }))
+    : []
 
   return (
     <Form route="identity.update" routeParams={{ league: leagueSlug }}>
       {({ processing }) => (
         <>
           <input type="hidden" name="platformAccountId" value={platformAccountId} />
-          {/* Unnamed, so it stays a control: the field that submits depends on it. */}
-          <select value={target} onChange={(event) => setTarget(event.target.value)}>
-            <option value="" disabled>
-              Choose a player…
-            </option>
-            {players.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.displayTag}
-              </option>
-            ))}
-            <option value={NEW_PLAYER}>New player…</option>
-          </select>{' '}
           {creating ? (
-            <input
-              name="newPlayerTag"
-              defaultValue={gamerTag ?? ''}
-              placeholder="Player name"
-              aria-label="New player name"
-              required
-            />
+            <>
+              <input
+                name="newPlayerTag"
+                defaultValue={gamerTag ?? ''}
+                placeholder="New player name"
+                aria-label="New player name"
+                required
+              />{' '}
+              <button type="button" onClick={() => setCreating(false)}>
+                Cancel
+              </button>{' '}
+              <button type="submit" disabled={processing}>
+                Create
+              </button>
+            </>
           ) : (
-            <input type="hidden" name="leaguePlayerId" value={target} />
-          )}{' '}
-          <button type="submit" disabled={processing || target === ''}>
-            {creating ? 'Create' : 'Reassign'}
-          </button>
+            <>
+              <AutocompleteInput<PlayerSuggestion>
+                ariaLabel="Reassign to player"
+                placeholder="Reassign to…"
+                value={query}
+                suggestions={matches}
+                keyOf={(suggestion) => suggestion.id}
+                onChange={(value) => {
+                  setQuery(value)
+                  // Editing after a pick invalidates it — force another choice.
+                  setSelectedId('')
+                }}
+                onSelect={(suggestion) => {
+                  setQuery(suggestion.label)
+                  setSelectedId(suggestion.id)
+                }}
+              />{' '}
+              {selectedId && <input type="hidden" name="leaguePlayerId" value={selectedId} />}
+              <button type="button" onClick={() => setCreating(true)}>
+                New player
+              </button>{' '}
+              <button type="submit" disabled={processing || selectedId === ''}>
+                Reassign
+              </button>
+            </>
+          )}
         </>
       )}
     </Form>
@@ -222,15 +251,74 @@ function scoreOf(set: Props['sets'][number]) {
   return `${set.scoreA ?? '—'}–${set.scoreB ?? '—'}`
 }
 
+const IdentityTable: React.FC<{
+  leagueSlug: string
+  players: Props['players']
+  entrants: Props['entrants']
+}> = ({ leagueSlug, players, entrants }) => {
+  return (
+    <div className="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Entrant</th>
+            <th>Imported account</th>
+            <th>Counts as</th>
+            <th>Reassign to</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entrants.flatMap((entrant) =>
+            entrant.players
+              .filter((participant) => participant.platformAccountId !== null)
+              .map((participant) => (
+                <tr key={participant.platformAccountId!}>
+                  <td>{entrant.name}</td>
+                  <td>
+                    {participant.gamerTag ?? '—'}
+                    {participant.platformKey && <> · {participant.platformKey}</>}
+                  </td>
+                  <td>
+                    {participant.slug ? (
+                      <Link
+                        route="players.show"
+                        routeParams={{ league: leagueSlug, player: participant.slug }}
+                      >
+                        {participant.tag}
+                      </Link>
+                    ) : (
+                      participant.tag
+                    )}
+                    {participant.provisional && ' · needs review'}
+                  </td>
+                  <td>
+                    <ReassignForm
+                      leagueSlug={leagueSlug}
+                      platformAccountId={participant.platformAccountId!}
+                      gamerTag={participant.gamerTag}
+                      players={players}
+                    />
+                  </td>
+                </tr>
+              ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const EventResults: React.FC<Props> = ({ league, canManage, event, players, entrants, sets }) => {
   return (
     <>
       <LeagueNav slug={league.slug} name={league.name} canManage={canManage} />
 
-      <h1>{event.name}</h1>
+      <h1>
+        {event.tournamentName} - {event.name}
+      </h1>
       <p>
-        {event.tournamentName}
-        {event.gameName && <> · {event.gameName}</>} · {event.entryKind}
+        {event.gameName && <>{event.gameName} · </>}
+        {event.entryKind}
         {event.startAt && <> · {event.startAt}</>}
         {formatLocation(event) && <> · {formatLocation(event)}</>}
         {event.url && (
@@ -245,38 +333,40 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
 
       {canManage && (
         <details>
-          <summary>Edit location</summary>
-          <TournamentLocationForm
+          <summary>Edit event</summary>
+          <EventEditForm
             league={league.slug}
             event={event.id}
+            eventName={event.name}
+            tournamentName={event.tournamentName}
+            startAt={event.startAt}
             city={event.city}
             state={event.state}
             country={event.country}
           />
+          <div className="danger-zone">
+            <strong>Danger zone</strong>
+            <Form route="events.destroy" routeParams={{ league: league.slug, event: event.id }}>
+              {({ processing }) => (
+                <div className="danger-action">
+                  <p>
+                    Drops it from every ranking&apos;s next recompute. Nothing is deleted — pasting
+                    the same link re-imports it.
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={processing}
+                    onClick={confirmSubmit(
+                      `Remove ${event.name} from ${league.name}? It drops from every ranking's next recompute. Nothing is deleted — pasting the same link re-imports it.`
+                    )}
+                  >
+                    Remove from league
+                  </button>
+                </div>
+              )}
+            </Form>
+          </div>
         </details>
-      )}
-
-      {canManage && (
-        <details>
-          <summary>Edit date</summary>
-          <TournamentDateForm league={league.slug} event={event.id} startAt={event.startAt} />
-        </details>
-      )}
-
-      {canManage && (
-        <Form route="events.destroy" routeParams={{ league: league.slug, event: event.id }}>
-          {({ processing }) => (
-            <>
-              <button type="submit" disabled={processing}>
-                Remove from league
-              </button>
-              <p>
-                Drops it from every ranking&apos;s next recompute. Nothing is deleted — pasting the
-                same link re-imports it.
-              </p>
-            </>
-          )}
-        </Form>
       )}
 
       <h2>Placements ({entrants.length})</h2>
@@ -299,24 +389,13 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
                 </td>
                 <td>{entrant.name}</td>
                 <td>
-                  {/* An entrant is 1..N players, so doubles teams link to both. */}
-                  {entrant.players.length === 0
-                    ? '—'
-                    : entrant.players.map((player, index) => (
-                        <span key={`${entrant.id}-${player.tag}`}>
-                          {index > 0 && ' & '}
-                          {player.slug ? (
-                            <Link
-                              route="players.show"
-                              routeParams={{ league: league.slug, player: player.slug }}
-                            >
-                              {player.tag}
-                            </Link>
-                          ) : (
-                            player.tag
-                          )}
-                        </span>
-                      ))}
+                  <PlayerLinkList
+                    leagueSlug={league.slug}
+                    players={entrant.players.map((player) => ({
+                      slug: player.slug,
+                      label: player.tag,
+                    }))}
+                  />
                 </td>
                 <td>{entrant.seed ?? '—'}</td>
               </tr>
@@ -334,54 +413,7 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
             change is logged.
           </p>
 
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Entrant</th>
-                  <th>Imported account</th>
-                  <th>Counts as</th>
-                  <th>Reassign to</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entrants.flatMap((entrant) =>
-                  entrant.players
-                    .filter((participant) => participant.platformAccountId !== null)
-                    .map((participant) => (
-                      <tr key={participant.platformAccountId!}>
-                        <td>{entrant.name}</td>
-                        <td>
-                          {participant.gamerTag ?? '—'}
-                          {participant.platformKey && <> · {participant.platformKey}</>}
-                        </td>
-                        <td>
-                          {participant.slug ? (
-                            <Link
-                              route="players.show"
-                              routeParams={{ league: league.slug, player: participant.slug }}
-                            >
-                              {participant.tag}
-                            </Link>
-                          ) : (
-                            participant.tag
-                          )}
-                          {participant.provisional && ' · needs review'}
-                        </td>
-                        <td>
-                          <ReassignForm
-                            leagueSlug={league.slug}
-                            platformAccountId={participant.platformAccountId!}
-                            gamerTag={participant.gamerTag}
-                            players={players}
-                          />
-                        </td>
-                      </tr>
-                    ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <IdentityTable leagueSlug={league.slug} players={players} entrants={entrants} />
         </>
       )}
 

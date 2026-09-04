@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Form } from '@adonisjs/inertia/react'
 import LeagueNav from '../../components/league_nav.js'
+import { confirmSubmit } from '../../lib/confirm_submit.js'
 
 type Props = {
   league: {
@@ -77,58 +78,46 @@ const Settings: React.FC<Props> = ({ league, timezones, canDelete }) => {
       </p>
 
       {canDelete && (
-        <>
-          <h2>Danger zone</h2>
+        <div className="danger-zone">
+          <strong>Danger zone</strong>
 
           <Form route="leagues.clear" routeParams={{ league: league.slug }}>
             {({ processing }) => (
-              <>
-                <button
-                  type="submit"
-                  disabled={processing}
-                  onClick={(event) => {
-                    if (
-                      !window.confirm(
-                        `Clear ${league.name}? This deletes every ranking, player and imported event in this league. Admins, credentials and the league itself stay — you can re-import from scratch.`
-                      )
-                    ) {
-                      event.preventDefault()
-                    }
-                  }}
-                >
-                  Clear league data
-                </button>
+              <div className="danger-action">
                 <p>
                   Wipes rankings, players and imported events. Admins, credentials and the game list
                   are kept, and re-importing brings data back.
                 </p>
-              </>
+                <button
+                  type="submit"
+                  disabled={processing}
+                  onClick={confirmSubmit(
+                    `Clear ${league.name}? This deletes every ranking, player and imported event in this league. Admins, credentials and the league itself stay — you can re-import from scratch.`
+                  )}
+                >
+                  Clear league data
+                </button>
+              </div>
             )}
           </Form>
 
           <Form route="leagues.destroy" routeParams={{ league: league.slug }}>
             {({ processing }) => (
-              <>
+              <div className="danger-action">
+                <p>Removes the league itself, along with everything in it, permanently.</p>
                 <button
                   type="submit"
                   disabled={processing}
-                  onClick={(event) => {
-                    if (
-                      !window.confirm(
-                        `Delete ${league.name}? This removes the league itself along with everything in it. This cannot be undone.`
-                      )
-                    ) {
-                      event.preventDefault()
-                    }
-                  }}
+                  onClick={confirmSubmit(
+                    `Delete ${league.name}? This removes the league itself along with everything in it. This cannot be undone.`
+                  )}
                 >
                   Delete league
                 </button>
-                <p>Removes the league itself, along with everything in it, permanently.</p>
-              </>
+              </div>
             )}
           </Form>
-        </>
+        </div>
       )}
     </>
   )

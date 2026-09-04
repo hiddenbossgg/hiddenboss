@@ -2,13 +2,10 @@ import vine from '@vinejs/vine'
 import { toAlpha2CountryCode } from '#lib/geo/country'
 
 const place = () => vine.string().trim().maxLength(100)
+const displayName = () => vine.string().trim().minLength(1).maxLength(255)
 
 /**
- * `tournaments.country` is `varchar(2)` — unlike a player's, which was
- * widened to fit a platform's free-text location name (see the migration
- * that widened it). A tournament's country is expected to resolve to an ISO
- * alpha-2 code, so an admin typing "United States" instead of picking the
- * suggestion needs resolving here rather than failing as a database error.
+ * `tournaments.country` is expected to resolve to an ISO alpha-2 code.
  */
 const countryCode = vine.createRule((value, _options, field) => {
   if (typeof value !== 'string' || value.trim() === '') return
@@ -23,9 +20,11 @@ const countryCode = vine.createRule((value, _options, field) => {
 })
 
 /**
- * A league admin's manual correction.
+ * A league admin's manual corrections to one event through the "Edit event" form.
  */
-export const updateTournamentValidator = vine.create({
+export const updateEventValidator = vine.create({
+  eventName: displayName(),
+  tournamentName: displayName(),
   city: place().optional(),
   state: place().optional(),
   country: place().use(countryCode()).optional(),
