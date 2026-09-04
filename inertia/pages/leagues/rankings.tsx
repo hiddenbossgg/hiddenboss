@@ -62,7 +62,7 @@ const Rankings: React.FC<Props> = ({ league, canManage, rankings }) => {
       )}
 
       {canManage && (
-        <p>
+        <p className="ranking-create">
           <Link className="button" route="rankings.create" routeParams={{ league: league.slug }}>
             Create a ranking
           </Link>

@@ -208,6 +208,10 @@ textarea[data-invalid='true'] {
 .ranking-recompute-form {
   margin-top: 12px;
 }
+/** Sets the "Create a ranking" button off from the list or table above it. */
+.ranking-create {
+  margin-top: 16px;
+}
 
 /**
  * A collapsed name/location filter panel above a player table (rankings and
@@ -227,6 +231,27 @@ textarea[data-invalid='true'] {
 /** Set off from the filters above, same as they're set off from the recompute controls. */
 .ranking-exclude-inactive {
   margin-top: 16px;
+}
+
+/**
+ * A disclosure panel ("Edit event", "Edit player", "Filter players"). Once
+ * open, a border boxes its contents off from the page around it; collapsed,
+ * only the summary shows and there is nothing to frame.
+ */
+.edit-panel {
+  margin-top: 16px;
+}
+.edit-panel summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+.edit-panel[open] {
+  border: 1px solid var(--gray-4);
+  border-radius: 8px;
+  padding: 16px;
+}
+.edit-panel[open] summary {
+  margin-bottom: 16px;
 }
 
 /** Set off from the count line above it. */
@@ -289,9 +314,22 @@ button:hover {
   flex-direction: column;
   gap: 24px;
 }
-.danger-zone > strong {
+.danger-zone > strong,
+.danger-zone > summary {
   color: #fb2c36;
   font-size: 14px;
+  font-weight: 700;
+}
+/* On the settings page the zone is a disclosure, collapsed by default so the
+   destructive actions aren't the first thing in reach. */
+.danger-zone > summary {
+  cursor: pointer;
+}
+/* Collapsed, the box holds only the summary line — drop the flex layout and
+   its column gap, and pad just enough to clear the text. */
+details.danger-zone:not([open]) {
+  display: block;
+  padding: 6px 14px;
 }
 .danger-zone .danger-action {
   display: flex;

@@ -54,7 +54,7 @@ const LeagueHome: React.FC<Props> = ({ league, rankings, events, canManage }) =>
 
       {/* Outside the empty-state branch so it stays reachable after the first one. */}
       {canManage && (
-        <p>
+        <p className="ranking-create">
           <Link className="button" route="rankings.create" routeParams={{ league: league.slug }}>
             Create a ranking
           </Link>

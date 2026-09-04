@@ -339,7 +339,7 @@ const EventResults: React.FC<Props> = ({ league, canManage, event, players, entr
       </p>
 
       {canManage && (
-        <details>
+        <details className="edit-panel">
           <summary>Edit event</summary>
           <EventEditForm
             league={league.slug}

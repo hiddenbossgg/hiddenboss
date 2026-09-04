@@ -306,7 +306,7 @@ const RankingPage: React.FC<Props> = ({ league, canManage, ranking, standings })
         </>
       )}
 
-      <details className="list-filters">
+      <details className="list-filters edit-panel">
         <summary>Filter players</summary>
 
         <p>
