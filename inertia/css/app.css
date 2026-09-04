@@ -229,6 +229,11 @@ textarea[data-invalid='true'] {
   margin-top: 16px;
 }
 
+/** Set off from the count line above it. */
+.players-sort {
+  margin-top: 16px;
+}
+
 .h2h-search-input {
   max-width: 480px;
 }
