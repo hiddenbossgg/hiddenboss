@@ -4,6 +4,7 @@ import LeagueEvent from '#models/league_event'
 import LeaguePolicy from '#policies/league_policy'
 import RecomputeRankingJob from '#jobs/recompute_ranking_job'
 import { StalenessService } from '#services/rankings/staleness_service'
+import { LeaguePlayerReconcilerService } from '#services/identity/league_player_reconciler_service'
 import { updateEventValidator } from '#validators/event'
 import { DEFAULT_TIMEZONE } from '#lib/geo/timezones'
 import { fromLocalDate, toLocalDate } from '#lib/time/local_date'
@@ -161,8 +162,8 @@ export default class EventsController {
         `p."order" asc nulls last, b.id asc, s.completed_at asc nulls last, s.ordinal asc nulls last`
       )
 
-    /** One row per participant of a team, so the roster groups rather than repeats. */
-    const rosters = new Map<
+    /** One row per participant of a team, so entrants group rather than repeat. */
+    const entrantPlayers = new Map<
       string,
       Array<{
         tag: string
@@ -176,7 +177,7 @@ export default class EventsController {
     >()
 
     for (const row of entrants) {
-      const list = rosters.get(row.id) ?? []
+      const list = entrantPlayers.get(row.id) ?? []
       list.push({
         tag: row.display_tag ?? row.gamer_tag ?? row.name,
         slug: row.player_slug,
@@ -197,15 +198,14 @@ export default class EventsController {
             : null,
         provisional: row.provisional ?? false,
       })
-      rosters.set(row.id, list)
+      entrantPlayers.set(row.id, list)
     }
 
     const canManage = await bouncer.with(LeaguePolicy).allows('manage', league)
 
     /**
-     * Every player in the league, so a correction can point an account at any of
-     * them. Only sent to admins — it is the whole roster, and visitors have
-     * nothing to do with it.
+     * Every league player, so a correction can point an account at any of them.
+     * Only sent to admins — visitors have nothing to do with it.
      */
     const players = canManage
       ? await db
@@ -219,9 +219,23 @@ export default class EventsController {
     const seen = new Set<string>()
     const zone = league.timezone ?? DEFAULT_TIMEZONE
 
+    /**
+     * Tournament data is canonical and shared instance-wide, so delete only when no other league
+     * shares the tournament.
+     */
+    const otherLeague = canManage
+      ? await db
+          .from('league_events as le')
+          .innerJoin('events as e', 'e.id', 'le.event_id')
+          .where('e.tournament_id', event.tournament.id)
+          .whereNot('le.league_id', league.id)
+          .first()
+      : null
+
     return inertia.render('leagues/event', {
       league: { slug: league.slug, name: league.name },
       canManage,
+      tournamentSharedWithOtherLeagues: otherLeague !== null,
       players: players.map((row) => ({ id: row.id, displayTag: row.display_tag })),
       event: {
         id: event.id,
@@ -246,7 +260,7 @@ export default class EventsController {
           seed: row.seed,
           placement: row.placement,
           isDisqualified: row.is_disqualified,
-          players: rosters.get(row.id) ?? [],
+          players: entrantPlayers.get(row.id) ?? [],
         })),
       sets: sets.map((row) => ({
         id: row.id,
@@ -273,7 +287,7 @@ export default class EventsController {
    * later — re-pasting the link upserts the same canonical rows and recreates
    * this league's `league_events` row.
    */
-  async destroy({ league, params, response, session }: HttpContext) {
+  async destroy({ league, params, response, session, auth }: HttpContext) {
     const counted = isUuid(params.event)
       ? await LeagueEvent.query()
           .where('leagueId', league.id)
@@ -288,6 +302,16 @@ export default class EventsController {
     await counted.delete()
 
     /**
+     * Unlinking removes the join row but not the league players the import built,
+     * so players now backed by no counted event are pruned here — otherwise a
+     * re-import under a different filter strands the old set.
+     */
+    await new LeaguePlayerReconcilerService().pruneUnbackedPlayers({
+      leagueId: league.id,
+      actorUserId: auth.user?.id ?? null,
+    })
+
+    /**
      * The next recompute of each ranking replays only the events this league
      * still counts, so a departed tournament's sets and standings are dropped
      * the same way a retroactive correction drops them — nothing here needs
@@ -299,6 +323,52 @@ export default class EventsController {
     }
 
     session.flash('success', 'Removed the event from this league')
+
+    return response.redirect().toRoute('events.index', { league: league.slug })
+  }
+
+  /**
+   * Deletes the tournament itself.
+   *
+   * Blocked when another league still counts any event of this tournament.
+   */
+  async destroyTournament({ league, params, response, session, auth }: HttpContext) {
+    const event = await this.loadCountedEvent(league.id, params.event)
+
+    if (!event) {
+      return response.notFound({ message: 'No such event in this league' })
+    }
+
+    const tournamentName = event.tournament.name
+
+    const otherLeague = await db
+      .from('league_events as le')
+      .innerJoin('events as e', 'e.id', 'le.event_id')
+      .where('e.tournament_id', event.tournament.id)
+      .whereNot('le.league_id', league.id)
+      .first()
+
+    if (otherLeague) {
+      session.flash(
+        'error',
+        `${tournamentName} is also counted by another league on this instance — it must remove it first.`
+      )
+      return response.redirect().back()
+    }
+
+    await event.tournament.delete()
+
+    await new LeaguePlayerReconcilerService().pruneUnbackedPlayers({
+      leagueId: league.id,
+      actorUserId: auth.user?.id ?? null,
+    })
+
+    const auto = await new StalenessService().markLeagueStale(league.id)
+    for (const rankingId of auto) {
+      await RecomputeRankingJob.dispatch({ rankingId })
+    }
+
+    session.flash('success', `Deleted ${tournamentName} entirely`)
 
     return response.redirect().toRoute('events.index', { league: league.slug })
   }
