@@ -20,13 +20,28 @@ type Props = {
     bracketsTotal: number | null
     error: string | null
     warning: string | null
+    regionFiltered: boolean
     counts: {
       entrants?: number
       sets?: number
-      regionFilteredOutSets?: number
-      regionFilteredOutEntrants?: number
+      entrantsImported?: number
+      setsImported?: number
     } | null
   }>
+}
+
+const POLL_INTERVAL_MS = 2000
+const DEFAULT_MAX_POLLS = 45
+
+/**
+ * Scale budget by number of brackets.
+ */
+function maxPollsFor(runningImports: Props['imports']): number {
+  const bracketsTotal = Math.max(0, ...runningImports.map((record) => record.bracketsTotal ?? 0))
+  if (bracketsTotal === 0) return DEFAULT_MAX_POLLS
+
+  const budgetMs = Math.max(DEFAULT_MAX_POLLS * POLL_INTERVAL_MS, 60_000 + bracketsTotal * 4_000)
+  return Math.ceil(budgetMs / POLL_INTERVAL_MS)
 }
 
 const Imports: React.FC<Props> = ({ league, platforms, imports }) => {
@@ -34,10 +49,15 @@ const Imports: React.FC<Props> = ({ league, platforms, imports }) => {
    * The worker writes progress as it goes, so a queued or running import means
    * this page is already out of date.
    */
-  const running = imports.some((record) =>
+  const runningImports = imports.filter((record) =>
     ['queued', 'running', 'cancelling'].includes(record.status)
   )
-  const { gaveUp } = useLiveUpdates(running, { only: ['imports'] })
+  const running = runningImports.length > 0
+  const { gaveUp } = useLiveUpdates(running, {
+    only: ['imports'],
+    intervalMs: POLL_INTERVAL_MS,
+    maxPolls: maxPollsFor(runningImports),
+  })
 
   return (
     <>
@@ -166,11 +186,10 @@ const Imports: React.FC<Props> = ({ league, platforms, imports }) => {
                       <>
                         <br />
                         {record.counts.entrants ?? 0} entrants, {record.counts.sets} sets
-                        {/* Distinguishes "a region filter excluded most of this bracket" from "the bracket was just small." */}
-                        {Boolean(record.counts.regionFilteredOutEntrants) &&
-                          `, ${record.counts.regionFilteredOutEntrants} entrants excluded by region filter`}
-                        {Boolean(record.counts.regionFilteredOutSets) &&
-                          `, ${record.counts.regionFilteredOutSets} sets excluded by region filter`}
+                        {record.regionFiltered &&
+                          typeof record.counts.entrantsImported === 'number' &&
+                          typeof record.counts.setsImported === 'number' &&
+                          `, ${record.counts.entrantsImported} entrants and ${record.counts.setsImported} sets imported`}
                       </>
                     )}
                   </td>

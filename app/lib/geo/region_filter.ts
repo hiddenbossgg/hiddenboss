@@ -11,6 +11,24 @@ export interface LocationFilter {
   city?: string
 }
 
+export function normaliseLocation(location: LocationFilter | undefined): LocationFilter | null {
+  if (!location) return null
+
+  const country = location.country?.trim() || undefined
+  const state = location.state?.trim() || undefined
+  const city = location.city?.trim() || undefined
+
+  if (!country && !state && !city) return null
+
+  return { country, state, city }
+}
+
+export function normaliseLocations(locations: LocationFilter[] | undefined): LocationFilter[] {
+  return (locations ?? [])
+    .map((location) => normaliseLocation(location))
+    .filter((location): location is LocationFilter => location !== null)
+}
+
 interface LocatedFields {
   country?: string | null
   state?: string | null
@@ -72,19 +90,4 @@ export function entrantMatchesRegions(
     const state = normalizeState(participant.state, country)
     return matchesAnyRegion({ country, state, city: participant.city }, regions)
   })
-}
-
-function regionKey(region: LocationFilter): string {
-  return [region.country, region.state, region.city]
-    .map((value) => (value ? normalise(value) : ''))
-    .join('|')
-}
-
-export function regionsEqual(a: LocationFilter[], b: LocationFilter[]): boolean {
-  if (a.length !== b.length) return false
-
-  const sortedA = a.map(regionKey).sort()
-  const sortedB = b.map(regionKey).sort()
-
-  return sortedA.every((key, index) => key === sortedB[index])
 }
