@@ -2,34 +2,9 @@ import EventImport from '#models/event_import'
 import ImportEventJob from '#jobs/import_event_job'
 import { platforms } from '#lib/platforms/registry'
 import { importValidator } from '#validators/import'
+import { normaliseLocations } from '#lib/geo/region_filter'
 import type { LocationFilter } from '#lib/geo/region_filter'
 import type { HttpContext } from '@adonisjs/core/http'
-
-/** Collapses an all-empty region row to `null`. */
-function normaliseLocation(
-  location: { country?: string; state?: string; city?: string } | undefined
-): LocationFilter | null {
-  if (!location) return null
-
-  const country = location.country?.trim() || undefined
-  const state = location.state?.trim() || undefined
-  const city = location.city?.trim() || undefined
-
-  if (!country && !state && !city) return null
-
-  return { country, state, city }
-}
-
-/**
- * Drops any all-blank row.
- */
-function normaliseRegionFilter(
-  regions: Array<{ country?: string; state?: string; city?: string }> | undefined
-): LocationFilter[] {
-  return (regions ?? [])
-    .map((region) => normaliseLocation(region))
-    .filter((region): region is LocationFilter => region !== null)
-}
 
 function regionFilterTag(regions: LocationFilter[]): string | null {
   if (regions.length === 0) return null
@@ -39,6 +14,18 @@ function regionFilterTag(regions: LocationFilter[]): string | null {
   )
 
   return `${regionNames.join(' / ')} Filtered`
+}
+
+/** One tag per active filter. */
+function importTags(record: EventImport): string[] {
+  const tags: string[] = []
+
+  const regionTag = regionFilterTag(record.regionFilter)
+  if (regionTag) tags.push(regionTag)
+
+  if (record.leagueFilter) tags.push('League Only')
+
+  return tags
 }
 
 /**
@@ -68,12 +55,12 @@ export default class ImportsController {
           ? `${record.tournament?.name ?? ''} — ${record.event.name}`.replace(/^ — /, '')
           : (record.tournament?.name ?? record.targetUrl ?? 'Pending')
 
-        const tag = regionFilterTag(record.regionFilter)
+        const tags = importTags(record)
 
         return {
           id: record.id,
           platformKey: record.platformKey,
-          label: tag ? `${baseLabel} [${tag}]` : baseLabel,
+          label: tags.length > 0 ? `${baseLabel} [${tags.join(', ')}]` : baseLabel,
           /**
            * Only linkable once the import has actually succeeded
            */
@@ -85,10 +72,12 @@ export default class ImportsController {
           bracketsTotal: record.bracketsTotal,
           error: record.error,
           warning: record.emptyWarning,
+          regionFiltered: regionFilterTag(record.regionFilter) !== null,
           counts: record.stats as {
             entrants?: number
             sets?: number
-            regionFilteredOutSets?: number
+            entrantsImported?: number
+            setsImported?: number
           } | null,
         }
       }),
@@ -101,7 +90,7 @@ export default class ImportsController {
    * the adapter, which can say which events it holds.
    */
   async store({ league, auth, request, response, session }: HttpContext) {
-    const { url, regionFilter } = await request.validateUsing(importValidator)
+    const { url, regionFilter, leagueFilter } = await request.validateUsing(importValidator)
 
     const resolved = platforms.resolveUrl(url)
     if (!resolved) {
@@ -115,7 +104,8 @@ export default class ImportsController {
       targetUrl: url,
       status: 'queued',
       createdByUserId: auth.getUserOrFail().id,
-      regionFilter: normaliseRegionFilter(regionFilter),
+      regionFilter: normaliseLocations(regionFilter),
+      leagueFilter: leagueFilter ?? false,
     })
 
     await ImportEventJob.dispatch({ eventImportId: eventImport.id })
